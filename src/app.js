@@ -1,0 +1,174 @@
+/* ===== estado, armazenamento no aparelho, fila de envio e ações ===== */
+let S;
+const get=p=>p.split('.').reduce((o,k)=>o==null?o:o[k],S);
+const set=(p,v)=>{const a=p.split('.'),l=a.pop();a.reduce((o,k)=>o[k],S)[l]=v};
+const KEY='mic.v1';
+const newDx=()=>({id:'',data:'',ativo:false,ack:false,mic:[],liq:[],fim:{q:'',g:'',m:''}});
+const blankOb=()=>({code:'',dob:'',sx:'',papel:'',sit:'',termo:false,assent:false,cas:false,mn:false,md:false,nd:2,err:'',busy:false});
+const draftBlank=()=>({s:'',f:[],por:'c',rem:'',who:'',al:''});
+const now=()=>{const d=new Date();return p2(d.getHours())+':'+p2(d.getMinutes())};
+const uid=()=>(Date.now().toString(36)+Math.random().toString(36).slice(2,9));
+let canStore=true;
+function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):null}catch(e){canStore=false;return null}}
+function save(){
+ if(!canStore)return;
+ try{localStorage.setItem(KEY,JSON.stringify({code:S.code,token:S.token,papel:S.papel,cfg:S.cfg,nights:S.nights,weeks:S.weeks,notes:S.notes,outbox:S.outbox,dx:S.dx,screen:S.p.screen,share:S.p.share,ws:S.ws}))}catch(e){canStore=false}
+}
+function init(){
+ const L=load()||{};
+ S={code:L.code||'',token:L.token||'',papel:L.papel||'',cfg:L.cfg||null,nights:L.nights||{},weeks:L.weeks||{},notes:L.notes||[],outbox:L.outbox||[],
+  dx:Object.assign(newDx(),L.dx||{}),nt:'',p:{screen:L.token?(L.screen||'menu'):'onb',share:!!L.share},ob:blankOb(),draft:draftBlank(),
+  draft2:{h:'12:00',v:'',nm:false,u:'ausente',p:'nenhuma',o:''},draft3:{h:'12:00',v:0,t:'Água',vv:''},
+  ws:L.ws||{dias:3,av:0,sem:0,urg:0,troca:0,regra:5,evac:6,bris:4,fecal:0},cal:{y:TODAY.getFullYear(),m:TODAY.getMonth()},busy:false,authBad:false};
+ if(S.cfg)applyCfg(S.cfg,true);
+}
+function applyCfg(c,quiet){
+ S.cfg=c;S.p.code=S.code;S.p.cas=c.guarda;S.p.adol=c.adolescente;S.p.mods=c.modulos;
+ if(c.adolescente&&S.papel==='adol')S.p.share=c.compartilha;
+ if(!quiet)fixScreen();
+}
+/* para onde o app deve ir conforme a configuração do paciente */
+function fixScreen(){
+ const c=S.cfg;if(!c){S.p.screen='onb';return}
+ const sc=S.p.screen;
+ if(c.fase==='trat'&&c.status!=='ativo'){S.p.screen='wait';return}
+ if(sc==='wait'||sc==='onb'||sc==='load')S.p.screen=(c.fase==='inv'&&c.dx)?'dx':'menu';
+ if(c.fase==='inv'&&c.dx&&(sc==='menu'))S.p.screen='dx';
+ if(c.fase==='trat'&&(sc==='dx')&&!S.dx.ativo)S.p.screen='menu';
+}
+/* ---------- rede ---------- */
+async function api(req){
+ if(!API_URL||API_URL.indexOf('COLE')>=0)return{ok:false,err:'config'};
+ const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),30000);
+ try{
+  const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(req),redirect:'follow',signal:ctl.signal});
+  return await r.json();
+ }catch(e){return{ok:false,err:'rede'}}finally{clearTimeout(tm)}
+}
+function queue(a,d){S.outbox.push({eid:uid(),a:a,d:d});save();flush()}
+let flushing=false;
+async function flush(){
+ if(flushing||!S.token||!S.outbox.length||S.authBad)return;
+ if(navigator.onLine===false)return;
+ flushing=true;
+ try{
+  for(let guard=0;guard<20&&S.outbox.length;guard++){
+   const batch=S.outbox.slice(0,40);
+   const r=await api({a:'sync',c:S.code,t:S.token,e:batch});
+   if(r.ok){
+    const gone=new Set((r.done||[]).concat(r.bad||[]));
+    S.outbox=S.outbox.filter(e=>!gone.has(e.eid));
+    if(r.config)applyCfg(r.config);
+    save();render();
+   }else{if(r.err==='auth'){S.authBad=true;save();render()}break}
+  }
+ }finally{flushing=false}
+}
+async function refresh(){
+ if(!S.token)return;
+ const r=await api({a:'config',c:S.code,t:S.token});
+ if(r.ok){applyCfg(r.config);save()}else if(r.err==='auth'){S.authBad=true}
+ render();flush();
+}
+/* ---------- visual ---------- */
+function render(){
+ const ae=document.activeElement,fk=ae&&ae.dataset&&ae.dataset.i?{k:ae.dataset.i,s:ae.selectionStart}:null;
+ document.getElementById('app').innerHTML=viewPais();
+ if(fk){const el=document.querySelector('[data-i="'+fk.k+'"]');if(el){el.focus();try{el.setSelectionRange(fk.s,fk.s)}catch(e){}}}
+}
+const toTop=()=>window.scrollTo(0,0);
+function openNight(k){
+ const n=S.nights[k];
+ S.draft=n?{s:n.s,f:n.f.filter(x=>x!=='med'),por:n.por,al:n.al||'',rem:n.f.includes('med')?'nao':(n.rem||'sim'),who:n.who||(n.h==='P'?'pai':(S.papel==='pai'?'pai':'mae'))}:Object.assign(draftBlank(),{who:S.papel==='pai'?'pai':(S.papel==='mae'?'mae':'')});
+ if(S.p.adol)S.draft.who='adol';
+ S.p.sheet={v:'night',k,step:1};
+}
+const A={
+ go(d){S.p.screen=d.v;S.p.sheet=null;save();toTop()},
+ ob(d){S.ob[d.k]=d.k==='nd'?Number(d.v):d.v;S.ob.err=''},
+ async obgo(){
+  const o=S.ob;if(!obValid()||o.busy)return 'norender';
+  o.busy=true;o.err='';render();
+  const mods=o.sit==='investigacao'?[o.mn?'n':null,o.md?'d':null].filter(Boolean).join(','):'';
+  const r=await api({a:'register',c:norm(o.code),dob:o.dob,papel:o.papel,sx:o.sx,fase:o.sit==='investigacao'?'inv':'trat',nd:o.nd,mods,cas:o.cas?1:0,termo:{v:TERMO_V,ok:true}});
+  o.busy=false;
+  if(!r.ok){
+   o.err=({dados:'O código ou a data de nascimento não conferem. Confira com o consultório.',bloqueado:'Muitas tentativas. Tente novamente daqui a 1 hora.',termo:'O termo mudou. Feche e abra o aplicativo de novo.',codigo:'Código inválido. Use as iniciais e o ano de nascimento, como no exemplo.',rede:'Sem conexão com a internet. Tente de novo.',config:'O aplicativo ainda não foi configurado.',ocupado:'O serviço está ocupado. Tente de novo em instantes.'})[r.err]||'Não foi possível entrar. Tente de novo.';
+   render();return 'norender';
+  }
+  S.code=norm(o.code);S.token=r.token;S.papel=o.papel;S.authBad=false;S.p.screen='load';S.ob=blankOb();
+  applyCfg(r.config);save();toTop();
+ },
+ refresh(){S.busy=true;render();refresh().then(()=>{S.busy=false;render()});return 'norender'},
+ dxstart(){
+  const d=S.dx;
+  if(d.ativo||[0,6].includes(TODAY.getDay())||d.ack){if(!d.ativo){d.id='d'+uid();d.data=I(TODAY);d.ativo=true}S.p.screen='diary';save();toTop()}
+  else S.p.sheet={v:'rule'}},
+ ruleok(){const d=S.dx;S.p.sheet=null;d.id='d'+uid();d.data=I(TODAY);d.ativo=true;S.p.screen='diary';save();toTop()},
+ dxfromtrat(){S.p.screen='dx';save();toTop()},
+ sheet(d){S.p.sheet=d.v?{v:d.v}:null;if(d.v==='mic')S.draft2={h:now(),v:'',nm:false,u:'ausente',p:'nenhuma',o:''};if(d.v==='liq')S.draft3={h:now(),v:0,t:'Água',vv:''};if(d.v==='fim')S.dx.fim={q:'',g:'',m:''}},
+ night(d){openNight(d.v)},
+ dr(d){S.draft[d.k]=d.v},
+ drf(d){const f=S.draft.f,i=f.indexOf(d.v);i<0?f.push(d.v):f.splice(i,1)},
+ drp(d){S.draft.por=d.v},
+ nstep(d){S.p.sheet.step=Number(d.v)},
+ savenight(){
+  const k=S.p.sheet.k,dr=S.draft,casa=dr.who==='pai'?'P':'M';
+  const f=dr.f.filter(x=>x!=='med').concat(dr.rem==='nao'?['med']:[]);
+  S.nights[k]={h:casa,s:dr.s,f,por:dr.por,al:dr.al||'',rem:dr.rem,who:dr.who};
+  queue('night',{data:k,casa,s:dr.s,por:dr.por,rem:dr.rem,al:dr.al||'',flags:f,quem:dr.who||S.papel});
+  S.p.sheet=null;save()},
+ cm(d){let{y,m}=S.cal;m+=Number(d.v);if(m<0){m=11;y--}if(m>11){m=0;y++}S.cal={y,m}},
+ d2(d){S.draft2[d.k]=d.v},
+ d3(d){S.draft3.v=Number(d.v);S.draft3.vv=''},
+ d3t(d){S.draft3.t=d.v},
+ savemic(){const m=S.draft2,dx=S.dx,ml=m.nm?0:Math.round(Number(m.v)||0);
+  dx.mic.push([m.h,ml,m.u,m.p,m.o||'']);
+  queue('mic',{diario:dx.id,data:dx.data,hora:m.h,ml,urg:m.u,perda:m.p,obs:m.o||''});S.p.sheet=null;save()},
+ saveliq(){const v=Math.round(Number(S.draft3.vv)||S.draft3.v);if(!v)return 'norender';const dx=S.dx;
+  dx.liq.push([S.draft3.h,v,S.draft3.t]);
+  queue('liq',{diario:dx.id,data:dx.data,hora:S.draft3.h||'',ml:v,tipo:S.draft3.t});S.p.sheet=null;save()},
+ fim(d){S.dx.fim.q=d.v},
+ fimok(){const dx=S.dx,f=dx.fim,tipo=S.cfg&&S.cfg.dx?S.cfg.dx.tipo:'inicial';
+  queue('fim',{diario:dx.id,data:dx.data,tipo,sr:f.q==='sim'?'sim':'nao',g:f.g,m:f.m});
+  Object.assign(S.dx,newDx());S.p.sheet=null;S.p.screen=(S.cfg&&S.cfg.fase==='trat')?'menu':'dx';save();toTop()},
+ wb(d){S.ws.bris=Number(d.v)},
+ savewk(){const w=S.ws,k=I(add(monday(TODAY),-7));
+  S.weeks[k]={dias:w.dias,esc:w.av+w.sem,av:w.av,sem:w.sem,urg:w.urg,troca:w.troca,regra:w.regra,evac:w.evac,bris:w.bris,fecal:w.fecal};
+  queue('week',{semana:k,dias:w.dias,esc:w.av+w.sem,av:w.av,sem:w.sem,urg:w.urg,troca:w.troca,regra:w.regra,evac:w.evac,bris:w.bris,fecal:w.fecal});
+  S.p.screen='menu';save();toTop()},
+ addnote(){const t=(S.nt||'').trim();if(!t)return 'norender';S.notes.unshift([FY(TODAY),t]);queue('note',{data:I(TODAY),texto:t});S.nt=''},
+ st(d){const v=Math.max(Number(d.min),Math.min(Number(d.max),Number(get(d.p))+Number(d.d)));set(d.p,v);document.querySelectorAll('output[data-bind="'+d.p+'"]').forEach(o=>o.textContent=v);save();return 'norender'},
+ sheetbg(d,e){if(e.target.classList.contains('sheetbg')){S.p.sheet=null}else return 'norender'},
+ sairok(){try{localStorage.removeItem(KEY)}catch(e){}init();S.p.screen='onb';render();toTop()}
+};
+document.addEventListener('click',e=>{
+ const el=e.target.closest('[data-a]');if(!el||el.disabled)return;
+ const fn=A[el.dataset.a];if(!fn)return;
+ if(el.classList.contains('sheetbg')&&e.target!==el)return;
+ const r=fn(el.dataset,e);
+ if(r&&typeof r.then==='function'){r.then(x=>{if(x!=='norender')render()});return}
+ if(r==='norender')return;
+ render();
+});
+function onField(e){
+ const el=e.target;
+ if(el.dataset.i){set(el.dataset.i,el.value);if(el.dataset.i==='ob.code'||el.dataset.i==='ob.dob'){S.ob.err=''}
+  const u=el.dataset.u;
+  if(u==='ob'){const g=document.getElementById('ob-go');if(g)g.disabled=!obValid()||S.ob.busy;const n=document.getElementById('ob-norm');if(n)n.innerHTML=norm(S.ob.code)?'Código lido: <b>'+norm(S.ob.code)+'</b>':'Maiúsculas e minúsculas não importam.'}
+  save();
+ }
+ if(el.dataset.c&&e.type==='change'){
+  set(el.dataset.c,el.checked);
+  if(el.dataset.c==='p.share')queue('share',{v:el.checked});
+  save();render();
+ }
+}
+document.addEventListener('input',onField);
+document.addEventListener('change',onField);
+window.addEventListener('online',()=>flush());
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){TODAY=mkToday();refresh()}});
+setInterval(()=>{if(S&&S.outbox.length)flush()},60000);
+init();render();
+if(S.token)refresh();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}

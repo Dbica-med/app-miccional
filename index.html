@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<title>Calendário do xixi</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0D2340">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Calendário do xixi">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="robots" content="noindex,nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preload" href="fonts/open-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:'EB Garamond';font-weight:500;font-style:normal;font-display:swap;src:url(fonts/eb-garamond-latin-500-normal.woff2) format('woff2')}
+@font-face{font-family:'EB Garamond';font-weight:600;font-style:normal;font-display:swap;src:url(fonts/eb-garamond-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Open Sans';font-weight:400;font-style:normal;font-display:swap;src:url(fonts/open-sans-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Open Sans';font-weight:600;font-style:normal;font-display:swap;src:url(fonts/open-sans-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Open Sans';font-weight:700;font-style:normal;font-display:swap;src:url(fonts/open-sans-latin-700-normal.woff2) format('woff2')}
+/* Layout: duas superfícies. App dos pais = coluna de celular (marca azul-marinho e dourado). Painel do médico = ferramenta densa, largura total. */
+:root{
+  --bg:#F2F4F8; --surface:#FFFFFF; --surface2:#F7F8FB;
+  --ink:#0D2340; --ink2:#46546C; --muted:#78859A;
+  --line:#DCE1EA; --grid:#E4E8EF; --axis:#C3CBD8;
+  --brand:#0D2340; --hdr:#0D2340; --hdr-ink:#FFFFFF; --gold:#C8A46A; --gold-ink:#7A5B22; --gold-wash:#F6EEDD;
+  --btn:#0D2340; --btn-ink:#FFFFFF; --sel:#E6ECF6; --sel-line:#0D2340;
+  --good:#0ca30c; --warn:#fab219; --crit:#d03b3b; --info:#2a78d6;
+  --c-noite:#2a78d6; --c-dia:#eb6834; --c-int:#1baf7a; --med:#0D2340;
+  --shadow:0 1px 2px rgba(13,35,64,.06),0 6px 20px rgba(13,35,64,.06);
+  --serif:'EB Garamond',Georgia,'Times New Roman',serif; --sans:'Open Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0A1424; --surface:#12203A; --surface2:#172846;
+  --ink:#EAEFF7; --ink2:#B4C0D4; --muted:#8190A8;
+  --line:#26395A; --grid:#22344F; --axis:#34496A;
+  --hdr:#0F2848; --btn:#C8A46A; --btn-ink:#0D2340; --sel:#1C3156; --sel-line:#C8A46A; --gold-ink:#E3C48C; --gold-wash:#2A2A2E;
+  --c-noite:#3987e5; --c-dia:#d95926; --c-int:#199e70; --med:#9DB4D8;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0A1424; --surface:#12203A; --surface2:#172846;
+  --ink:#EAEFF7; --ink2:#B4C0D4; --muted:#8190A8;
+  --line:#26395A; --grid:#22344F; --axis:#34496A;
+  --hdr:#0F2848; --btn:#C8A46A; --btn-ink:#0D2340; --sel:#1C3156; --sel-line:#C8A46A; --gold-ink:#E3C48C; --gold-wash:#2A2A2E;
+  --c-noite:#3987e5; --c-dia:#d95926; --c-int:#199e70; --med:#9DB4D8;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25); color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans);padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:0 28px;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--serif);font-weight:600;margin:0;letter-spacing:.005em;text-wrap:balance}
+h1{font-size:26px;line-height:1.15} h2{font-size:21px} h3{font-size:17px}
+p{margin:0}
+a{color:inherit}
+.sr{position:absolute;left:-9999px}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+/* barra do protótipo */
+.proto{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--bg);padding:10px 0 8px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:center;max-width:1120px;margin:0 auto}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
+.seg button{border:0;background:none;padding:7px 12px;border-radius:9px;font-size:13px;font-weight:600;color:var(--ink2);white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--btn);color:var(--btn-ink)}
+.tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-ink);background:var(--gold-wash);padding:4px 9px;border-radius:99px}
+.mini{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 10px;font-size:12px;color:var(--ink2)}
+/* ===== app dos pais ===== */
+.phone{max-width:430px;margin:6px auto 0;background:var(--bg);border-radius:30px;border:1px solid var(--line);box-shadow:var(--shadow);overflow:hidden;min-height:720px;position:relative;display:flex;flex-direction:column}
+@media (max-width:520px){.phone{border-radius:0;border:0;box-shadow:none;margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)));margin-inline-end:calc(-1*max(16px,env(safe-area-inset-right,0px)))}}
+.hdr{background:var(--hdr);color:var(--hdr-ink);padding:14px 18px;display:flex;align-items:center;gap:12px}
+.hdr svg{width:34px;height:auto;flex:none}
+.hdr .nm{font-family:var(--serif);font-size:19px;font-weight:600;line-height:1.1}
+.hdr .sub{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-top:2px}
+.hdr .who{margin-left:auto;font-size:12px;color:#C9D3E4;text-align:right}
+.body{padding:18px;display:flex;flex-direction:column;gap:14px;flex:1}
+.foot{padding:14px 18px 20px;font-size:12px;color:var(--muted);text-align:center;border-top:1px solid var(--line)}
+.foot a{color:var(--gold-ink);font-weight:600;text-decoration:none}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.card.flat{box-shadow:none}
+.lead{color:var(--ink2);font-size:14px}
+.row{display:flex;gap:10px;align-items:center}
+.row.wrap{flex-wrap:wrap}
+.sp{flex:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:13px;padding:13px 18px;font-weight:700;background:var(--btn);color:var(--btn-ink);min-height:48px;font-size:15px}
+.btn.block{width:100%}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.gold{background:var(--gold);color:#0D2340}
+.btn.sm{padding:8px 12px;min-height:36px;font-size:13px;border-radius:10px}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.lbl{display:block;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink2);margin-bottom:6px}
+.in{width:100%;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;min-height:48px}
+.in:focus{outline:2px solid var(--gold);border-color:transparent}
+.field{display:flex;flex-direction:column;gap:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:99px;padding:9px 14px;font-size:14px;font-weight:600;min-height:40px;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--sel);border-color:var(--sel-line)}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;cursor:pointer}
+.chk input{width:22px;height:22px;margin:1px 0 0;flex:none;accent-color:var(--brand)}
+.term{max-height:150px;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13px;color:var(--ink2);background:var(--surface2)}
+.term p{margin:0 0 7px}
+.note{font-size:12.5px;color:var(--ink2);background:var(--gold-wash);border-radius:12px;padding:10px 12px}
+.menu{display:flex;flex-direction:column;gap:10px}
+.mi{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;min-height:72px}
+.mi .t{font-weight:700;font-size:16px}
+.mi .d{font-size:13px;color:var(--ink2);margin-top:1px}
+.mi .ic{width:44px;height:44px;border-radius:12px;background:var(--sel);display:grid;place-items:center;flex:none;font-size:22px}
+.sem{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:4px 9px 4px 6px;border-radius:99px;background:var(--surface2);border:1px solid var(--line);white-space:nowrap}
+.sem i{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;color:#fff;font-style:normal;font-size:12px;line-height:1}
+.sem.g i{background:var(--good)} .sem.y i{background:var(--warn);color:#3a2a00} .sem.r i{background:var(--crit)} .sem.n i{background:var(--muted)}
+.back{background:none;border:0;padding:6px 0;font-weight:700;color:var(--ink2);display:inline-flex;gap:6px;align-items:center;min-height:36px}
+.big{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sym{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:2px solid var(--line);background:var(--surface);border-radius:18px;padding:14px 8px;min-height:104px;font-weight:700;font-size:13px;text-align:center}
+.sym b{font-size:34px;line-height:1;font-weight:400}
+.sym[aria-pressed="true"]{border-color:var(--sel-line);background:var(--sel)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal .h{font-size:11px;font-weight:700;text-align:center;color:var(--muted);text-transform:uppercase;padding:2px 0}
+.day{aspect-ratio:1/1.12;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:3px 2px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;font-size:11px;color:var(--ink2);min-width:0}
+.day b{font-size:18px;line-height:1;font-weight:400}
+.day .fl{font-size:9px;line-height:1;min-height:9px}
+.day.off{opacity:.38}
+.day.today{border:2px solid var(--gold)}
+.day.miss{background:var(--surface2)}
+.day.hit{cursor:pointer}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:12.5px;color:var(--ink2)}
+.sheetbg{position:fixed;inset:0;background:rgba(5,12,25,.5);z-index:60;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:430px;border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));max-height:92vh;overflow:auto;display:flex;flex-direction:column;gap:14px}
+.sheet h2{font-size:20px}
+.stepper{display:flex;align-items:center;gap:6px}
+.stepper button{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);font-size:22px;font-weight:700;line-height:1}
+.stepper output{min-width:44px;text-align:center;font-size:20px;font-weight:700}
+.qrow{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line)}
+.qrow:first-child{border-top:0}
+.qrow .q{font-size:14px;font-weight:600;flex:1}
+.q small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+table.t{width:100%;border-collapse:collapse;font-size:13px}
+table.t th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:700;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.t td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+table.t tr:last-child td{border-bottom:0}
+.tw{overflow-x:auto}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:11px 16px;border-radius:12px;font-weight:600;font-size:14px;z-index:90;box-shadow:var(--shadow)}
+#tip{position:fixed;z-index:95;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;padding:6px 9px;border-radius:8px;max-width:240px;line-height:1.35;display:none}
+/* ===== painel do médico ===== */
+.doc{max-width:1120px;margin:6px auto 0;display:flex;flex-direction:column;gap:16px}
+.dhdr{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.dhdr svg{width:34px;height:auto;flex:none}
+.dhdr .nm{font-family:var(--serif);font-size:22px;font-weight:600;line-height:1.1}
+.dhdr .sub{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-ink);font-weight:700}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.tabs button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:8px 14px;font-weight:600;font-size:14px;white-space:nowrap}
+.tabs button[aria-pressed="true"]{background:var(--btn);color:var(--btn-ink);border-color:transparent}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.kpi b{font-size:30px;line-height:1.05;font-weight:700}
+.kpi span{font-size:12.5px;color:var(--ink2)}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:99px;padding:3px 10px 3px 8px;font-size:12px;font-weight:700;background:var(--surface2);border:1px solid var(--line);white-space:nowrap}
+.pill u{width:9px;height:9px;display:inline-block;background:var(--muted);border-radius:50%}
+.pill.warn u{background:var(--warn)} .pill.crit u{background:var(--crit);border-radius:2px;transform:rotate(45deg)} .pill.ok u{background:var(--good)} .pill.info u{background:var(--info);border-radius:2px} .pill.gray u{background:var(--muted)}
+.mod{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;background:var(--sel);color:var(--ink);margin-right:3px}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.plist tr{cursor:pointer}
+.plist tr:hover td{background:var(--surface2)}
+.charttitle{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-bottom:2px}
+.charttitle h3{font-size:16px}
+.charttitle small{color:var(--muted);font-size:12.5px}
+.chartbox svg{display:block;width:100%;height:auto;overflow:visible}
+.chartbox text{fill:var(--muted);font:11px var(--sans)}
+.chartbox text.k{fill:var(--ink2)}
+.stat{display:flex;flex-direction:column;gap:2px;min-width:110px}
+.stat b{font-size:28px;line-height:1.05}
+.stat span{font-size:12.5px;color:var(--ink2)}
+.wk{display:grid;grid-template-columns:34px 1fr 48px;gap:8px;align-items:center;font-size:12.5px;color:var(--ink2)}
+.wk i{display:block;height:12px;border-radius:0 4px 4px 0;background:var(--c-noite)}
+.bar{height:14px;background:var(--grid);border-radius:7px;overflow:hidden;position:relative}
+.bar i{display:block;height:100%;background:var(--c-noite);border-radius:7px 0 0 7px}
+.flag{font-size:11px;font-weight:700;border-radius:6px;padding:1px 6px;background:var(--gold-wash);color:var(--gold-ink)}
+textarea.msg{width:100%;min-height:130px;border:1.5px solid var(--line);background:var(--surface2);border-radius:12px;padding:12px;font-size:13.5px;line-height:1.5;resize:vertical}
+.hint{font-size:12.5px;color:var(--muted)}
+details>summary{cursor:pointer;font-weight:700}
+@media (max-width:520px){.seg{max-width:100%}.seg button{padding:7px 8px;font-size:12px}.proto .seg{flex-wrap:wrap;justify-content:center}}
+.hdr .nm,.dhdr .nm{text-transform:uppercase;width:max-content;white-space:nowrap}
+.hdr .nm{font-size:17px}.hdr .sub,.dhdr .sub{width:max-content;white-space:nowrap}
+
+</style></head><body>
+<main id="app"></main>
+<script>
+/* Preencha API_URL com o endereço do programa do Google (termina em /exec) */
+const API_URL='COLE_AQUI_O_ENDERECO_DO_GOOGLE';
+const APP_V='1.0';
+const TERMO_V='2026-10-v1';
+
+'use strict';
+const MS=864e5;
+const mkToday=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate(),12)};
+let TODAY=mkToday();
+const P=s=>{const a=s.split('-').map(Number);return new Date(a[0],a[1]-1,a[2],12)};
+const p2=n=>String(n).padStart(2,'0');
+const I=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+const add=(d,n)=>{const r=new Date(d.getTime());r.setDate(r.getDate()+n);return r};
+const diff=(a,b)=>Math.round((a-b)/MS);
+const F=d=>p2(d.getDate())+'/'+p2(d.getMonth()+1);
+const FY=d=>F(d)+'/'+d.getFullYear();
+const DS=['dom','seg','ter','qua','qui','sex','sáb'];
+const DL=['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+const MN=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const monday=d=>add(d,-((d.getDay()+6)%7));
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=(v,dec)=>{const s=(Math.round(v*10)/10).toFixed(dec==null?1:dec);return s.replace('.',',').replace(/,0$/,'')};
+const MARK='<svg viewBox="50 45 480 715" aria-hidden="true"><path fill="currentColor" d="M126 52 L172 100 L172 496 C172 556 160 614 126 666 Z"/><path fill="#C8A46A" d="M205 118 C315 126 374 177 374 251 C374 315 330 350 250 371 C345 386 408 441 408 520 C408 611 333 663 198 691 C297 648 350 592 350 520 C350 450 310 403 218 374 C301 350 326 307 326 252 C326 190 285 145 205 118 Z"/><path fill="currentColor" d="M58 724 C185 720 311 690 408 629 C458 598 493 563 523 519 C503 578 467 628 418 664 C323 733 194 751 58 724 Z"/></svg>';
+
+
+/* ===== app dos pais ===== */
+const SYM={seca:['☀️','Noite seca'],umida:['<span style="font-size:1.35em">☁️</span>','Xixi durante o sono'],pouco:['☀️<span style="font-size:.55em">☁️</span>','Molhou só um pouquinho'],acordou:['🌙','Acordou sozinho para fazer xixi']};
+const RAZ={liquido:'Bebeu líquido antes de deitar',tarde:'Dormiu tarde',viagem:'Viagem ou festa',ar:'Ar-condicionado ou ventilador',estresse:'Estresse',doenca:'Doença',outro:'Outro'};
+const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]/g,'').toUpperCase();
+const hasMod=m=>(S.p.mods||[]).includes(m);
+function sem(c,txt,ic){return '<span class="sem '+c+'"><i aria-hidden="true">'+ic+'</i>'+txt+'</span>'}
+function hdrP(){
+ const sub=S.p.screen==='onb'?'':(S.p.code?'<div class="who">Código<br><b style="color:#fff;font-size:15px;letter-spacing:.06em">'+S.p.code+'</b></div>':'');
+ return '<div class="hdr">'+MARK+'<div><div class="nm">Dr. Domingos Bica</div><div class="sub">Urologista Pediátrico</div></div>'+sub+'</div>';
+}
+function footP(){
+ const n=S.outbox.length;
+ const st=S.token?(n?'<span class="sem y"><i aria-hidden="true">…</i>'+n+' registro'+(n>1?'s':'')+' para enviar</span>':'<span class="sem g"><i aria-hidden="true">✓</i>Tudo enviado</span>'):'';
+ return '<div class="foot">'+(st?'<div style="margin-bottom:8px">'+st+'</div>':'')+(S.authBad?'<div class="note" style="margin-bottom:8px">Este aparelho precisa entrar de novo. Vá em “Como usar” e toque em “Sair deste aparelho”.</div>':'')+'Acompanhamento miccional · <a href="https://www.instagram.com/dr.domingosbica" target="_blank" rel="noopener">@dr.domingosbica</a><br><span style="opacity:.8">versão '+APP_V+'</span></div>'}
+function stepper(path,min,max){return '<div class="stepper"><button type="button" data-a="st" data-p="'+path+'" data-d="-1" data-min="'+min+'" data-max="'+max+'" aria-label="menos">−</button><output data-bind="'+path+'">'+get(path)+'</output><button type="button" data-a="st" data-p="'+path+'" data-d="1" data-min="'+min+'" data-max="'+max+'" aria-label="mais">+</button></div>'}
+function nextSat(){let d=TODAY;while(d.getDay()!==6)d=add(d,1);return d}
+
+/* ----- entrada ----- */
+function obValid(){const o=S.ob;return norm(o.code).length>=4&&o.dob&&o.sx&&o.papel&&o.sit&&o.termo&&(o.papel!=='adol'||o.assent)&&(o.sit!=='investigacao'||o.mn||o.md)}
+function viewOnb(){
+ const o=S.ob;
+ return '<div class="body"><div><h1>Bem-vindos</h1><p class="lead" style="margin-top:6px">Este é o aplicativo de acompanhamento miccional, para o tratamento dos problemas de xixi (distúrbios miccionais). Com ele, o tratamento é acompanhado com mais rigor e controle entre as consultas, e as condutas podem ser ajustadas com mais segurança. Use o código que o consultório enviou pelo WhatsApp.</p></div>'+
+ '<div class="card flat"><div class="field"><label class="lbl" for="ob-code">Código da criança</label><input id="ob-code" class="in" data-i="ob.code" data-u="ob" value="'+esc(o.code)+'" autocapitalize="characters" autocomplete="off" placeholder="Ex.: TG2013"><div class="hint" id="ob-norm" style="margin-top:4px">'+(norm(o.code)?'Código lido: <b>'+norm(o.code)+'</b>':'Maiúsculas e minúsculas não importam.')+'</div></div>'+
+ '<div class="field" style="margin-top:12px"><label class="lbl" for="ob-dob">Data de nascimento da criança</label><input id="ob-dob" type="date" class="in" data-i="ob.dob" data-u="ob" value="'+esc(o.dob)+'"><div class="hint" style="margin-top:4px">Serve só para conferir o código. Não fica guardada.</div></div>'+
+ '<div style="margin-top:12px"><span class="lbl">A criança é</span><div class="chips">'+['M:Menino','F:Menina'].map(x=>{const[k,t]=x.split(':');return '<button type="button" class="chip" data-a="ob" data-k="sx" data-v="'+k+'" aria-pressed="'+(o.sx===k)+'">'+t+'</button>'}).join('')+'</div></div>'+
+ '<div style="margin-top:12px"><span class="lbl">Quem usa este aparelho</span><div class="chips">'+['mae:Mãe','pai:Pai','outro:Outro responsável','adol:Sou o adolescente'].map(x=>{const[k,t]=x.split(':');return '<button type="button" class="chip" data-a="ob" data-k="papel" data-v="'+k+'" aria-pressed="'+(o.papel===k)+'">'+t+'</button>'}).join('')+'</div></div>'+
+ '<label class="chk" style="margin-top:12px"><input type="checkbox" data-c="ob.cas"'+(o.cas?' checked':'')+'><span>A criança divide o tempo entre duas casas (guarda compartilhada). Cada responsável usa o próprio celular, com o mesmo código.</span></label></div>'+
+ '<div class="card flat"><span class="lbl">Em que fase estão?</span><div class="chips">'+['investigacao:Em investigação','tratamento:Já iniciou tratamento com o Dr. Domingos Bica'].map(x=>{const[k,t]=x.split(':');return '<button type="button" class="chip" data-a="ob" data-k="sit" data-v="'+k+'" aria-pressed="'+(o.sit===k)+'">'+t+'</button>'}).join('')+'</div>'+
+ (o.sit==='investigacao'?'<div style="margin-top:12px"><span class="lbl">O que traz vocês ao consultório?</span><label class="chk"><input type="checkbox" data-c="ob.mn"'+(o.mn?' checked':'')+'><span>Xixi na cama durante a noite (enurese)</span></label><label class="chk" style="margin-top:8px"><input type="checkbox" data-c="ob.md"'+(o.md?' checked':'')+'><span>Perdas, urgência ou outros problemas para urinar durante o dia</span></label>'+
+ '<div style="margin-top:12px"><span class="lbl">O Dr. Domingos pediu quantos diários miccionais?</span><div class="chips">'+[1,2,3].map(n=>'<button type="button" class="chip" data-a="ob" data-k="nd" data-v="'+n+'" aria-pressed="'+(o.nd===n)+'">'+n+'</button>').join('')+'</div></div></div>':'')+'</div>'+
+ '<div class="card flat"><h3>Termo de consentimento</h3><div class="term" style="margin-top:8px"><p><b>1. Finalidade.</b> Este aplicativo registra diários e o calendário do xixi, para acompanhar a evolução do tratamento com maior rigor e controle e orientar as decisões do Dr. Domingos Bica.</p><p><b>2. Dados.</b> Apenas o código da criança e os registros lançados. Não há nome, endereço, telefone, documento nem qualquer vínculo direto com a identidade. O código só é associado à criança dentro do sistema de prontuário do médico, onde ficam todos os dados médicos e de identificação, e que são tratados conforme a LGPD.</p><p><b>3. Acesso.</b> Somente o Dr. Domingos Bica. Os registros não são enviados nem divulgados a mais ninguém.</p><p><b>4. Armazenamento.</b> Planilha em nuvem protegida, só com o código e os registros.</p><p><b>5. Duração e uso estatístico.</b> O consentimento vale durante o acompanhamento. Ao final ou interrupção do tratamento, os registros são anonimizados, sem o código, e usados apenas para estatística e pesquisa médica. Se preferir a exclusão, solicite pelo consultório.</p><p><b>6.</b> Os registros são analisados pelo médico nas avaliações, e não em tempo real.</p><p class="hint">Versão do termo: '+TERMO_V+'</p></div>'+
+ '<label class="chk" style="margin-top:12px"><input type="checkbox" data-c="ob.termo"'+(o.termo?' checked':'')+'><span>Sou responsável legal pela criança, li o termo e <b>consinto</b>.</span></label>'+
+ (o.papel==='adol'?'<label class="chk" style="margin-top:8px"><input type="checkbox" data-c="ob.assent"'+(o.assent?' checked':'')+'><span>Entendi e concordo em participar.</span></label><p class="hint" style="margin-top:6px">Seus responsáveis só veem “preenchido ✔”. Se achar que eles devem ver como estão as suas noites, você ativa essa opção no menu, quando quiser.</p>':'')+'</div>'+
+ (o.err?'<div class="note" style="border-color:var(--crit)">'+esc(o.err)+'</div>':'')+'<button type="button" class="btn block" id="ob-go" data-a="obgo"'+(obValid()&&!o.busy?'':' disabled')+'>'+(o.busy?'Entrando…':'Entrar')+'</button></div>';
+}
+/* ----- fase diagnóstica ----- */
+function viewDx(){
+ const d=Object.assign({},S.cfg&&S.cfg.dx||{n:0,tipo:'inicial',prazo:''}),n=d.n,fe=dxFeitos(),done=fe>=n;
+ return '<div class="body"><div><h1>'+(d.tipo==='seguimento'?'Diário de acompanhamento':'Fase de avaliação')+'</h1><p class="lead" style="margin-top:6px">Diários miccionais pedidos: <b>'+n+'</b>. Cada um é feito em um dia diferente, sem dias seguidos. <span class="hint">O consultório confirma esse número.</span></p></div>'+
+ '<div class="card"><div class="row wrap" style="gap:8px">'+Array.from({length:n},(_,i)=>sem(i<fe?'g':(i===fe&&S.dx.ativo?'y':'n'),'Diário '+(i+1),i<fe?'✓':(i===fe&&S.dx.ativo?'…':'·'))).join('')+'</div>'+
+ (done?'<p style="margin-top:12px"><b>Diários completos.</b> Obrigado! O Dr. Domingos já recebeu tudo.</p>':
+ '<p class="lead" style="margin-top:12px">Próximo dia indicado: <b>sábado '+F(nextSat())+'</b> (ou feriado), em casa, sem atividades externas.</p>'+
+ '<button type="button" class="btn block" style="margin-top:12px" data-a="dxstart">'+(S.dx.ativo?'Continuar o diário de hoje':'Iniciar o diário de hoje')+'</button>')+'</div>'+
+ '<div class="card flat"><h3>Como preencher</h3><ol style="margin:8px 0 0;padding-left:20px;color:var(--ink2);font-size:14px;display:flex;flex-direction:column;gap:6px"><li>Escolha um sábado, domingo ou feriado em que a criança fique em casa.</li><li><b>Nenhuma micção pode ficar sem registro.</b> Toque em “Registrar micção agora” a cada xixi.</li><li>Meça o volume em um copo graduado e anote em mL.</li><li><b>Neste dia, não peça nem lembre a criança de fazer xixi.</b> Ela deve urinar sozinha, quando sentir vontade. Só neste dia é proibido estimular. Você só anota.</li><li>Mantenha o dia comum e a ingestão de líquidos habitual: <b>nem menos, nem mais</b> que o normal.</li><li>Anote <b>tudo</b> que a criança beber durante o dia (água, suco, leite, sopa). O horário é opcional.</li>'+((S.cfg&&S.cfg.dx?S.cfg.dx.tipo:'inicial')==='inicial'&&hasMod('n')?'<li>Na noite do diário, coloque uma fralda e pese de manhã. Meça o primeiro xixi do dia seguinte.</li>':'<li>O dia do diário vai do acordar até a criança dormir. Não é preciso pesar fralda.</li>')+'</ol></div>'+
+ '<div class="note">O envio é automático. Cada registro vai para o Dr. Domingos assim que a internet estiver disponível.</div><div class="note">Exames e laudos, como o ultrassom, não precisam ser enviados pelo aplicativo. Entregue no consultório, e o Dr. Domingos lança as informações.</div></div>';
+}
+function viewDiary(){
+ const d=S.dx,mic=d.mic.slice().sort((a,b)=>a[0]<b[0]?-1:1),tot=mic.reduce((s,x)=>s+(x[1]||0),0),liq=d.liq.reduce((s,x)=>s+x[1],0);
+ return '<div class="body"><button class="back" data-a="go" data-v="dx">‹ Voltar</button><div><h2>Diário '+(dxFeitos()+1)+' de '+((S.cfg&&S.cfg.dx&&S.cfg.dx.n)||1)+'</h2><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div>'+
+ '<div class="note"><b>Lembrete:</b> não peça nem lembre a criança de urinar. Anote só o que ela fizer por conta própria.</div><button class="btn block" data-a="sheet" data-v="mic">＋ Registrar micção agora</button><button class="btn block ghost" data-a="sheet" data-v="liq">Registrei líquido</button>'+
+ '<div class="card"><div class="row"><h3>Hoje</h3><span class="sp"></span><span class="hint">'+mic.length+(mic.length===1?' micção · ':' micções · ')+tot+' mL · líquidos '+liq+' mL</span></div>'+
+ (mic.length?'<div class="tw"><table class="t" style="margin-top:6px"><tr><th>Hora</th><th>mL</th><th>Urgência</th><th>Perda</th><th>Obs.</th></tr>'+mic.map(x=>'<tr><td>'+x[0]+'</td><td>'+(x[1]||'não medido')+'</td><td>'+x[2]+'</td><td>'+x[3]+'</td><td>'+esc(x[4]||'')+'</td></tr>').join('')+'</table></div>':'<p class="hint" style="margin-top:8px">Nenhuma micção registrada ainda.</p>')+'</div>'+
+ (d.liq.length?'<div class="card"><h3>Líquidos de hoje</h3><div class="tw"><table class="t" style="margin-top:6px"><tr><th>Hora</th><th>O quê</th><th>mL</th></tr>'+d.liq.map(x=>'<tr><td>'+(x[0]||'—')+'</td><td>'+esc(x[2]||'')+'</td><td>'+x[1]+'</td></tr>').join('')+'</table></div></div>':'')+'<button class="btn block gold" data-a="sheet" data-v="fim"'+(mic.length?'':' disabled')+'>Encerrar o dia</button></div>';
+}
+/* ----- tratamento ----- */
+const hasNight=k=>!!(S.nights[k]||(S.cfg&&S.cfg.nights&&S.cfg.nights[k]));
+const dxFeitos=()=>((S.cfg&&S.cfg.dx?S.cfg.dx.feitos:0)+S.outbox.filter(e=>e.a==='fim').length);
+const alarmOn=k=>!!(S.cfg&&S.cfg.alarme&&S.cfg.alarme<=k);
+const calStart=()=>S.cfg&&S.cfg.inicio?P(S.cfg.inicio):add(TODAY,-75);
+function nightsMissing(){let m=0;for(let i=1;i<=7;i++)if(!hasNight(I(add(TODAY,-i))))m++;return m}
+function viewMenu(){
+ const y=I(add(TODAY,-1)),okN=hasNight(y),miss=nightsMissing();
+ const wk=I(add(monday(TODAY),-7)),okW=!!(S.weeks[wk]||(S.cfg&&S.cfg.weeks.includes(wk)));
+ const stars=Object.values(S.nights).filter(n=>n.por==='c').length;
+ let items='<button class="mi" data-a="go" data-v="cal"><span class="ic">🌙</span><span style="flex:1"><div class="t">Calendário do xixi</div><div class="d">'+(okN?'Noite de ontem registrada':'Falta registrar a noite de ontem')+(miss&&okN?' · faltam '+miss+' nos últimos 7 dias':'')+'</div></span>'+(okN?sem('g','Em dia','✓'):sem('r',miss>1?'Faltam '+miss:'Falta','!'))+'</button>';
+ if(hasMod('d')||hasMod('i'))items+='<button class="mi" data-a="go" data-v="week"><span class="ic">📋</span><span style="flex:1"><div class="t">Resumo semanal</div><div class="d">Semana de '+F(add(monday(TODAY),-7))+' a '+F(add(monday(TODAY),-1))+'</div></span>'+(okW?sem('g','Enviado','✓'):sem('r','Pendente','!'))+'</button>';
+ const dxc=S.cfg&&S.cfg.fase==='trat'&&S.cfg.dx&&dxFeitos()<S.cfg.dx.n?S.cfg.dx:null;
+ if(dxc)items+='<button class="mi" data-a="dxfromtrat"><span class="ic">💧</span><span style="flex:1"><div class="t">Diário miccional</div><div class="d">O Dr. Domingos pediu '+(dxc.n-dxFeitos())+' diário'+(dxc.n-dxFeitos()>1?'s':'')+' miccional'+(dxc.n-dxFeitos()>1?'is':'')+(dxc.prazo?' até '+FY(P(dxc.prazo)):'')+'</div></span>'+sem('y','Pedido','…')+'</button>';
+ items+='<button class="mi" data-a="go" data-v="notes"><span class="ic">✍️</span><span style="flex:1"><div class="t">Anotações</div><div class="d">Remédio, viagem, acontecimentos</div></span></button>'+
+ '<button class="mi" data-a="go" data-v="info"><span class="ic">ℹ️</span><span style="flex:1"><div class="t">Orientações</div><div class="d">Líquidos, horários e hábitos</div></span></button>'+'<button class="mi" data-a="go" data-v="dev"><span class="ic">⏰</span><span style="flex:1"><div class="t">Alarmes e dispositivos</div><div class="d">Alarme noturno e relógio com lembrete</div></span></button>'+'<button class="mi" data-a="go" data-v="help"><span class="ic">❓</span><span style="flex:1"><div class="t">Como usar o aplicativo</div><div class="d">Passo a passo e dúvidas comuns</div></span></button>';
+ return '<div class="body"><div class="row"><div><h1>'+'Olá!'+'</h1><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div><span class="sp"></span>'+(S.p.adol?'':'<span class="sem n" title="Estrelas da criança"><i style="background:var(--gold)">★</i>'+stars+'</span>')+'</div>'+
+ (S.p.adol?'<div class="card flat"><label class="chk"><input type="checkbox" data-c="p.share"'+(S.p.share?' checked':'')+'><span><b>Mostrar meu calendário aos meus responsáveis</b></span></label><p class="hint" style="margin-top:6px">'+(S.p.share?'Ativado: seus responsáveis veem como foram as suas noites. Você pode desativar quando quiser.':'Desativado: seus responsáveis veem apenas “preenchido ✔”. Ative esta opção quando achar que eles devem ver como estão as suas noites.')+' O Dr. Domingos sempre vê os registros, como informado no termo.</p></div>':'')+
+ '<div class="menu">'+items+'</div>'+(S.p.cas?'<div class="note">Guarda compartilhada: você vê só “✔ preenchido” nas noites da outra casa.</div>':'')+'</div>';
+}
+function viewCal(){
+ const {y,m}=S.cal,start=calStart(),first=new Date(y,m,1,12),nd=new Date(y,m+1,0).getDate(),lead=first.getDay();
+ let cells='';for(let i=0;i<lead;i++)cells+='<div></div>';
+ for(let dd=1;dd<=nd;dd++){const d=new Date(y,m,dd,12),k=I(d),n=S.nights[k],sv=S.cfg&&S.cfg.nights?S.cfg.nights[k]:null,past=d<=add(TODAY,-1)&&d>=start,isT=I(d)===I(TODAY);
+  let sym='',fl='';
+  if(!n&&sv){sym=sv.s?'<span style="font-size:17px;line-height:1">'+SYM[sv.s][0]+'</span>':'<span style="font-size:15px;color:var(--good)" title="Preenchido">✔</span>'}
+  else if(n){sym='<span style="font-size:17px;line-height:1">'+SYM[n.s][0]+'</span>';
+   {fl=(n.f.includes('med')?'🔵':'')+(n.f.some(f=>f!=='med')?'🔺':'')}}
+  cells+='<button type="button" class="day'+(past?' hit':' off')+(isT?' today':'')+(past&&!n&&!sv?' miss':'')+'"'+(past?' data-a="night" data-v="'+k+'"':' disabled')+' aria-label="'+DS[d.getDay()]+' '+dd+'"><span style="font-size:10px">'+DS[d.getDay()]+'</span><b>'+dd+'</b><span>'+sym+'</span><span class="fl">'+fl+'</span></button>'}
+ const prev=new Date(y,m,1,12)>new Date(start.getFullYear(),start.getMonth(),1,12),next=!(y===TODAY.getFullYear()&&m>=TODAY.getMonth());
+ return '<div class="body"><button class="back" data-a="go" data-v="menu">‹ Voltar</button><div class="row"><button class="chip" data-a="cm" data-v="-1"'+(prev?'':' disabled')+' aria-label="mês anterior">‹</button><h2 class="sp" style="text-align:center;text-transform:capitalize">'+MN[m]+' '+y+'</h2><button class="chip" data-a="cm" data-v="1"'+(next?'':' disabled')+' aria-label="próximo mês">›</button></div>'+
+ '<div class="cal">'+DS.map(x=>'<div class="h">'+x+'</div>').join('')+cells+'</div>'+
+ '<div class="card flat"><span class="lbl">Para a criança</span><div class="legend">'+Object.values(SYM).map(x=>'<span>'+x[0]+' '+x[1]+'</span>').join('')+'</div><span class="lbl" style="margin-top:12px">Observações dos responsáveis</span><div class="legend"><span>🔵 Remédio fora do horário ou não dado</span><span>🔺 Algo diferente na noite</span></div></div></div>';
+}
+function sheetNight(){
+ const k=S.p.sheet.k,d=P(k),n=S.nights[k],dr=S.draft,adol=S.p.adol,step=adol?0:(S.p.sheet.step||1);
+ const title='<h2>Noite de '+DS[d.getDay()]+' '+F(d)+'</h2>';
+ if(!n&&S.p.cas&&S.cfg&&S.cfg.nights&&S.cfg.nights[k])return title+'<p>✔ Já preenchida pela outra casa.</p><button class="btn block" data-a="sheet" data-v="">Fechar</button>';
+ const chip=(a,k,v,t,on)=>'<button type="button" class="chip" data-a="'+a+'" data-k="'+k+'" data-v="'+v+'" aria-pressed="'+on+'">'+t+'</button>';
+ const child='<div class="note" style="border-color:var(--gold)"><b>🧒 Esta parte é da criança!</b> Ela mesma escolhe o desenho. Os adultos só ajudam a segurar o celular.</div><div><span class="lbl">Como foi a noite?</span><div class="big">'+Object.keys(SYM).map(s=>'<button type="button" class="sym" data-a="dr" data-k="s" data-v="'+s+'" aria-pressed="'+(dr.s===s)+'"><b>'+SYM[s][0]+'</b>'+SYM[s][1]+'</button>').join('')+'</div></div>'+(adol?'':'<div class="row"><span class="hint">Quem escolheu o desenho?</span>'+chip('drp','k','c','Criança',dr.por==='c')+chip('drp','k','r','Responsável',dr.por==='r')+'</div>');
+ const par=(adol?'':'<div><span class="lbl">Quem está respondendo agora?</span><div class="chips">'+[['mae','Mãe'],['pai','Pai'],['outro','Outro responsável']].map(x=>chip('dr','who',x[0],x[1],dr.who===x[0])).join('')+'</div></div>')+
+  '<div><span class="lbl">O remédio foi dado no horário?</span><div class="chips">'+[['sim','Sim'],['nao','Não, atrasou ou não foi dado'],['na','Não toma remédio']].map(x=>chip('dr','rem',x[0],x[1],dr.rem===x[0])).join('')+'</div></div>'+
+  (alarmOn(k)?'<div><span class="lbl">O alarme foi usado nesta noite?</span><div class="chips">'+[['t','Sim, tocou'],['n','Sim, não tocou'],['x','Não usou']].map(x=>chip('dr','al',x[0],x[1],dr.al===x[0])).join('')+'</div></div>':'')+
+  '<div><span class="lbl">Aconteceu algo diferente nesta noite? <span class="hint">(opcional)</span></span><div class="chips">'+Object.keys(RAZ).map(r=>'<button type="button" class="chip" data-a="drf" data-v="'+r+'" aria-pressed="'+dr.f.includes(r)+'">'+RAZ[r]+'</button>').join('')+'</div></div>';
+ const cancel='<button class="btn block ghost" data-a="sheet" data-v="">Cancelar</button>';
+ if(adol)return title+child+par+'<button class="btn block" data-a="savenight"'+(dr.s&&dr.rem?'':' disabled')+'>Salvar</button>'+cancel;
+ if(step===1)return title+'<span class="hint">Passo 1 de 2 · Criança</span>'+child+'<button class="btn block" data-a="nstep" data-v="2"'+(dr.s?'':' disabled')+'>Continuar</button>'+cancel;
+ return title+'<span class="hint">Passo 2 de 2 · Responsáveis</span><p class="lead">Desenho da criança: <b style="font-size:1.1em">'+SYM[dr.s][0]+'</b> '+SYM[dr.s][1]+'</p>'+par+'<button class="btn block" data-a="savenight"'+(dr.rem&&dr.who?'':' disabled')+'>Salvar</button><button class="btn block ghost" data-a="nstep" data-v="1">‹ Voltar à parte da criança</button>';
+}
+function viewWeek(){
+ const w=S.ws,a=add(monday(TODAY),-7);
+ const q=(t,sub,p,mn,mx)=>'<div class="qrow"><div class="q">'+t+(sub?'<small>'+sub+'</small>':'')+'</div>'+stepper(p,mn,mx)+'</div>';
+ return '<div class="body"><button class="back" data-a="go" data-v="menu">‹ Voltar</button><div><h2>Resumo da semana</h2><p class="lead">De '+F(a)+' a '+F(add(a,6))+'. Leva cerca de 1 minuto.</p></div>'+
+ '<div class="card">'+(S.p.cas?q('Dias desta semana com a criança','Só os dias em que ela esteve com você','ws.dias',0,7):'')+
+ (hasMod('d')?q('Escapes de xixi no dia','Com aviso: deu vontade e não deu tempo','ws.av',0,40)+q('Escapes sem aviso','Só percebeu a roupa molhada','ws.sem',0,40)+q('Episódios de urgência','','ws.urg',0,60)+q('Trocas de roupa por causa do xixi','','ws.troca',0,40):'')+
+ q('Dias em que seguiu a regra dos líquidos','2 a 3 copos ao acordar, pouco no jantar, nada 2 h antes de dormir','ws.regra',0,7)+
+ (hasMod('i')?q('Vezes em que fez cocô na semana','','ws.evac',0,21)+'<div class="qrow"><div class="q">Como foram as fezes, em geral?</div></div><div class="chips">'+[[1,'Bolinhas duras'],[2,'Duras'],[4,'Normais'],[6,'Moles']].map(x=>'<button type="button" class="chip" data-a="wb" data-v="'+x[0]+'" aria-pressed="'+(ws_b(x[0]))+'">'+x[1]+'</button>').join('')+'</div>'+q('Escapes de cocô na roupa','','ws.fecal',0,21):'')+'</div>'+
+ '<button class="btn block" data-a="savewk">Enviar resumo</button></div>';
+}
+const ws_b=v=>(S.ws.bris===v);
+function viewNotes(){
+ return '<div class="body"><button class="back" data-a="go" data-v="menu">‹ Voltar</button><h2>Anotações</h2><div class="card flat"><label class="lbl" for="nt">Nova anotação</label><textarea id="nt" class="in" rows="3" data-i="nt" placeholder="Ex.: viagem de 3 dias, remédio esquecido, prova na escola">'+esc(S.nt)+'</textarea><p class="hint" style="margin-top:4px">Não escreva nomes de pessoas.</p><button class="btn block" style="margin-top:10px" data-a="addnote">Salvar anotação</button></div>'+
+ S.notes.map(n=>'<div class="card flat"><div class="hint">'+n[0]+'</div><div>'+esc(n[1])+'</div></div>').join('')+'</div>';
+}
+function viewInfo(){
+ return '<div class="body"><button class="back" data-a="go" data-v="menu">‹ Voltar</button><h2>Orientações</h2><div class="note">Texto de exemplo para revisão do Dr. Domingos. As orientações completas continuam sendo enviadas em PDF pelo consultório.</div>'+
+ '<div class="card"><h3>Como fazer o diário miccional</h3><ul style="margin:8px 0 0;padding-left:20px;color:var(--ink2);display:flex;flex-direction:column;gap:6px"><li>Escolha um sábado, domingo ou feriado, em casa, sem atividades externas.</li><li><b>Neste dia, não peça nem lembre a criança de fazer xixi.</b> Ela vai sozinha, quando sentir vontade. Você só anota.</li><li>Mantenha a ingestão de líquidos habitual: <b>nem menos, nem mais</b> que o normal.</li><li>Anote cada micção (volume, urgência, perdas) e tudo que a criança beber. O horário dos líquidos é opcional.</li><li><b>Diário inicial, se há xixi na cama:</b> na noite do diário, coloque fralda e pese de manhã. Meça também o primeiro xixi do dia seguinte.</li><li><b>Diário de acompanhamento:</b> vai do acordar até a criança dormir, sem fralda.</li></ul></div>'+
+ '<div class="card"><h3>Nos outros dias</h3><ul style="margin:8px 0 0;padding-left:20px;color:var(--ink2);display:flex;flex-direction:column;gap:6px"><li>É recomendado lembrar a criança de urinar em horários regulares. Os pais podem pedir, ou ela pode usar um relógio ou dispositivo com alarme.</li><li>No calendário do xixi, <b>a criança escolhe o desenho</b> de como foi a noite. Os adultos completam o remédio e as observações.</li></ul></div>'+
+ '<div class="card"><h3>Líquidos ao longo do dia</h3><p class="lead" style="margin-top:6px">A distribuição importa tanto quanto a quantidade.</p><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">'+
+ [['Ao acordar','2 a 3 copos',95],['Manhã','Bastante',80],['Tarde','Moderado',50],['Jantar','Pouco',22],['2 horas antes de dormir','Nenhum',3]].map(x=>'<div class="wk" style="grid-template-columns:110px 1fr 74px"><span>'+x[0]+'</span><i style="width:'+x[2]+'%;background:var(--c-noite)"></i><span>'+x[1]+'</span></div>').join('')+'</div></div>'+
+ '<div class="card"><h3>Quanto beber por dia</h3><div class="tw"><table class="t" style="margin-top:8px"><tr><th>Idade</th><th>Total</th><th>Em copos de 200 mL</th></tr><tr><td>4 a 8 anos</td><td>cerca de 1,7 L</td><td>8 a 9</td></tr><tr><td>9 a 13 anos</td><td>2,1 a 2,4 L</td><td>10 a 12</td></tr><tr><td>14 a 18 anos</td><td>2,5 a 3,3 L</td><td>12 a 16</td></tr></table></div><p class="hint" style="margin-top:8px">Referência de hidratação infantil da Sociedade Brasileira de Pediatria, conforme o Dr. Domingos.</p></div>'+
+ '<div class="card"><h3>Hábitos</h3><ul style="margin:8px 0 0;padding-left:20px;color:var(--ink2);display:flex;flex-direction:column;gap:6px"><li>Urinar em horários regulares, de 6 a 8 vezes por dia, mesmo sem vontade (fora do dia do diário).</li><li>Não segurar o xixi nem prolongar os intervalos.</li><li>Prevenir a prisão de ventre.</li><li>Dormir e acordar em horários regulares.</li></ul></div></div>';
+}
+/* ----- sheets (janelas inferiores) ----- */
+function sheetsP(){
+ const sh=S.p.sheet;if(!sh)return'';let c='';
+ if(sh.v==='night')c=sheetNight();
+ else if(sh.v==='rule')c='<h2>Hoje é '+DL[TODAY.getDay()]+'</h2><p>O diário deve ser feito em <b>sábado, domingo ou feriado</b>, em um dia sem atividades externas, para que nenhuma micção seja perdida.</p><label class="chk"><input type="checkbox" data-c="dx.ack"'+(S.dx.ack?' checked':'')+'><span>Hoje é um feriado ou um dia em que a criança fica em casa.</span></label><button class="btn block" data-a="ruleok"'+(S.dx.ack?'':' disabled')+'>Começar o diário</button><button class="btn block ghost" data-a="sheet" data-v="">Voltar e escolher outro dia</button>';
+ else if(sh.v==='mic'){const m=S.draft2;c='<h2>Registrar micção</h2><div class="field"><label class="lbl" for="mh">Hora</label><input id="mh" type="time" class="in" data-i="draft2.h" value="'+m.h+'"></div><div class="field"><label class="lbl" for="mv">Volume (mL)</label><input id="mv" type="number" inputmode="numeric" class="in" data-i="draft2.v" value="'+(m.nm?'':m.v)+'" placeholder="Ex.: 150"'+(m.nm?' disabled':'')+'></div><label class="chk"><input type="checkbox" data-c="draft2.nm"'+(m.nm?' checked':'')+'><span>Não consegui medir</span></label><div><span class="lbl">Urgência</span><div class="chips">'+['ausente','+','++','+++'].map(u=>'<button type="button" class="chip" data-a="d2" data-k="u" data-v="'+u+'" aria-pressed="'+(m.u===u)+'">'+u+'</button>').join('')+'</div></div><div><span class="lbl">Perda de xixi</span><div class="chips">'+['nenhuma','gotas','roupa íntima','roupa molhada'].map(u=>'<button type="button" class="chip" data-a="d2" data-k="p" data-v="'+u+'" aria-pressed="'+(m.p===u)+'">'+u+'</button>').join('')+'</div></div><div class="field"><label class="lbl" for="mo">Observação (opcional)</label><input id="mo" class="in" data-i="draft2.o" value="'+esc(m.o||'')+'" placeholder="Ex.: estava brincando"></div><button class="btn block" data-a="savemic">Salvar</button><button class="btn block ghost" data-a="sheet" data-v="">Cancelar</button>'}
+ else if(sh.v==='liq'){const m=S.draft3;c='<h2>Registrar líquido</h2><div class="field"><label class="lbl" for="lh">Hora (opcional)</label><input id="lh" type="time" class="in" data-i="draft3.h" value="'+m.h+'"></div><div><span class="lbl">O que bebeu</span><div class="chips">'+['Água','Suco','Leite','Refrigerante','Outro'].map(t=>'<button type="button" class="chip" data-a="d3t" data-v="'+t+'" aria-pressed="'+(m.t===t)+'">'+t+'</button>').join('')+'</div></div><div><span class="lbl">Quantidade (mL)</span><div class="chips">'+[100,200,300,500].map(v=>'<button type="button" class="chip" data-a="d3" data-v="'+v+'" aria-pressed="'+(m.v===v&&!m.vv)+'">'+v+'</button>').join('')+'</div></div><div class="field"><label class="lbl" for="lv">Ou digite o volume (mL)</label><input id="lv" type="number" inputmode="numeric" class="in" data-i="draft3.vv" value="'+esc(m.vv||'')+'"></div><button class="btn block" data-a="saveliq">Salvar</button><button class="btn block ghost" data-a="sheet" data-v="">Cancelar</button>'}
+ else if(sh.v==='sair')c='<h2>Sair deste aparelho?</h2><p>Os registros já enviados continuam com o Dr. Domingos.'+(S.outbox.length?' <b>Há '+S.outbox.length+' registro(s) ainda não enviados, que serão perdidos.</b>':'')+' Para entrar de novo, será preciso o código e a data de nascimento.</p><button class="btn block" data-a="sairok">Sair deste aparelho</button><button class="btn block ghost" data-a="sheet" data-v="">Cancelar</button>';
+ else if(sh.v==='fim'){const f=S.dx.fim;
+  c='<h2>Encerrar o dia</h2><div><span class="lbl">Alguma micção ficou sem registro hoje?</span><div class="chips">'+['nao:Não, registrei todas','sim:Sim, alguma ficou sem registro'].map(x=>{const[k,t]=x.split(':');return '<button type="button" class="chip" data-a="fim" data-v="'+k+'" aria-pressed="'+(f.q===k)+'">'+t+'</button>'}).join('')+'</div></div>'+
+  (S.dx.tipo==='inicial'&&hasMod('n')?'<div class="note"><b>Esta noite:</b> coloque uma fralda e pese de manhã. Meça o primeiro xixi do dia seguinte. (Na demonstração, você pode preencher agora.)</div><div class="field"><label class="lbl" for="fg">Peso da fralda (g)</label><input id="fg" type="number" inputmode="numeric" class="in" data-i="dx.fim.g" value="'+esc(f.g)+'"></div><div class="field"><label class="lbl" for="fm">Primeiro xixi da manhã (mL)</label><input id="fm" type="number" inputmode="numeric" class="in" data-i="dx.fim.m" value="'+esc(f.m)+'"></div>':(hasMod('n')?'<div class="note">Neste diário de acompanhamento, não é preciso pesar a fralda. O dia termina quando a criança for dormir.</div>':''))+
+  '<button class="btn block" data-a="fimok"'+(f.q?'':' disabled')+'>Concluir diário</button><button class="btn block ghost" data-a="sheet" data-v="">Voltar</button>'}
+ return '<div class="sheetbg" data-a="sheetbg"><div class="sheet" role="dialog" aria-modal="true">'+c+'</div></div>';
+}
+function viewPais(){
+ let b;const sc=S.p.screen;
+ if(sc==='onb')b=viewOnb();else if(sc==='wait')b='<div class="body"><h1>Cadastro recebido</h1><p class="lead">O Dr. Domingos vai liberar o seu acompanhamento em breve. Enquanto isso, nada precisa ser preenchido.</p><button class="btn block" data-a="refresh">'+(S.busy?'Verificando…':'Verificar agora')+'</button></div>';
+ else if(sc==='dx')b=viewDx();else if(sc==='diary')b=viewDiary();else if(sc==='menu')b=viewMenu();else if(sc==='cal')b=viewCal();else if(sc==='week')b=viewWeek();else if(sc==='notes')b=viewNotes();else if(sc==='info')b=viewInfo();else if(sc==='help')b=viewHelpP();else if(sc==='load')b='<div class="body"><p class="lead">Carregando…</p></div>';else if(sc==='dev')b=viewDev();
+ return '<div class="phone">'+hdrP()+b+footP()+sheetsP()+'</div>';
+}
+
+function viewHelpP(){
+ const li=t=>'<li>'+t+'</li>';
+ const ul=a=>'<ul style="margin:8px 0 0;padding-left:20px;color:var(--ink2);display:flex;flex-direction:column;gap:6px">'+a.map(li).join('')+'</ul>';
+ return '<div class="body"><button class="back" data-a="go" data-v="menu">‹ Voltar</button><h2>Como usar o aplicativo</h2>'+
+ '<div class="card"><h3>Para que serve</h3><p class="lead" style="margin-top:6px">É uma forma de oferecer um tratamento melhor, com mais visibilidade do que acontece com a criança entre as consultas e do efeito de cada mudança de conduta. Os registros são analisados pelo Dr. Domingos nas consultas, e não em tempo real. <b>Não use o aplicativo para urgências.</b></p></div>'+
+ '<div class="card"><h3>Passo a passo</h3>'+ul(['Todo dia de manhã, a criança diz como foi a noite e o calendário recebe o símbolo.','Toda semana, os pais respondem o resumo (cerca de 1 minuto).','Quando o Dr. Domingos pedir um diário miccional, ele aparece no menu com o prazo.','Em consultas, o Dr. Domingos marca no calendário os dias em que o remédio mudou (✳️).'])+'</div>'+
+ '<div class="card"><h3>Este aparelho</h3><p class="lead" style="margin-top:6px">Código: <b>'+esc(S.code||'')+'</b>. Se o aparelho for trocado ou emprestado, você pode sair daqui.</p><button class="btn block ghost" style="margin-top:10px" data-a="sheet" data-v="sair">Sair deste aparelho</button></div>'+
+ '<div class="card"><h3>Dúvidas comuns</h3>'+ul(['<b>Esqueci de registrar um dia.</b> Toque no dia no calendário e registre depois.','<b>Trocei de celular.</b> Entre de novo com o código da criança e a data de nascimento. Seu histórico volta.','<b>Guarda compartilhada.</b> Cada responsável usa o próprio celular, com o mesmo código. Cada um vê só “✔ preenchido” na casa do outro.','<b>Quem vê os registros?</b> Somente o Dr. Domingos. Nada é enviado a outras pessoas.','<b>Sem internet.</b> O registro fica guardado e é enviado quando a conexão voltar.','<b>Quero falar com o consultório.</b> Use o contato habitual, e não o aplicativo.'])+'</div></div>';
+}
+
+function viewDev(){
+ const ul=a=>'<ul style="margin:8px 0 0;padding-left:20px;color:var(--ink2);display:flex;flex-direction:column;gap:6px">'+a.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+ return '<div class="body"><button class="back" data-a="go" data-v="menu">‹ Voltar</button><h2>Alarmes e dispositivos</h2><div class="note">Texto de exemplo para revisão do Dr. Domingos. O modelo e o tempo de uso são definidos por ele para cada criança.</div>'+
+ '<div class="card"><h3>Alarme noturno (para xixi na cama)</h3><p class="lead" style="margin-top:6px">Um sensor na roupa íntima ou no protetor de cama avisa, com som ou vibração, nos primeiros pingos de xixi. Ele ajuda a criança a aprender a acordar quando a bexiga pede.</p>'+ul(['Modelos como Wet-Stop e WOBL, conforme a indicação do Dr. Domingos.','Use todas as noites, e teste o aparelho antes de dormir.','Quando tocar, a criança acorda, desliga, vai ao banheiro e troca a roupa. No começo, os adultos ajudam a acordar.','Marque no calendário se o alarme foi usado e se tocou. Isso ajuda a avaliar o tratamento.','O Dr. Domingos decide quando parar. Não interrompa por conta própria.'])+'</div>'+
+ '<div class="card"><h3>Relógio ou dispositivo com lembrete (de dia)</h3><p class="lead" style="margin-top:6px">Um relógio com alarme ou vibração programado ajuda a criança a lembrar de urinar em horários regulares, sem que os pais precisem ficar pedindo.</p>'+ul(['Use nos dias comuns, em intervalos combinados com o Dr. Domingos.','<b>No dia do diário miccional, não use.</b> Nesse dia a criança vai sozinha, sem lembretes.'])+'</div></div>';
+}
+
+/* ===== estado, armazenamento no aparelho, fila de envio e ações ===== */
+let S;
+const get=p=>p.split('.').reduce((o,k)=>o==null?o:o[k],S);
+const set=(p,v)=>{const a=p.split('.'),l=a.pop();a.reduce((o,k)=>o[k],S)[l]=v};
+const KEY='mic.v1';
+const newDx=()=>({id:'',data:'',ativo:false,ack:false,mic:[],liq:[],fim:{q:'',g:'',m:''}});
+const blankOb=()=>({code:'',dob:'',sx:'',papel:'',sit:'',termo:false,assent:false,cas:false,mn:false,md:false,nd:2,err:'',busy:false});
+const draftBlank=()=>({s:'',f:[],por:'c',rem:'',who:'',al:''});
+const now=()=>{const d=new Date();return p2(d.getHours())+':'+p2(d.getMinutes())};
+const uid=()=>(Date.now().toString(36)+Math.random().toString(36).slice(2,9));
+let canStore=true;
+function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):null}catch(e){canStore=false;return null}}
+function save(){
+ if(!canStore)return;
+ try{localStorage.setItem(KEY,JSON.stringify({code:S.code,token:S.token,papel:S.papel,cfg:S.cfg,nights:S.nights,weeks:S.weeks,notes:S.notes,outbox:S.outbox,dx:S.dx,screen:S.p.screen,share:S.p.share,ws:S.ws}))}catch(e){canStore=false}
+}
+function init(){
+ const L=load()||{};
+ S={code:L.code||'',token:L.token||'',papel:L.papel||'',cfg:L.cfg||null,nights:L.nights||{},weeks:L.weeks||{},notes:L.notes||[],outbox:L.outbox||[],
+  dx:Object.assign(newDx(),L.dx||{}),nt:'',p:{screen:L.token?(L.screen||'menu'):'onb',share:!!L.share},ob:blankOb(),draft:draftBlank(),
+  draft2:{h:'12:00',v:'',nm:false,u:'ausente',p:'nenhuma',o:''},draft3:{h:'12:00',v:0,t:'Água',vv:''},
+  ws:L.ws||{dias:3,av:0,sem:0,urg:0,troca:0,regra:5,evac:6,bris:4,fecal:0},cal:{y:TODAY.getFullYear(),m:TODAY.getMonth()},busy:false,authBad:false};
+ if(S.cfg)applyCfg(S.cfg,true);
+}
+function applyCfg(c,quiet){
+ S.cfg=c;S.p.code=S.code;S.p.cas=c.guarda;S.p.adol=c.adolescente;S.p.mods=c.modulos;
+ if(c.adolescente&&S.papel==='adol')S.p.share=c.compartilha;
+ if(!quiet)fixScreen();
+}
+/* para onde o app deve ir conforme a configuração do paciente */
+function fixScreen(){
+ const c=S.cfg;if(!c){S.p.screen='onb';return}
+ const sc=S.p.screen;
+ if(c.fase==='trat'&&c.status!=='ativo'){S.p.screen='wait';return}
+ if(sc==='wait'||sc==='onb'||sc==='load')S.p.screen=(c.fase==='inv'&&c.dx)?'dx':'menu';
+ if(c.fase==='inv'&&c.dx&&(sc==='menu'))S.p.screen='dx';
+ if(c.fase==='trat'&&(sc==='dx')&&!S.dx.ativo)S.p.screen='menu';
+}
+/* ---------- rede ---------- */
+async function api(req){
+ if(!API_URL||API_URL.indexOf('COLE')>=0)return{ok:false,err:'config'};
+ const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),30000);
+ try{
+  const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(req),redirect:'follow',signal:ctl.signal});
+  return await r.json();
+ }catch(e){return{ok:false,err:'rede'}}finally{clearTimeout(tm)}
+}
+function queue(a,d){S.outbox.push({eid:uid(),a:a,d:d});save();flush()}
+let flushing=false;
+async function flush(){
+ if(flushing||!S.token||!S.outbox.length||S.authBad)return;
+ if(navigator.onLine===false)return;
+ flushing=true;
+ try{
+  for(let guard=0;guard<20&&S.outbox.length;guard++){
+   const batch=S.outbox.slice(0,40);
+   const r=await api({a:'sync',c:S.code,t:S.token,e:batch});
+   if(r.ok){
+    const gone=new Set((r.done||[]).concat(r.bad||[]));
+    S.outbox=S.outbox.filter(e=>!gone.has(e.eid));
+    if(r.config)applyCfg(r.config);
+    save();render();
+   }else{if(r.err==='auth'){S.authBad=true;save();render()}break}
+  }
+ }finally{flushing=false}
+}
+async function refresh(){
+ if(!S.token)return;
+ const r=await api({a:'config',c:S.code,t:S.token});
+ if(r.ok){applyCfg(r.config);save()}else if(r.err==='auth'){S.authBad=true}
+ render();flush();
+}
+/* ---------- visual ---------- */
+function render(){
+ const ae=document.activeElement,fk=ae&&ae.dataset&&ae.dataset.i?{k:ae.dataset.i,s:ae.selectionStart}:null;
+ document.getElementById('app').innerHTML=viewPais();
+ if(fk){const el=document.querySelector('[data-i="'+fk.k+'"]');if(el){el.focus();try{el.setSelectionRange(fk.s,fk.s)}catch(e){}}}
+}
+const toTop=()=>window.scrollTo(0,0);
+function openNight(k){
+ const n=S.nights[k];
+ S.draft=n?{s:n.s,f:n.f.filter(x=>x!=='med'),por:n.por,al:n.al||'',rem:n.f.includes('med')?'nao':(n.rem||'sim'),who:n.who||(n.h==='P'?'pai':(S.papel==='pai'?'pai':'mae'))}:Object.assign(draftBlank(),{who:S.papel==='pai'?'pai':(S.papel==='mae'?'mae':'')});
+ if(S.p.adol)S.draft.who='adol';
+ S.p.sheet={v:'night',k,step:1};
+}
+const A={
+ go(d){S.p.screen=d.v;S.p.sheet=null;save();toTop()},
+ ob(d){S.ob[d.k]=d.k==='nd'?Number(d.v):d.v;S.ob.err=''},
+ async obgo(){
+  const o=S.ob;if(!obValid()||o.busy)return 'norender';
+  o.busy=true;o.err='';render();
+  const mods=o.sit==='investigacao'?[o.mn?'n':null,o.md?'d':null].filter(Boolean).join(','):'';
+  const r=await api({a:'register',c:norm(o.code),dob:o.dob,papel:o.papel,sx:o.sx,fase:o.sit==='investigacao'?'inv':'trat',nd:o.nd,mods,cas:o.cas?1:0,termo:{v:TERMO_V,ok:true}});
+  o.busy=false;
+  if(!r.ok){
+   o.err=({dados:'O código ou a data de nascimento não conferem. Confira com o consultório.',bloqueado:'Muitas tentativas. Tente novamente daqui a 1 hora.',termo:'O termo mudou. Feche e abra o aplicativo de novo.',codigo:'Código inválido. Use as iniciais e o ano de nascimento, como no exemplo.',rede:'Sem conexão com a internet. Tente de novo.',config:'O aplicativo ainda não foi configurado.',ocupado:'O serviço está ocupado. Tente de novo em instantes.'})[r.err]||'Não foi possível entrar. Tente de novo.';
+   render();return 'norender';
+  }
+  S.code=norm(o.code);S.token=r.token;S.papel=o.papel;S.authBad=false;S.p.screen='load';S.ob=blankOb();
+  applyCfg(r.config);save();toTop();
+ },
+ refresh(){S.busy=true;render();refresh().then(()=>{S.busy=false;render()});return 'norender'},
+ dxstart(){
+  const d=S.dx;
+  if(d.ativo||[0,6].includes(TODAY.getDay())||d.ack){if(!d.ativo){d.id='d'+uid();d.data=I(TODAY);d.ativo=true}S.p.screen='diary';save();toTop()}
+  else S.p.sheet={v:'rule'}},
+ ruleok(){const d=S.dx;S.p.sheet=null;d.id='d'+uid();d.data=I(TODAY);d.ativo=true;S.p.screen='diary';save();toTop()},
+ dxfromtrat(){S.p.screen='dx';save();toTop()},
+ sheet(d){S.p.sheet=d.v?{v:d.v}:null;if(d.v==='mic')S.draft2={h:now(),v:'',nm:false,u:'ausente',p:'nenhuma',o:''};if(d.v==='liq')S.draft3={h:now(),v:0,t:'Água',vv:''};if(d.v==='fim')S.dx.fim={q:'',g:'',m:''}},
+ night(d){openNight(d.v)},
+ dr(d){S.draft[d.k]=d.v},
+ drf(d){const f=S.draft.f,i=f.indexOf(d.v);i<0?f.push(d.v):f.splice(i,1)},
+ drp(d){S.draft.por=d.v},
+ nstep(d){S.p.sheet.step=Number(d.v)},
+ savenight(){
+  const k=S.p.sheet.k,dr=S.draft,casa=dr.who==='pai'?'P':'M';
+  const f=dr.f.filter(x=>x!=='med').concat(dr.rem==='nao'?['med']:[]);
+  S.nights[k]={h:casa,s:dr.s,f,por:dr.por,al:dr.al||'',rem:dr.rem,who:dr.who};
+  queue('night',{data:k,casa,s:dr.s,por:dr.por,rem:dr.rem,al:dr.al||'',flags:f,quem:dr.who||S.papel});
+  S.p.sheet=null;save()},
+ cm(d){let{y,m}=S.cal;m+=Number(d.v);if(m<0){m=11;y--}if(m>11){m=0;y++}S.cal={y,m}},
+ d2(d){S.draft2[d.k]=d.v},
+ d3(d){S.draft3.v=Number(d.v);S.draft3.vv=''},
+ d3t(d){S.draft3.t=d.v},
+ savemic(){const m=S.draft2,dx=S.dx,ml=m.nm?0:Math.round(Number(m.v)||0);
+  dx.mic.push([m.h,ml,m.u,m.p,m.o||'']);
+  queue('mic',{diario:dx.id,data:dx.data,hora:m.h,ml,urg:m.u,perda:m.p,obs:m.o||''});S.p.sheet=null;save()},
+ saveliq(){const v=Math.round(Number(S.draft3.vv)||S.draft3.v);if(!v)return 'norender';const dx=S.dx;
+  dx.liq.push([S.draft3.h,v,S.draft3.t]);
+  queue('liq',{diario:dx.id,data:dx.data,hora:S.draft3.h||'',ml:v,tipo:S.draft3.t});S.p.sheet=null;save()},
+ fim(d){S.dx.fim.q=d.v},
+ fimok(){const dx=S.dx,f=dx.fim,tipo=S.cfg&&S.cfg.dx?S.cfg.dx.tipo:'inicial';
+  queue('fim',{diario:dx.id,data:dx.data,tipo,sr:f.q==='sim'?'sim':'nao',g:f.g,m:f.m});
+  Object.assign(S.dx,newDx());S.p.sheet=null;S.p.screen=(S.cfg&&S.cfg.fase==='trat')?'menu':'dx';save();toTop()},
+ wb(d){S.ws.bris=Number(d.v)},
+ savewk(){const w=S.ws,k=I(add(monday(TODAY),-7));
+  S.weeks[k]={dias:w.dias,esc:w.av+w.sem,av:w.av,sem:w.sem,urg:w.urg,troca:w.troca,regra:w.regra,evac:w.evac,bris:w.bris,fecal:w.fecal};
+  queue('week',{semana:k,dias:w.dias,esc:w.av+w.sem,av:w.av,sem:w.sem,urg:w.urg,troca:w.troca,regra:w.regra,evac:w.evac,bris:w.bris,fecal:w.fecal});
+  S.p.screen='menu';save();toTop()},
+ addnote(){const t=(S.nt||'').trim();if(!t)return 'norender';S.notes.unshift([FY(TODAY),t]);queue('note',{data:I(TODAY),texto:t});S.nt=''},
+ st(d){const v=Math.max(Number(d.min),Math.min(Number(d.max),Number(get(d.p))+Number(d.d)));set(d.p,v);document.querySelectorAll('output[data-bind="'+d.p+'"]').forEach(o=>o.textContent=v);save();return 'norender'},
+ sheetbg(d,e){if(e.target.classList.contains('sheetbg')){S.p.sheet=null}else return 'norender'},
+ sairok(){try{localStorage.removeItem(KEY)}catch(e){}init();S.p.screen='onb';render();toTop()}
+};
+document.addEventListener('click',e=>{
+ const el=e.target.closest('[data-a]');if(!el||el.disabled)return;
+ const fn=A[el.dataset.a];if(!fn)return;
+ if(el.classList.contains('sheetbg')&&e.target!==el)return;
+ const r=fn(el.dataset,e);
+ if(r&&typeof r.then==='function'){r.then(x=>{if(x!=='norender')render()});return}
+ if(r==='norender')return;
+ render();
+});
+function onField(e){
+ const el=e.target;
+ if(el.dataset.i){set(el.dataset.i,el.value);if(el.dataset.i==='ob.code'||el.dataset.i==='ob.dob'){S.ob.err=''}
+  const u=el.dataset.u;
+  if(u==='ob'){const g=document.getElementById('ob-go');if(g)g.disabled=!obValid()||S.ob.busy;const n=document.getElementById('ob-norm');if(n)n.innerHTML=norm(S.ob.code)?'Código lido: <b>'+norm(S.ob.code)+'</b>':'Maiúsculas e minúsculas não importam.'}
+  save();
+ }
+ if(el.dataset.c&&e.type==='change'){
+  set(el.dataset.c,el.checked);
+  if(el.dataset.c==='p.share')queue('share',{v:el.checked});
+  save();render();
+ }
+}
+document.addEventListener('input',onField);
+document.addEventListener('change',onField);
+window.addEventListener('online',()=>flush());
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){TODAY=mkToday();refresh()}});
+setInterval(()=>{if(S&&S.outbox.length)flush()},60000);
+init();render();
+if(S.token)refresh();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+
+</script></body></html>
