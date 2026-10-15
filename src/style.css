@@ -157,3 +157,9 @@ details>summary{cursor:pointer;font-weight:700}
 @media (max-width:520px){.seg{max-width:100%}.seg button{padding:7px 8px;font-size:12px}.proto .seg{flex-wrap:wrap;justify-content:center}}
 .hdr .nm,.dhdr .nm{text-transform:uppercase;width:max-content;white-space:nowrap}
 .hdr .nm{font-size:17px}.hdr .sub,.dhdr .sub{width:max-content;white-space:nowrap}
+/* iPhone: evita zoom automático ao tocar em campos e rolagem lateral */
+html,body{overflow-x:hidden;overflow-x:clip;max-width:100%}
+.in,input,select,textarea{font-size:16px}
+.field{min-width:0}
+input[type=date],input[type=time],input[type=number]{min-width:0;max-width:100%;-webkit-appearance:none;appearance:none;text-align:left}
+input[type=date]::-webkit-date-and-time-value{text-align:left;min-height:1.2em}
