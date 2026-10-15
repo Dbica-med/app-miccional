@@ -87,6 +87,8 @@ const A={
  go(d){let v=d.v;if(v==='menu'&&S.cfg&&S.cfg.fase==='inv'&&S.cfg.dx)v='dx';S.p.screen=v;S.p.sheet=null;save();toTop()},
  lang(d){setLang(d.v);render()},
  agenda(d){if(!S.cfg||!S.cfg.ret)return 'norender';S.cfg.ag=d.v==='1'?I(TODAY):'';queue('ag',{v:d.v==='1'?1:0});save()},
+ rr(d){if(!S.cfg||!S.cfg.ret)return 'norender';const m=d.v||'';S.cfg.rr={m:m,d:m?I(TODAY):''};if(m==='agendei')S.cfg.ag=I(TODAY);S.ckmsg=m&&m!=='parou'?m:'';queue('rr',{m:m});save()},
+ ckok(){S.ckmsg='';},
  usdone(){if(!S.cfg||!S.cfg.us)return 'norender';S.cfg.us.f=I(TODAY);queue('us',{});save()},
  ob(d){S.ob[d.k]=d.k==='nd'?Number(d.v):d.v;S.ob.err=''},
  async obgo(){

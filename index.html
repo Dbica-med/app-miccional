@@ -367,6 +367,27 @@ const M={
 'rc.ag':['Já agendei','I have scheduled it','J’ai pris rendez-vous'],
 'rc.agok':['✓ Você informou que já agendou','✓ You said you have scheduled it','✓ Vous avez indiqué avoir pris rendez-vous'],
 'rc.undo':['Desfazer','Undo','Annuler'],
+'ck.t':['Como está o acompanhamento?','How is the follow-up going?','Comment se passe le suivi ?'],
+'ck.p1':['Olá! Já se passaram {0} dias da data prevista para a reavaliação. Sabemos que a rotina é corrida. Conte-nos como estão as coisas para que possamos ajudar.','Hello! It has been {0} days since the expected re-evaluation date. We know routines are busy. Please tell us how things are so we can help.','Bonjour ! {0} jours se sont écoulés depuis la date prévue de la réévaluation. Nous savons que le quotidien est chargé. Dites-nous où vous en êtes pour que nous puissions vous aider.'],
+'ck.p2':['Já se passaram {0} dias da data prevista. A reavaliação serve para decidir com segurança se o tratamento deve continuar, mudar ou ser suspenso. Conte-nos como estão as coisas.','{0} days have passed since the expected date. The re-evaluation is how we decide safely whether treatment should continue, change or stop. Please tell us how things are.','{0} jours se sont écoulés depuis la date prévue. La réévaluation permet de décider en toute sécurité de poursuivre, modifier ou arrêter le traitement. Dites-nous où vous en êtes.'],
+'ck.o.agendei':['Já agendei a consulta','I have already scheduled the visit','J’ai déjà pris rendez-vous'],
+'ck.o.vou':['Vou agendar em breve','I will schedule it soon','Je vais prendre rendez-vous bientôt'],
+'ck.o.melhorou':['Meu filho melhorou e prefiro aguardar','My child improved and I prefer to wait','Mon enfant va mieux et je préfère attendre'],
+'ck.o.custo':['Tenho dificuldade de custo ou de horário','I have difficulty with cost or schedule','J’ai des difficultés de coût ou d’horaire'],
+'ck.o.parou':['Interrompemos o tratamento','We stopped the treatment','Nous avons arrêté le traitement'],
+'ck.o.outro':['Outro motivo','Another reason','Autre raison'],
+'ck.o.depois':['Lembrar mais tarde','Remind me later','Me le rappeler plus tard'],
+'ck.r.agendei':['Ótimo, obrigado por avisar! O consultório será informado.','Great, thank you for letting us know! The office will be informed.','Parfait, merci de nous prévenir ! Le cabinet sera informé.'],
+'ck.r.vou':['Combinado! Ligue para o consultório quando puder. Voltamos a perguntar em 30 dias.','Agreed! Please call the office when you can. We will ask again in 30 days.','Entendu ! Appelez le cabinet dès que possible. Nous vous reposerons la question dans 30 jours.'],
+'ck.r.melhorou':['Que boa notícia! Mesmo com a melhora, a reavaliação é importante: o remédio costuma precisar de redução cuidadosa, e o risco de o xixi voltar é menor com acompanhamento. Continue registrando as noites. Voltamos a perguntar em 30 dias.','Great news! Even with improvement, the re-evaluation matters: medication usually needs careful tapering, and the risk of wetting returning is lower with follow-up. Keep recording the nights. We will ask again in 30 days.','Bonne nouvelle ! Même avec l’amélioration, la réévaluation est importante : le médicament doit souvent être réduit avec soin, et le risque de rechute est plus faible avec un suivi. Continuez à noter les nuits. Nous vous reposerons la question dans 30 jours.'],
+'ck.r.custo':['Obrigado por contar. O Dr. Domingos prefere saber da dificuldade para buscar uma solução junto com vocês. Fale com o consultório. Continuar registrando as noites também ajuda muito.','Thank you for telling us. Dr. Domingos prefers to know about the difficulty so a solution can be found together. Please contact the office. Continuing to record the nights also helps a lot.','Merci de nous le dire. Le Dr Domingos préfère connaître la difficulté pour chercher une solution avec vous. Contactez le cabinet. Continuer à noter les nuits aide aussi beaucoup.'],
+'ck.r.parou':['Obrigado por nos contar. O Dr. Domingos será informado. Se mudarem de ideia, é só tocar em Retomar. Os registros ficam guardados.','Thank you for telling us. Dr. Domingos will be informed. If you change your mind, just tap Resume. Your records stay saved.','Merci de nous le dire. Le Dr Domingos sera informé. Si vous changez d’avis, touchez simplement Reprendre. Vos enregistrements restent conservés.'],
+'ck.r.outro':['Obrigado por avisar. O Dr. Domingos será informado.','Thank you for letting us know. Dr. Domingos will be informed.','Merci de nous prévenir. Le Dr Domingos sera informé.'],
+'ck.r.depois':['Tudo bem, perguntamos de novo em uma semana.','All right, we will ask again in a week.','D’accord, nous vous le redemanderons dans une semaine.'],
+'ck.pause':['Acompanhamento pausado','Follow-up paused','Suivi en pause'],
+'ck.pausep':['Vocês informaram que o tratamento foi interrompido. O Dr. Domingos foi avisado e os registros continuam guardados.','You said the treatment was stopped. Dr. Domingos has been notified and your records remain saved.','Vous avez indiqué que le traitement a été arrêté. Le Dr Domingos a été informé et vos enregistrements restent conservés.'],
+'ck.resume':['Retomar o acompanhamento','Resume follow-up','Reprendre le suivi'],
+'ck.ok':['Entendi','Got it','Compris'],
 'mn.started':['<b>O tratamento começou!</b> A partir de agora, registre as noites no calendário.','<b>Treatment has started!</b> From now on, record the nights in the calendar.','<b>Le traitement a commencé !</b> À partir de maintenant, enregistrez les nuits dans le calendrier.'],
 'mn.share':['Mostrar meu calendário aos meus responsáveis','Show my calendar to my guardians','Montrer mon calendrier à mes responsables'],
 'mn.shareon':['Ativado: seus responsáveis veem como foram as suas noites. Você pode desativar quando quiser.','On: your guardians can see how your nights went. You can turn it off whenever you like.','Activé : vos responsables voient comment se sont passées vos nuits. Vous pouvez le désactiver quand vous voulez.'],
@@ -519,7 +540,7 @@ function viewDx(){
  '<div class="row wrap" style="gap:8px;margin-top:10px">'+Array.from({length:n},(_,i)=>sem(i<fe?'g':(i===fe&&S.dx.ativo?'y':'n'),t('dx.diary',i+1),i<fe?'✓':(i===fe&&S.dx.ativo?'…':'·'))).join('')+'</div>'+
  (done?'<p style="margin-top:12px">'+t('dx.done')+'</p>':'<p class="lead" style="margin-top:12px">'+t('dx.next',F(nextSat()))+'</p><button type="button" class="btn block" style="margin-top:12px" data-a="dxstart">'+(S.dx.ativo?t('dx.cont'):t('dx.start'))+'</button>')+'</div>';
  if(us.p)h+='<div class="card"><h3>2 · '+t('dx.us')+'</h3>'+(us.f?'<p class="lead" style="margin-top:6px">'+t('dx.usdone',FY(P(us.f)))+'</p>':'<p class="lead" style="margin-top:6px">'+t('dx.usask')+'</p><button type="button" class="btn block ghost" style="margin-top:10px" data-a="usdone">'+t('dx.usbtn')+'</button>')+'</div>';
- h+=retCard();
+ {const k=checkCard();h+=k+(k.includes('data-v="agendei"')?'':retCard())}
  h+='<div class="card flat"><h3>'+t('dx.how')+'</h3><ol style="margin:8px 0 0;padding-left:20px;color:var(--ink2);font-size:14px;display:flex;flex-direction:column;gap:6px">'+['dx.h1','dx.h2','dx.h3','dx.h4','dx.h5','dx.h6'].map(k=>'<li>'+t(k)+'</li>').join('')+'<li>'+t(nightDx?'dx.h7a':'dx.h7b')+'</li></ol></div>';
  h+='<div class="menu">'+lockedItem('🌙',t('mn.cal'))+((hasMod('d')||hasMod('i'))?lockedItem('📋',t('mn.week')):'')+lockedItem('⏰',t('mn.dev'))+
   '<button class="mi" data-a="go" data-v="info"><span class="ic">ℹ️</span><span style="flex:1"><div class="t">'+t('mn.info')+'</div><div class="d">'+t('mn.infod')+'</div></span></button>'+
@@ -550,8 +571,19 @@ function retCard(){
  (late&&!ag?'<p class="hint" style="margin-bottom:6px">'+t('rc.late')+'</p>':'')+
  (ag?'<div class="row"><span class="sem g"><i>✓</i>'+t('rc.agok').replace('✓ ','')+'</span><span class="sp"></span><button class="chip" data-a="agenda" data-v="0">'+t('rc.undo')+'</button></div>':'<div class="row wrap"><button class="chip" data-a="agenda" data-v="1">'+t('rc.ag')+'</button></div><p class="hint" style="margin-top:6px">'+t('rc.book')+'</p>')+'</div>';
 }
+
+function checkCard(){
+ const c=S.cfg;if(!c||!c.ret)return '';
+ const rr=c.rr||{m:'',d:''};
+ if(S.ckmsg)return '<div class="note" style="border-color:var(--gold)">'+t('ck.r.'+S.ckmsg)+'<div style="margin-top:8px"><button class="chip" data-a="ckok">'+t('ck.ok')+'</button></div></div>';
+ if(rr.m==='parou')return '<div class="card flat"><span class="lbl">'+t('ck.pause')+'</span><p style="margin:4px 0 8px">'+t('ck.pausep')+'</p><button class="chip" data-a="rr" data-v="">'+t('ck.resume')+'</button></div>';
+ const late=diff(TODAY,P(c.ret));if(late<14)return '';
+ if(rr.m&&rr.d){const since=diff(TODAY,P(rr.d));if(since<(rr.m==='depois'?7:30))return ''}
+ const o=['agendei','vou','melhorou','custo','parou','outro','depois'];
+ return '<div class="card" style="border-color:var(--gold)"><span class="lbl">'+t('ck.t')+'</span><p style="margin:6px 0 10px">'+t(late>=45?'ck.p2':'ck.p1',late)+'</p><div style="display:flex;flex-direction:column;gap:8px">'+o.map(k=>'<button class="chip" style="justify-content:flex-start;text-align:left" data-a="rr" data-v="'+k+'">'+t('ck.o.'+k)+'</button>').join('')+'</div></div>';
+}
 function lateBox(){
- const c=S.cfg;if(!c||c.fase!=='trat')return '';
+ const c=S.cfg;if(!c||c.fase!=='trat'||(c.rr&&c.rr.m==='parou'))return '';
  const st=calStart();let miss=0;for(let i=1;i<=7;i++){const d=add(TODAY,-i);if(d>=st&&!hasNight(I(d)))miss++}
  const okW=!!(S.weeks[I(add(monday(TODAY),-7))]||c.weeks.includes(I(add(monday(TODAY),-7))));
  const wkNeed=(hasMod('d')||hasMod('i'))&&!okW&&diff(add(monday(TODAY),-7),st)>=-6;
@@ -572,7 +604,7 @@ function viewMenu(){
  items+=mi('go','notes','✍️',t('mn.notes'),t('mn.notesd'))+mi('go','info','ℹ️',t('mn.info'),t('mn.infod'))+mi('go','dev','⏰',t('mn.dev'),t('mn.devd'))+mi('go','help','❓',t('mn.help'),t('mn.helpd'));
  const fresh=S.cfg&&S.cfg.fase==='trat'&&S.cfg.inicio&&diff(TODAY,P(S.cfg.inicio))<=2&&diff(TODAY,P(S.cfg.inicio))>=0;
  return '<div class="body"><div class="row"><div><h1>'+t('hello')+'</h1><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div><span class="sp"></span>'+(S.p.adol?'':'<span class="sem n" title="'+t('mn.stars')+'"><i style="background:var(--gold)">★</i>'+stars+'</span>')+'</div>'+
- (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+lateBox()+retCard()+
+ (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+(()=>{const k=checkCard();return k+lateBox()+(k.includes('data-v="agendei"')||k.includes('data-a="rr" data-v=""')?'':retCard())})()+
  (S.p.adol?'<div class="card flat"><label class="chk"><input type="checkbox" data-c="p.share"'+(S.p.share?' checked':'')+'><span><b>'+t('mn.share')+'</b></span></label><p class="hint" style="margin-top:6px">'+t(S.p.share?'mn.shareon':'mn.shareoff')+t('mn.shareend')+'</p></div>':'')+
  '<div class="menu">'+items+'</div>'+(S.p.cas?'<div class="note">'+t('mn.cas')+'</div>':'')+'</div>';
 }
@@ -752,6 +784,8 @@ const A={
  go(d){let v=d.v;if(v==='menu'&&S.cfg&&S.cfg.fase==='inv'&&S.cfg.dx)v='dx';S.p.screen=v;S.p.sheet=null;save();toTop()},
  lang(d){setLang(d.v);render()},
  agenda(d){if(!S.cfg||!S.cfg.ret)return 'norender';S.cfg.ag=d.v==='1'?I(TODAY):'';queue('ag',{v:d.v==='1'?1:0});save()},
+ rr(d){if(!S.cfg||!S.cfg.ret)return 'norender';const m=d.v||'';S.cfg.rr={m:m,d:m?I(TODAY):''};if(m==='agendei')S.cfg.ag=I(TODAY);S.ckmsg=m&&m!=='parou'?m:'';queue('rr',{m:m});save()},
+ ckok(){S.ckmsg='';},
  usdone(){if(!S.cfg||!S.cfg.us)return 'norender';S.cfg.us.f=I(TODAY);queue('us',{});save()},
  ob(d){S.ob[d.k]=d.k==='nd'?Number(d.v):d.v;S.ob.err=''},
  async obgo(){

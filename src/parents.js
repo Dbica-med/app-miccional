@@ -49,7 +49,7 @@ function viewDx(){
  '<div class="row wrap" style="gap:8px;margin-top:10px">'+Array.from({length:n},(_,i)=>sem(i<fe?'g':(i===fe&&S.dx.ativo?'y':'n'),t('dx.diary',i+1),i<fe?'✓':(i===fe&&S.dx.ativo?'…':'·'))).join('')+'</div>'+
  (done?'<p style="margin-top:12px">'+t('dx.done')+'</p>':'<p class="lead" style="margin-top:12px">'+t('dx.next',F(nextSat()))+'</p><button type="button" class="btn block" style="margin-top:12px" data-a="dxstart">'+(S.dx.ativo?t('dx.cont'):t('dx.start'))+'</button>')+'</div>';
  if(us.p)h+='<div class="card"><h3>2 · '+t('dx.us')+'</h3>'+(us.f?'<p class="lead" style="margin-top:6px">'+t('dx.usdone',FY(P(us.f)))+'</p>':'<p class="lead" style="margin-top:6px">'+t('dx.usask')+'</p><button type="button" class="btn block ghost" style="margin-top:10px" data-a="usdone">'+t('dx.usbtn')+'</button>')+'</div>';
- h+=retCard();
+ {const k=checkCard();h+=k+(k.includes('data-v="agendei"')?'':retCard())}
  h+='<div class="card flat"><h3>'+t('dx.how')+'</h3><ol style="margin:8px 0 0;padding-left:20px;color:var(--ink2);font-size:14px;display:flex;flex-direction:column;gap:6px">'+['dx.h1','dx.h2','dx.h3','dx.h4','dx.h5','dx.h6'].map(k=>'<li>'+t(k)+'</li>').join('')+'<li>'+t(nightDx?'dx.h7a':'dx.h7b')+'</li></ol></div>';
  h+='<div class="menu">'+lockedItem('🌙',t('mn.cal'))+((hasMod('d')||hasMod('i'))?lockedItem('📋',t('mn.week')):'')+lockedItem('⏰',t('mn.dev'))+
   '<button class="mi" data-a="go" data-v="info"><span class="ic">ℹ️</span><span style="flex:1"><div class="t">'+t('mn.info')+'</div><div class="d">'+t('mn.infod')+'</div></span></button>'+
@@ -80,8 +80,19 @@ function retCard(){
  (late&&!ag?'<p class="hint" style="margin-bottom:6px">'+t('rc.late')+'</p>':'')+
  (ag?'<div class="row"><span class="sem g"><i>✓</i>'+t('rc.agok').replace('✓ ','')+'</span><span class="sp"></span><button class="chip" data-a="agenda" data-v="0">'+t('rc.undo')+'</button></div>':'<div class="row wrap"><button class="chip" data-a="agenda" data-v="1">'+t('rc.ag')+'</button></div><p class="hint" style="margin-top:6px">'+t('rc.book')+'</p>')+'</div>';
 }
+
+function checkCard(){
+ const c=S.cfg;if(!c||!c.ret)return '';
+ const rr=c.rr||{m:'',d:''};
+ if(S.ckmsg)return '<div class="note" style="border-color:var(--gold)">'+t('ck.r.'+S.ckmsg)+'<div style="margin-top:8px"><button class="chip" data-a="ckok">'+t('ck.ok')+'</button></div></div>';
+ if(rr.m==='parou')return '<div class="card flat"><span class="lbl">'+t('ck.pause')+'</span><p style="margin:4px 0 8px">'+t('ck.pausep')+'</p><button class="chip" data-a="rr" data-v="">'+t('ck.resume')+'</button></div>';
+ const late=diff(TODAY,P(c.ret));if(late<14)return '';
+ if(rr.m&&rr.d){const since=diff(TODAY,P(rr.d));if(since<(rr.m==='depois'?7:30))return ''}
+ const o=['agendei','vou','melhorou','custo','parou','outro','depois'];
+ return '<div class="card" style="border-color:var(--gold)"><span class="lbl">'+t('ck.t')+'</span><p style="margin:6px 0 10px">'+t(late>=45?'ck.p2':'ck.p1',late)+'</p><div style="display:flex;flex-direction:column;gap:8px">'+o.map(k=>'<button class="chip" style="justify-content:flex-start;text-align:left" data-a="rr" data-v="'+k+'">'+t('ck.o.'+k)+'</button>').join('')+'</div></div>';
+}
 function lateBox(){
- const c=S.cfg;if(!c||c.fase!=='trat')return '';
+ const c=S.cfg;if(!c||c.fase!=='trat'||(c.rr&&c.rr.m==='parou'))return '';
  const st=calStart();let miss=0;for(let i=1;i<=7;i++){const d=add(TODAY,-i);if(d>=st&&!hasNight(I(d)))miss++}
  const okW=!!(S.weeks[I(add(monday(TODAY),-7))]||c.weeks.includes(I(add(monday(TODAY),-7))));
  const wkNeed=(hasMod('d')||hasMod('i'))&&!okW&&diff(add(monday(TODAY),-7),st)>=-6;
@@ -102,7 +113,7 @@ function viewMenu(){
  items+=mi('go','notes','✍️',t('mn.notes'),t('mn.notesd'))+mi('go','info','ℹ️',t('mn.info'),t('mn.infod'))+mi('go','dev','⏰',t('mn.dev'),t('mn.devd'))+mi('go','help','❓',t('mn.help'),t('mn.helpd'));
  const fresh=S.cfg&&S.cfg.fase==='trat'&&S.cfg.inicio&&diff(TODAY,P(S.cfg.inicio))<=2&&diff(TODAY,P(S.cfg.inicio))>=0;
  return '<div class="body"><div class="row"><div><h1>'+t('hello')+'</h1><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div><span class="sp"></span>'+(S.p.adol?'':'<span class="sem n" title="'+t('mn.stars')+'"><i style="background:var(--gold)">★</i>'+stars+'</span>')+'</div>'+
- (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+lateBox()+retCard()+
+ (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+(()=>{const k=checkCard();return k+lateBox()+(k.includes('data-v="agendei"')||k.includes('data-a="rr" data-v=""')?'':retCard())})()+
  (S.p.adol?'<div class="card flat"><label class="chk"><input type="checkbox" data-c="p.share"'+(S.p.share?' checked':'')+'><span><b>'+t('mn.share')+'</b></span></label><p class="hint" style="margin-top:6px">'+t(S.p.share?'mn.shareon':'mn.shareoff')+t('mn.shareend')+'</p></div>':'')+
  '<div class="menu">'+items+'</div>'+(S.p.cas?'<div class="note">'+t('mn.cas')+'</div>':'')+'</div>';
 }
