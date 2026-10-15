@@ -194,7 +194,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left;min-height:1.2em}
 <script>
 /* Preencha API_URL com o endereço do programa do Google (termina em /exec) */
 const API_URL='https://script.google.com/macros/s/AKfycbxOjWwSj60sG7hnjUilc_hHmllMNoVv36OOzKeRVvDBodoyF36NVerPX-jxHn_pS4eX/exec';
-const APP_V='1.1';
+const APP_V='1.2';
 const TERMO_V='2026-10-v1';
 
 'use strict';
@@ -347,6 +347,26 @@ const M={
 'mn.dev':['Alarmes e dispositivos','Alarms and devices','Alarmes et dispositifs'],'mn.devd':['Alarme noturno e relógio com lembrete','Bedwetting alarm and reminder watch','Alarme de nuit et montre-rappel'],
 'mn.help':['Como usar o aplicativo','How to use the app','Mode d’emploi de l’application'],'mn.helpd':['Passo a passo e dúvidas comuns','Step by step and common questions','Pas à pas et questions fréquentes'],
 'mn.stars':['Estrelas da criança','Child’s stars','Étoiles de l’enfant'],
+'lt.n1':['Falta registrar a noite de ontem.','Last night is not recorded yet.','La nuit dernière n’est pas encore enregistrée.'],
+'lt.nn':['Faltam {0} noites nos últimos 7 dias.','{0} nights missing in the last 7 days.','Il manque {0} nuits sur les 7 derniers jours.'],
+'lt.w':['O resumo da semana passada ainda não foi enviado.','Last week’s summary has not been sent yet.','Le résumé de la semaine dernière n’a pas encore été envoyé.'],
+'lt.m0':['Cada registro ajuda o Dr. Domingos a ajustar o tratamento no momento certo.','Every entry helps Dr. Domingos adjust the treatment at the right time.','Chaque enregistrement aide le Dr Domingos à ajuster le traitement au bon moment.'],
+'lt.m1':['Registrar todos os dias é o que mais aumenta a chance de sucesso do tratamento.','Recording every day is what most increases the chance of treatment success.','Enregistrer chaque jour est ce qui augmente le plus les chances de réussite du traitement.'],
+'lt.m2':['Sem os registros, a consulta vira palpite. Com eles, vira decisão.','Without records, the visit is guesswork. With them, it becomes a decision.','Sans enregistrements, la consultation repose sur des suppositions. Avec eux, elle devient une décision.'],
+'lt.m3':['Leva menos de um minuto e faz diferença no resultado do seu filho.','It takes less than a minute and makes a difference to your child’s result.','Cela prend moins d’une minute et fait la différence pour le résultat de votre enfant.'],
+'lt.m4':['Mesmo as noites difíceis são importantes: registre-as também.','Even the difficult nights matter: record them too.','Même les nuits difficiles comptent : enregistrez-les aussi.'],
+'rc.t':['Próxima consulta com o Dr. Domingos','Next visit with Dr. Domingos','Prochaine consultation avec le Dr Domingos'],
+'rc.when':['Previsão: <b>{0}</b>','Expected: <b>{0}</b>','Prévue : <b>{0}</b>'],
+'rc.d':['faltam {0} dias','{0} days left','dans {0} jours'],
+'rc.d1':['falta 1 dia','1 day left','dans 1 jour'],
+'rc.today':['é hoje','it is today','c’est aujourd’hui'],
+'rc.w':['faltam cerca de {0} semanas','about {0} weeks left','dans environ {0} semaines'],
+'rc.m':['faltam cerca de {0} meses','about {0} months left','dans environ {0} mois'],
+'rc.late':['O retorno previsto já passou. Agende o quanto antes.','The expected visit date has passed. Please schedule it as soon as possible.','La date prévue est dépassée. Veuillez prendre rendez-vous dès que possible.'],
+'rc.book':['Ainda não agendou? Ligue para o consultório.','Not scheduled yet? Please call the office.','Pas encore de rendez-vous ? Appelez le cabinet.'],
+'rc.ag':['Já agendei','I have scheduled it','J’ai pris rendez-vous'],
+'rc.agok':['✓ Você informou que já agendou','✓ You said you have scheduled it','✓ Vous avez indiqué avoir pris rendez-vous'],
+'rc.undo':['Desfazer','Undo','Annuler'],
 'mn.started':['<b>O tratamento começou!</b> A partir de agora, registre as noites no calendário.','<b>Treatment has started!</b> From now on, record the nights in the calendar.','<b>Le traitement a commencé !</b> À partir de maintenant, enregistrez les nuits dans le calendrier.'],
 'mn.share':['Mostrar meu calendário aos meus responsáveis','Show my calendar to my guardians','Montrer mon calendrier à mes responsables'],
 'mn.shareon':['Ativado: seus responsáveis veem como foram as suas noites. Você pode desativar quando quiser.','On: your guardians can see how your nights went. You can turn it off whenever you like.','Activé : vos responsables voient comment se sont passées vos nuits. Vous pouvez le désactiver quand vous voulez.'],
@@ -499,6 +519,7 @@ function viewDx(){
  '<div class="row wrap" style="gap:8px;margin-top:10px">'+Array.from({length:n},(_,i)=>sem(i<fe?'g':(i===fe&&S.dx.ativo?'y':'n'),t('dx.diary',i+1),i<fe?'✓':(i===fe&&S.dx.ativo?'…':'·'))).join('')+'</div>'+
  (done?'<p style="margin-top:12px">'+t('dx.done')+'</p>':'<p class="lead" style="margin-top:12px">'+t('dx.next',F(nextSat()))+'</p><button type="button" class="btn block" style="margin-top:12px" data-a="dxstart">'+(S.dx.ativo?t('dx.cont'):t('dx.start'))+'</button>')+'</div>';
  if(us.p)h+='<div class="card"><h3>2 · '+t('dx.us')+'</h3>'+(us.f?'<p class="lead" style="margin-top:6px">'+t('dx.usdone',FY(P(us.f)))+'</p>':'<p class="lead" style="margin-top:6px">'+t('dx.usask')+'</p><button type="button" class="btn block ghost" style="margin-top:10px" data-a="usdone">'+t('dx.usbtn')+'</button>')+'</div>';
+ h+=retCard();
  h+='<div class="card flat"><h3>'+t('dx.how')+'</h3><ol style="margin:8px 0 0;padding-left:20px;color:var(--ink2);font-size:14px;display:flex;flex-direction:column;gap:6px">'+['dx.h1','dx.h2','dx.h3','dx.h4','dx.h5','dx.h6'].map(k=>'<li>'+t(k)+'</li>').join('')+'<li>'+t(nightDx?'dx.h7a':'dx.h7b')+'</li></ol></div>';
  h+='<div class="menu">'+lockedItem('🌙',t('mn.cal'))+((hasMod('d')||hasMod('i'))?lockedItem('📋',t('mn.week')):'')+lockedItem('⏰',t('mn.dev'))+
   '<button class="mi" data-a="go" data-v="info"><span class="ic">ℹ️</span><span style="flex:1"><div class="t">'+t('mn.info')+'</div><div class="d">'+t('mn.infod')+'</div></span></button>'+
@@ -519,6 +540,26 @@ const hasNight=k=>!!(S.nights[k]||(S.cfg&&S.cfg.nights&&S.cfg.nights[k]));
 const alarmOn=k=>!!(S.cfg&&S.cfg.alarme&&S.cfg.alarme<=k);
 const calStart=()=>S.cfg&&S.cfg.inicio?P(S.cfg.inicio):add(TODAY,-75);
 function nightsMissing(){let m=0;for(let i=1;i<=7;i++)if(!hasNight(I(add(TODAY,-i))))m++;return m}
+
+function retCard(){
+ const c=S.cfg;if(!c||!c.ret)return '';
+ const d=P(c.ret),n=diff(d,TODAY),late=n<0;
+ let left=n===0?t('rc.today'):n===1?t('rc.d1'):n<=30?t('rc.d',n):n<=90?t('rc.w',Math.round(n/7)):t('rc.m',Math.round(n/30.4));
+ const ag=!!c.ag;
+ return '<div class="card flat"><span class="lbl">'+t('rc.t')+'</span><p style="margin:4px 0">'+t('rc.when',MN[d.getMonth()]+' '+d.getFullYear())+(late?'':' · <span class="hint">'+left+'</span>')+'</p>'+
+ (late&&!ag?'<p class="hint" style="margin-bottom:6px">'+t('rc.late')+'</p>':'')+
+ (ag?'<div class="row"><span class="sem g"><i>✓</i>'+t('rc.agok').replace('✓ ','')+'</span><span class="sp"></span><button class="chip" data-a="agenda" data-v="0">'+t('rc.undo')+'</button></div>':'<div class="row wrap"><button class="chip" data-a="agenda" data-v="1">'+t('rc.ag')+'</button></div><p class="hint" style="margin-top:6px">'+t('rc.book')+'</p>')+'</div>';
+}
+function lateBox(){
+ const c=S.cfg;if(!c||c.fase!=='trat')return '';
+ const st=calStart();let miss=0;for(let i=1;i<=7;i++){const d=add(TODAY,-i);if(d>=st&&!hasNight(I(d)))miss++}
+ const okW=!!(S.weeks[I(add(monday(TODAY),-7))]||c.weeks.includes(I(add(monday(TODAY),-7))));
+ const wkNeed=(hasMod('d')||hasMod('i'))&&!okW&&diff(add(monday(TODAY),-7),st)>=-6;
+ if(!miss&&!wkNeed)return '';
+ const k=((diff(TODAY,new Date(2026,0,1,12))%5)+5)%5;
+ const l=[];if(miss)l.push(t(miss===1&&!hasNight(I(add(TODAY,-1)))?'lt.n1':'lt.nn',miss));if(wkNeed)l.push(t('lt.w'));
+ return '<div class="note" style="border-color:var(--gold)"><b>'+l.join(' ')+'</b><br>'+t('lt.m'+k)+'</div>';
+}
 function viewMenu(){
  const y=I(add(TODAY,-1)),okN=hasNight(y),miss=nightsMissing();
  const wk=I(add(monday(TODAY),-7)),okW=!!(S.weeks[wk]||(S.cfg&&S.cfg.weeks.includes(wk)));
@@ -531,7 +572,7 @@ function viewMenu(){
  items+=mi('go','notes','✍️',t('mn.notes'),t('mn.notesd'))+mi('go','info','ℹ️',t('mn.info'),t('mn.infod'))+mi('go','dev','⏰',t('mn.dev'),t('mn.devd'))+mi('go','help','❓',t('mn.help'),t('mn.helpd'));
  const fresh=S.cfg&&S.cfg.fase==='trat'&&S.cfg.inicio&&diff(TODAY,P(S.cfg.inicio))<=2&&diff(TODAY,P(S.cfg.inicio))>=0;
  return '<div class="body"><div class="row"><div><h1>'+t('hello')+'</h1><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div><span class="sp"></span>'+(S.p.adol?'':'<span class="sem n" title="'+t('mn.stars')+'"><i style="background:var(--gold)">★</i>'+stars+'</span>')+'</div>'+
- (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+
+ (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+lateBox()+retCard()+
  (S.p.adol?'<div class="card flat"><label class="chk"><input type="checkbox" data-c="p.share"'+(S.p.share?' checked':'')+'><span><b>'+t('mn.share')+'</b></span></label><p class="hint" style="margin-top:6px">'+t(S.p.share?'mn.shareon':'mn.shareoff')+t('mn.shareend')+'</p></div>':'')+
  '<div class="menu">'+items+'</div>'+(S.p.cas?'<div class="note">'+t('mn.cas')+'</div>':'')+'</div>';
 }
@@ -710,6 +751,7 @@ function openNight(k){
 const A={
  go(d){let v=d.v;if(v==='menu'&&S.cfg&&S.cfg.fase==='inv'&&S.cfg.dx)v='dx';S.p.screen=v;S.p.sheet=null;save();toTop()},
  lang(d){setLang(d.v);render()},
+ agenda(d){if(!S.cfg||!S.cfg.ret)return 'norender';S.cfg.ag=d.v==='1'?I(TODAY):'';queue('ag',{v:d.v==='1'?1:0});save()},
  usdone(){if(!S.cfg||!S.cfg.us)return 'norender';S.cfg.us.f=I(TODAY);queue('us',{});save()},
  ob(d){S.ob[d.k]=d.k==='nd'?Number(d.v):d.v;S.ob.err=''},
  async obgo(){
