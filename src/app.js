@@ -31,7 +31,7 @@ function applyCfg(c,quiet){
 function fixScreen(){
  const c=S.cfg;if(!c){S.p.screen='onb';return}
  const sc=S.p.screen;
- if(c.fase==='trat'&&c.status!=='ativo'){S.p.screen='wait';return}
+ if((c.fase==='trat'&&c.status!=='ativo')||c.status==='encerrado'){S.p.screen='wait';return}
  if(sc==='wait'||sc==='onb'||sc==='load')S.p.screen=(c.fase==='inv'&&c.dx)?'dx':'menu';
  if(c.fase==='inv'&&c.dx&&(sc==='menu'))S.p.screen='dx';
  if(c.fase==='trat'&&(sc==='dx')&&!S.dx.ativo)S.p.screen='menu';

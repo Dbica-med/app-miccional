@@ -141,7 +141,7 @@ function sheetsP(){
 }
 function viewPais(){
  let b;const sc=S.p.screen;
- if(sc==='onb')b=viewOnb();else if(sc==='wait')b='<div class="body"><h1>Cadastro recebido</h1><p class="lead">O Dr. Domingos vai liberar o seu acompanhamento em breve. Enquanto isso, nada precisa ser preenchido.</p><button class="btn block" data-a="refresh">'+(S.busy?'Verificando…':'Verificar agora')+'</button></div>';
+ if(sc==='onb')b=viewOnb();else if(sc==='wait')b='<div class="body"><h1>'+(S.cfg&&S.cfg.status==='encerrado'?'Acompanhamento encerrado':'Cadastro recebido')+'</h1><p class="lead">'+(S.cfg&&S.cfg.status==='encerrado'?'O acompanhamento deste código foi encerrado pelo consultório. Para voltar a usar o aplicativo, fale com o consultório.':'O Dr. Domingos vai liberar o seu acompanhamento em breve. Enquanto isso, nada precisa ser preenchido.')+'</p><button class="btn block" data-a="refresh">'+(S.busy?'Verificando…':'Verificar agora')+'</button></div>';
  else if(sc==='dx')b=viewDx();else if(sc==='diary')b=viewDiary();else if(sc==='menu')b=viewMenu();else if(sc==='cal')b=viewCal();else if(sc==='week')b=viewWeek();else if(sc==='notes')b=viewNotes();else if(sc==='info')b=viewInfo();else if(sc==='help')b=viewHelpP();else if(sc==='load')b='<div class="body"><p class="lead">Carregando…</p></div>';else if(sc==='dev')b=viewDev();
  return '<div class="phone">'+hdrP()+b+footP()+sheetsP()+'</div>';
 }
