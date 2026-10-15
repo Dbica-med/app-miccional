@@ -2,7 +2,7 @@ import re,os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 r=lambda f:open('src/'+f).read()
 css=r('fonts.css')+r('style.css')
-js='\n'.join(r(f) for f in ['config.js','core.js','parents.js','app.js'])
+js='\n'.join(r(f) for f in ['config.js','core.js','i18n.js','parents.js','app.js'])
 html=f'''<!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8">
 <title>Calendário do xixi</title>

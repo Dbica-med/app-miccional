@@ -84,7 +84,9 @@ function openNight(k){
  S.p.sheet={v:'night',k,step:1};
 }
 const A={
- go(d){S.p.screen=d.v;S.p.sheet=null;save();toTop()},
+ go(d){let v=d.v;if(v==='menu'&&S.cfg&&S.cfg.fase==='inv'&&S.cfg.dx)v='dx';S.p.screen=v;S.p.sheet=null;save();toTop()},
+ lang(d){setLang(d.v);render()},
+ usdone(){if(!S.cfg||!S.cfg.us)return 'norender';S.cfg.us.f=I(TODAY);queue('us',{});save()},
  ob(d){S.ob[d.k]=d.k==='nd'?Number(d.v):d.v;S.ob.err=''},
  async obgo(){
   const o=S.ob;if(!obValid()||o.busy)return 'norender';
@@ -93,7 +95,7 @@ const A={
   const r=await api({a:'register',c:norm(o.code),dob:o.dob,papel:o.papel,sx:o.sx,fase:o.sit==='investigacao'?'inv':'trat',nd:o.nd,mods,cas:o.cas?1:0,termo:{v:TERMO_V,ok:true}});
   o.busy=false;
   if(!r.ok){
-   o.err=({dados:'O código ou a data de nascimento não conferem. Confira com o consultório.',bloqueado:'Muitas tentativas. Tente novamente daqui a 1 hora.',termo:'O termo mudou. Feche e abra o aplicativo de novo.',codigo:'Código inválido. Use as iniciais e o ano de nascimento, como no exemplo.',rede:'Sem conexão com a internet. Tente de novo.',config:'O aplicativo ainda não foi configurado.',ocupado:'O serviço está ocupado. Tente de novo em instantes.'})[r.err]||'Não foi possível entrar. Tente de novo.';
+   o.err=(['dados','bloqueado','termo','codigo','rede','config','ocupado'].includes(r.err)?t('err.'+r.err):t('err.x'));
    render();return 'norender';
   }
   S.code=norm(o.code);S.token=r.token;S.papel=o.papel;S.authBad=false;S.p.screen='load';S.ob=blankOb();
@@ -155,7 +157,7 @@ function onField(e){
  const el=e.target;
  if(el.dataset.i){set(el.dataset.i,el.value);if(el.dataset.i==='ob.code'||el.dataset.i==='ob.dob'){S.ob.err=''}
   const u=el.dataset.u;
-  if(u==='ob'){const g=document.getElementById('ob-go');if(g)g.disabled=!obValid()||S.ob.busy;const n=document.getElementById('ob-norm');if(n)n.innerHTML=norm(S.ob.code)?'Código lido: <b>'+norm(S.ob.code)+'</b>':'Maiúsculas e minúsculas não importam.'}
+  if(u==='ob'){const g=document.getElementById('ob-go');if(g)g.disabled=!obValid()||S.ob.busy;const n=document.getElementById('ob-norm');if(n)n.innerHTML=obNormHtml()}
   save();
  }
  if(el.dataset.c&&e.type==='change'){
@@ -169,6 +171,7 @@ document.addEventListener('change',onField);
 window.addEventListener('online',()=>flush());
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){TODAY=mkToday();refresh()}});
 setInterval(()=>{if(S&&S.outbox.length)flush()},60000);
+setLang(detectLang(),true);
 init();render();
 if(S.token)refresh();
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
