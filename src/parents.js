@@ -76,7 +76,7 @@ const calStart=()=>S.cfg&&S.cfg.inicio?P(S.cfg.inicio):add(TODAY,-75);
 function nightsMissing(){let m=0;for(let i=1;i<=7;i++)if(!hasNight(I(add(TODAY,-i))))m++;return m}
 
 const isTrat=()=>!!(S.cfg&&S.cfg.fase==='trat'&&S.cfg.status==='ativo');
-const needStart=()=>isTrat()&&(!S.cfg.inicio||(S.cfg.ja&&!S.cfg.cok));
+const needStart=()=>isTrat()&&!S.cfg.inicio;
 function pauseInfo(){
  const c=S.cfg;if(!isTrat()||!c.inicio||!c.ret)return null;
  const tol=c.tol||14,late=diff(TODAY,P(c.ret));
@@ -93,9 +93,14 @@ function retCard(){
  const c=S.cfg;if(!c||!c.ret)return '';
  const d=P(c.ret),n=diff(d,TODAY),ag=c.agd&&diff(P(c.agd),TODAY)>=-7;
  const left=n===0?t('rc.today'):n===1?t('rc.d1'):n<=30?t('rc.d',n):n<=90?t('rc.w',Math.round(n/7)):t('rc.m',Math.round(n/30.4));
- return '<div class="card flat"><span class="lbl">'+t('rc.t')+'</span><p style="margin:4px 0">'+t('rc.when',MN[d.getMonth()]+' '+d.getFullYear())+(n>=0?' · <span class="hint">'+left+'</span>':'')+'</p>'+
+ return '<div class="card flat"><span class="lbl">'+t('rc.t')+'</span><p style="margin:4px 0">'+t('rc.when',MN[d.getMonth()]+' '+d.getFullYear())+'</p>'+
  (ag?'<div class="row"><span class="sem g"><i>✓</i>'+t('rc.agok',FY(P(c.agd)))+'</span></div>':agForm()+''+bookBox()+'')+'</div>';
 }
+function retChip(){
+ const c=S.cfg;if(!c||!c.ret||!isTrat()||!c.inicio||pauseInfo())return '';
+ const n=diff(P(c.ret),TODAY);if(n<0)return '';
+ const left=n===0?t('rc.today'):n===1?t('rc.d1'):n<=30?t('rc.d',n):n<=90?t('rc.w',Math.round(n/7)):t('rc.m',Math.round(n/30.4));
+ return '<p class="hint" style="margin:-4px 0 10px">📅 '+t('rc.chip','<b>'+left+'</b>')+'</p>'}
 function rrOpts(list){
  return '<div style="display:flex;flex-direction:column;gap:8px">'+list.map(k=>'<button class="chip" style="justify-content:flex-start;text-align:left" data-a="rr" data-v="'+k+'">'+t('ck.o.'+k)+'</button>').join('')+'</div>';
 }
@@ -120,10 +125,10 @@ function impCard(){
 }
 const infoHelpItems=()=>'<button class="mi" data-a="go" data-v="info"><span class="ic">ℹ️</span><span style="flex:1"><div class="t">'+t('mn.info')+'</div><div class="d">'+t('mn.infod')+'</div></span></button><button class="mi" data-a="go" data-v="help"><span class="ic">❓</span><span style="flex:1"><div class="t">'+t('mn.help')+'</div><div class="d">'+t('mn.helpd')+'</div></span></button>';
 function viewStart(){
- return '<div class="body"><div><h1>'+t(S.cfg&&S.cfg.ja?'st.tj':'st.t')+'</h1><p class="lead">'+t(S.cfg&&S.cfg.ja?'st.leadj':'st.lead')+'</p></div>'+
- (S.cfg&&S.cfg.ja?'':'<div class="card"><div class="field" style="max-width:260px"><label class="lbl" for="st-dt">'+t('st.date')+'</label><input id="st-dt" type="date" class="in" data-i="st.dt" min="'+I(add(TODAY,-14))+'" max="'+I(TODAY)+'" value="'+esc(S.st.dt)+'"></div>'+(S.st.bad?'<p class="hint" style="color:var(--bad)">'+t('st.bad')+'</p>':'')+'</div>')+
- '<div class="card flat"><h3>'+t('st.ch')+'</h3><p style="margin:6px 0">'+t('st.cp')+'</p><label class="chk"><input type="checkbox" data-c="st.ok"'+(S.st.ok?' checked':'')+'><span><b>'+t('st.ok')+'</b></span></label></div>'+
- '<button class="btn block" data-a="startgo"'+(S.st.ok?'':' disabled')+'>'+t('st.go')+'</button>'+
+ return '<div class="body"><div><h1>'+t('st.t')+'</h1><p class="lead">'+t('st.lead')+'</p></div>'+
+'<div class="card"><div class="field" style="max-width:260px"><label class="lbl" for="st-dt">'+t('st.date')+'</label><input id="st-dt" type="date" class="in" data-i="st.dt" min="'+I(add(TODAY,-14))+'" max="'+I(TODAY)+'" value="'+esc(S.st.dt)+'"></div>'+(S.st.bad?'<p class="hint" style="color:var(--bad)">'+t('st.bad')+'</p>':'')+'</div>'+
+ '<div class="card flat"><h3>'+t('st.ch')+'</h3><p style="margin:6px 0">'+t('st.cp')+'</p></div>'+
+ '<button class="btn block" data-a="startgo">'+t('st.go')+'</button>'+
  '<div class="menu">'+lockedItem('🌙',t('mn.cal'))+((hasMod('d')||hasMod('i'))?lockedItem('📋',t('mn.week')):'')+lockedItem('⏰',t('mn.dev'))+infoHelpItems()+'</div></div>';
 }
 function viewPause(){
@@ -156,7 +161,7 @@ function viewMenu(){
  items+=mi('go','notes','✍️',t('mn.notes'),t('mn.notesd'))+mi('go','info','ℹ️',t('mn.info'),t('mn.infod'))+mi('go','dev','⏰',t('mn.dev'),t('mn.devd'))+mi('go','help','❓',t('mn.help'),t('mn.helpd'));
  const fresh=S.cfg&&S.cfg.fase==='trat'&&S.cfg.inicio&&diff(TODAY,P(S.cfg.inicio))<=2&&diff(TODAY,P(S.cfg.inicio))>=0;
  return '<div class="body"><div class="row"><div><h1>'+t('hello')+'</h1><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div><span class="sp"></span>'+(S.p.adol?'':'<span class="sem n" title="'+t('mn.stars')+'"><i style="background:var(--gold)">★</i>'+stars+'</span>')+'</div>'+
- (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+(()=>{const k=checkCard();return k+impCard()+lateBox()+(k.includes('data-ck')?'':retCard())})()+
+ (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+retChip()+(()=>{const k=checkCard();return k+impCard()+lateBox()+(k.includes('data-ck')?'':retCard())})()+
  (S.p.adol?'<div class="card flat"><label class="chk"><input type="checkbox" data-c="p.share"'+(S.p.share?' checked':'')+'><span><b>'+t('mn.share')+'</b></span></label><p class="hint" style="margin-top:6px">'+t(S.p.share?'mn.shareon':'mn.shareoff')+t('mn.shareend')+'</p></div>':'')+
  '<div class="menu">'+items+'</div>'+(S.p.cas?'<div class="note">'+t('mn.cas')+'</div>':'')+'</div>';
 }
@@ -208,7 +213,7 @@ function viewNotes(){
 }
 function viewInfo(){
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('in.title')+'</h2><div class="note">'+t('in.note')+'</div>'+
- '<div class="card"><h3>'+t('in.how')+'</h3>'+ul([1,2,3,4,5,6].map(i=>t('in.'+i)))+'</div>'+
+ (isTrat()?'<div class="card"><h3>'+t('st.ch')+'</h3><p style="margin:6px 0">'+t('st.cp')+'</p></div>':'')+'<div class="card"><h3>'+t('in.how')+'</h3>'+ul([1,2,3,4,5,6].map(i=>t('in.'+i)))+'</div>'+
  '<div class="card"><h3>'+t('in.other')+'</h3>'+ul([t('in.o1'),t('in.o2')])+'</div>'+
  '<div class="card"><h3>'+t('in.liq')+'</h3><p class="lead" style="margin-top:6px">'+t('in.liqh')+'</p><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">'+
  [[1,95],[2,80],[3,50],[4,22],[5,3]].map(x=>'<div class="wk" style="grid-template-columns:110px 1fr 74px"><span>'+t('in.l'+x[0])+'</span><i style="width:'+x[1]+'%;background:var(--c-noite)"></i><span>'+t('in.l'+x[0]+'v')+'</span></div>').join('')+'</div></div>'+

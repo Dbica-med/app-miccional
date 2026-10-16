@@ -393,14 +393,12 @@ const M={
 'ps.t':['Acompanhamento em pausa','Follow-up paused','Suivi en pause'],
 'ps.p':['O sucesso do tratamento depende da medicação e dos ajustes de comportamento, e ambos precisam de reavaliação periódica. A consulta prevista para {0} não foi realizada. Para continuarmos juntos, marque a consulta e informe a data aqui.','Treatment success depends on medication and behavioral adjustments, and both need periodic re-evaluation. The visit expected on {0} did not take place. To continue together, please book the visit and enter the date here.','Le succès du traitement dépend des médicaments et des ajustements de comportement, et les deux nécessitent une réévaluation périodique. La consultation prévue le {0} n’a pas eu lieu. Pour continuer ensemble, prenez rendez-vous et indiquez la date ici.'],
 'ps.rec':['Calendário e resumo semanal ficam bloqueados até lá. Seus registros estão guardados.','The calendar and weekly summary stay locked until then. Your records are saved.','Le calendrier et le résumé hebdomadaire restent verrouillés jusque-là. Vos enregistrements sont conservés.'],
-'st.tj':['Acompanhamento do tratamento','Treatment follow-up','Suivi du traitement'],
-'st.leadj':['Seu filho já está em tratamento com o Dr. Domingos. Para liberar o aplicativo, leia e confirme o combinado abaixo.','Your child is already in treatment with Dr. Domingos. To unlock the app, read and confirm the agreement below.','Votre enfant est déjà en traitement avec le Dr Domingos. Pour débloquer l’application, lisez et confirmez l’accord ci-dessous.'],
 'st.t':['Tratamento prescrito','Treatment prescribed','Traitement prescrit'],
 'st.lead':['Quando o tratamento começar, informe a data abaixo. Só depois disso o calendário e os controles são liberados.','When the treatment starts, enter the date below. The calendar and controls unlock only after that.','Lorsque le traitement commence, indiquez la date ci-dessous. Le calendrier et les contrôles ne se débloquent qu’ensuite.'],
 'st.date':['Data em que o tratamento começou','Date the treatment started','Date de début du traitement'],
-'st.ch':['Combinado do tratamento','Treatment agreement','Accord de traitement'],
-'st.cp':['O sucesso do tratamento depende da medicação e dos ajustes de comportamento, e ambos precisam de reavaliação periódica. As consultas do tratamento seguem um cronograma básico: a primeira 30 dias após o início, as três seguintes a cada 45 dias e, depois, a cada 2 meses, ou antes se o Dr. Domingos indicar. Se a consulta passar da tolerância (7 dias no início, 14 depois), o acompanhamento no aplicativo fica em pausa até a consulta ser marcada.','Treatment success depends on medication and behavioral adjustments, and both need periodic re-evaluation. Treatment visits follow a basic schedule: the first 30 days after the start, the next three every 45 days and then every 2 months, or sooner if Dr. Domingos advises. If a visit passes the tolerance (7 days at first, 14 later), follow-up in the app is paused until the visit is booked.','Le succès du traitement dépend des médicaments et des ajustements de comportement, et les deux nécessitent une réévaluation périodique. Les consultations du traitement suivent un calendrier de base : la première 30 jours après le début, les trois suivantes tous les 45 jours, puis tous les 2 mois, ou plus tôt si le Dr Domingos l’indique. Si une consultation dépasse la tolérance (7 jours au début, 14 ensuite), le suivi dans l’application est mis en pause jusqu’à la prise de rendez-vous.'],
-'st.ok':['Li e concordo com o combinado das consultas do tratamento.','I have read and agree to the treatment visit schedule.','J’ai lu et j’accepte le calendrier des consultations du traitement.'],
+'st.ch':['Ritmo das consultas','Visit schedule','Rythme des consultations'],
+'st.cp':['Em geral, o tratamento dos distúrbios da micção segue um ritmo de reavaliação: a primeira consulta cerca de 30 dias após o início, as três seguintes a cada 45 dias e, depois, a cada 2 meses, ou antes se o Dr. Domingos indicar. É esse acompanhamento próximo, com ajustes da medicação e dos hábitos no momento certo, que dá ao tratamento a melhor chance de evolução favorável. Se a consulta passar da data prevista em mais de 1 a 2 semanas, o acompanhamento no aplicativo fica em pausa até a consulta ser marcada.','In general, treating voiding disorders follows a rhythm of reassessment: the first visit about 30 days after starting, the next three every 45 days and then every 2 months, or sooner if Dr. Domingos advises. This close follow-up, adjusting medication and habits at the right time, gives the treatment its best chance of a favorable outcome. If a visit goes more than 1 to 2 weeks past the expected date, follow-up in the app is paused until the visit is booked.','En général, le traitement des troubles mictionnels suit un rythme de réévaluation : la première consultation environ 30 jours après le début, les trois suivantes tous les 45 jours, puis tous les 2 mois, ou plus tôt si le Dr Domingos l’indique. C’est ce suivi rapproché, avec des ajustements des médicaments et des habitudes au bon moment, qui donne au traitement les meilleures chances d’évolution favorable. Si une consultation dépasse la date prévue de plus de 1 à 2 semaines, le suivi dans l’application est mis en pause jusqu’à la prise de rendez-vous.'],
+'rc.chip':['Próxima consulta do tratamento: {0}','Next treatment visit: {0}','Prochaine consultation du traitement : {0}'],
 'st.go':['Começar o acompanhamento','Start follow-up','Commencer le suivi'],
 'st.bad':['A data não pode ser futura nem anterior a 14 dias.','The date cannot be in the future or more than 14 days ago.','La date ne peut pas être future ni antérieure à 14 jours.'],
 'im.t':['Antes da consulta','Before the visit','Avant la consultation'],
@@ -629,7 +627,7 @@ const calStart=()=>S.cfg&&S.cfg.inicio?P(S.cfg.inicio):add(TODAY,-75);
 function nightsMissing(){let m=0;for(let i=1;i<=7;i++)if(!hasNight(I(add(TODAY,-i))))m++;return m}
 
 const isTrat=()=>!!(S.cfg&&S.cfg.fase==='trat'&&S.cfg.status==='ativo');
-const needStart=()=>isTrat()&&(!S.cfg.inicio||(S.cfg.ja&&!S.cfg.cok));
+const needStart=()=>isTrat()&&!S.cfg.inicio;
 function pauseInfo(){
  const c=S.cfg;if(!isTrat()||!c.inicio||!c.ret)return null;
  const tol=c.tol||14,late=diff(TODAY,P(c.ret));
@@ -646,9 +644,14 @@ function retCard(){
  const c=S.cfg;if(!c||!c.ret)return '';
  const d=P(c.ret),n=diff(d,TODAY),ag=c.agd&&diff(P(c.agd),TODAY)>=-7;
  const left=n===0?t('rc.today'):n===1?t('rc.d1'):n<=30?t('rc.d',n):n<=90?t('rc.w',Math.round(n/7)):t('rc.m',Math.round(n/30.4));
- return '<div class="card flat"><span class="lbl">'+t('rc.t')+'</span><p style="margin:4px 0">'+t('rc.when',MN[d.getMonth()]+' '+d.getFullYear())+(n>=0?' · <span class="hint">'+left+'</span>':'')+'</p>'+
+ return '<div class="card flat"><span class="lbl">'+t('rc.t')+'</span><p style="margin:4px 0">'+t('rc.when',MN[d.getMonth()]+' '+d.getFullYear())+'</p>'+
  (ag?'<div class="row"><span class="sem g"><i>✓</i>'+t('rc.agok',FY(P(c.agd)))+'</span></div>':agForm()+''+bookBox()+'')+'</div>';
 }
+function retChip(){
+ const c=S.cfg;if(!c||!c.ret||!isTrat()||!c.inicio||pauseInfo())return '';
+ const n=diff(P(c.ret),TODAY);if(n<0)return '';
+ const left=n===0?t('rc.today'):n===1?t('rc.d1'):n<=30?t('rc.d',n):n<=90?t('rc.w',Math.round(n/7)):t('rc.m',Math.round(n/30.4));
+ return '<p class="hint" style="margin:-4px 0 10px">📅 '+t('rc.chip','<b>'+left+'</b>')+'</p>'}
 function rrOpts(list){
  return '<div style="display:flex;flex-direction:column;gap:8px">'+list.map(k=>'<button class="chip" style="justify-content:flex-start;text-align:left" data-a="rr" data-v="'+k+'">'+t('ck.o.'+k)+'</button>').join('')+'</div>';
 }
@@ -673,10 +676,10 @@ function impCard(){
 }
 const infoHelpItems=()=>'<button class="mi" data-a="go" data-v="info"><span class="ic">ℹ️</span><span style="flex:1"><div class="t">'+t('mn.info')+'</div><div class="d">'+t('mn.infod')+'</div></span></button><button class="mi" data-a="go" data-v="help"><span class="ic">❓</span><span style="flex:1"><div class="t">'+t('mn.help')+'</div><div class="d">'+t('mn.helpd')+'</div></span></button>';
 function viewStart(){
- return '<div class="body"><div><h1>'+t(S.cfg&&S.cfg.ja?'st.tj':'st.t')+'</h1><p class="lead">'+t(S.cfg&&S.cfg.ja?'st.leadj':'st.lead')+'</p></div>'+
- (S.cfg&&S.cfg.ja?'':'<div class="card"><div class="field" style="max-width:260px"><label class="lbl" for="st-dt">'+t('st.date')+'</label><input id="st-dt" type="date" class="in" data-i="st.dt" min="'+I(add(TODAY,-14))+'" max="'+I(TODAY)+'" value="'+esc(S.st.dt)+'"></div>'+(S.st.bad?'<p class="hint" style="color:var(--bad)">'+t('st.bad')+'</p>':'')+'</div>')+
- '<div class="card flat"><h3>'+t('st.ch')+'</h3><p style="margin:6px 0">'+t('st.cp')+'</p><label class="chk"><input type="checkbox" data-c="st.ok"'+(S.st.ok?' checked':'')+'><span><b>'+t('st.ok')+'</b></span></label></div>'+
- '<button class="btn block" data-a="startgo"'+(S.st.ok?'':' disabled')+'>'+t('st.go')+'</button>'+
+ return '<div class="body"><div><h1>'+t('st.t')+'</h1><p class="lead">'+t('st.lead')+'</p></div>'+
+'<div class="card"><div class="field" style="max-width:260px"><label class="lbl" for="st-dt">'+t('st.date')+'</label><input id="st-dt" type="date" class="in" data-i="st.dt" min="'+I(add(TODAY,-14))+'" max="'+I(TODAY)+'" value="'+esc(S.st.dt)+'"></div>'+(S.st.bad?'<p class="hint" style="color:var(--bad)">'+t('st.bad')+'</p>':'')+'</div>'+
+ '<div class="card flat"><h3>'+t('st.ch')+'</h3><p style="margin:6px 0">'+t('st.cp')+'</p></div>'+
+ '<button class="btn block" data-a="startgo">'+t('st.go')+'</button>'+
  '<div class="menu">'+lockedItem('🌙',t('mn.cal'))+((hasMod('d')||hasMod('i'))?lockedItem('📋',t('mn.week')):'')+lockedItem('⏰',t('mn.dev'))+infoHelpItems()+'</div></div>';
 }
 function viewPause(){
@@ -709,7 +712,7 @@ function viewMenu(){
  items+=mi('go','notes','✍️',t('mn.notes'),t('mn.notesd'))+mi('go','info','ℹ️',t('mn.info'),t('mn.infod'))+mi('go','dev','⏰',t('mn.dev'),t('mn.devd'))+mi('go','help','❓',t('mn.help'),t('mn.helpd'));
  const fresh=S.cfg&&S.cfg.fase==='trat'&&S.cfg.inicio&&diff(TODAY,P(S.cfg.inicio))<=2&&diff(TODAY,P(S.cfg.inicio))>=0;
  return '<div class="body"><div class="row"><div><h1>'+t('hello')+'</h1><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div><span class="sp"></span>'+(S.p.adol?'':'<span class="sem n" title="'+t('mn.stars')+'"><i style="background:var(--gold)">★</i>'+stars+'</span>')+'</div>'+
- (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+(()=>{const k=checkCard();return k+impCard()+lateBox()+(k.includes('data-ck')?'':retCard())})()+
+ (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+retChip()+(()=>{const k=checkCard();return k+impCard()+lateBox()+(k.includes('data-ck')?'':retCard())})()+
  (S.p.adol?'<div class="card flat"><label class="chk"><input type="checkbox" data-c="p.share"'+(S.p.share?' checked':'')+'><span><b>'+t('mn.share')+'</b></span></label><p class="hint" style="margin-top:6px">'+t(S.p.share?'mn.shareon':'mn.shareoff')+t('mn.shareend')+'</p></div>':'')+
  '<div class="menu">'+items+'</div>'+(S.p.cas?'<div class="note">'+t('mn.cas')+'</div>':'')+'</div>';
 }
@@ -761,7 +764,7 @@ function viewNotes(){
 }
 function viewInfo(){
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('in.title')+'</h2><div class="note">'+t('in.note')+'</div>'+
- '<div class="card"><h3>'+t('in.how')+'</h3>'+ul([1,2,3,4,5,6].map(i=>t('in.'+i)))+'</div>'+
+ (isTrat()?'<div class="card"><h3>'+t('st.ch')+'</h3><p style="margin:6px 0">'+t('st.cp')+'</p></div>':'')+'<div class="card"><h3>'+t('in.how')+'</h3>'+ul([1,2,3,4,5,6].map(i=>t('in.'+i)))+'</div>'+
  '<div class="card"><h3>'+t('in.other')+'</h3>'+ul([t('in.o1'),t('in.o2')])+'</div>'+
  '<div class="card"><h3>'+t('in.liq')+'</h3><p class="lead" style="margin-top:6px">'+t('in.liqh')+'</p><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">'+
  [[1,95],[2,80],[3,50],[4,22],[5,3]].map(x=>'<div class="wk" style="grid-template-columns:110px 1fr 74px"><span>'+t('in.l'+x[0])+'</span><i style="width:'+x[1]+'%;background:var(--c-noite)"></i><span>'+t('in.l'+x[0]+'v')+'</span></div>').join('')+'</div></div>'+
@@ -900,7 +903,7 @@ const A={
  agq(){S.ag.q=true;S.ag.bad=false},
  agsave(){const dt=S.ag.dt;if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)||diff(P(dt),TODAY)<-1||diff(P(dt),TODAY)>150){S.ag.bad=true;return}
   S.ag.bad=false;S.ag.q=false;S.ag.dt='';S.cfg.agd=dt;S.cfg.ag=I(TODAY);S.cfg.rr={m:'agendei',d:I(TODAY)};S.ckmsg='';queue('rr',{m:'agendei',dt:dt});save();fixScreen()},
- startgo(){if(S.cfg&&S.cfg.ja){if(!S.st.ok)return 'norender';S.cfg.cok=1;queue('ini',{ja:true,ok:true});S.p.screen='menu';save();toTop();return}const dt=S.st.dt;if(!S.st.ok)return 'norender';if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)||diff(TODAY,P(dt))<0||diff(TODAY,P(dt))>14){S.st.bad=true;return}
+ startgo(){const dt=S.st.dt;if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)||diff(TODAY,P(dt))<0||diff(TODAY,P(dt))>14){S.st.bad=true;return}
   S.st.bad=false;S.cfg.inicio=dt;if(!(S.cfg.tol>0)){S.cfg.ret=I(add(P(dt),30));S.cfg.tol=7;S.cfg.agd='';S.cfg.ag='';S.cfg.rr={m:'',d:''}}
   queue('ini',{dt:dt,ok:true});S.p.screen='menu';save();toTop()},
  impset(d){S.imp[d.k]=Number(d.v)},
