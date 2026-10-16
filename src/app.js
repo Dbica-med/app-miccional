@@ -12,14 +12,14 @@ let canStore=true;
 function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):null}catch(e){canStore=false;return null}}
 function save(){
  if(!canStore)return;
- try{localStorage.setItem(KEY,JSON.stringify({code:S.code,token:S.token,papel:S.papel,cfg:S.cfg,nights:S.nights,weeks:S.weeks,notes:S.notes,outbox:S.outbox,dx:S.dx,screen:S.p.screen,share:S.p.share,hqs:S.p.hqs,ws:S.ws}))}catch(e){canStore=false}
+ try{localStorage.setItem(KEY,JSON.stringify({code:S.code,token:S.token,papel:S.papel,cfg:S.cfg,nights:S.nights,weeks:S.weeks,notes:S.notes,outbox:S.outbox,dx:S.dx,screen:S.p.screen,share:S.p.share,hqs:S.p.hqs,cq:S.p.cq,cqs:S.p.cqs,ws:S.ws}))}catch(e){canStore=false}
 }
 function init(){
  const L=load()||{};
  S={code:L.code||'',token:L.token||'',papel:L.papel||'',cfg:L.cfg||null,nights:L.nights||{},weeks:L.weeks||{},notes:L.notes||[],outbox:L.outbox||[],
-  dx:Object.assign(newDx(),L.dx||{}),nt:'',p:{screen:L.token?(L.screen||'menu'):'onb',share:!!L.share,hqs:L.hqs||''},ob:blankOb(),draft:draftBlank(),
-  draft2:{h:'12:00',v:'',nm:false,u:'ausente',p:'nenhuma',o:''},draft3:{h:'12:00',v:0,t:'Água',vv:''},
-  st:{dt:I(TODAY),ok:false,bad:false},ntq:[],ag:{q:false,dt:'',bad:false},imp:{n:0,d:0,i:0},iq:{nw:'',dw:''},hq:{hp:'',hm:[],hn:'',hd:'',hi:''},ckmsg:'',impok:false,ws:L.ws||{dias:3,av:0,sem:0,urg:0,troca:0,regra:5,evac:6,bris:4,fecal:0},cal:{y:TODAY.getFullYear(),m:TODAY.getMonth()},busy:false,authBad:false};
+  dx:Object.assign(newDx(),L.dx||{}),nt:'',p:{screen:L.token?(L.screen||'menu'):'onb',share:!!L.share,hqs:L.hqs||'',cq:L.cq,cqs:L.cqs||''},ob:blankOb(),draft:draftBlank(),
+  draft2:{h:'12:00',v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''},draft3:{h:'12:00',v:0,t:'Água',vv:''},
+  st:{dt:I(TODAY),ok:false,bad:false},ntq:[],ag:{q:false,dt:'',bad:false},imp:{n:0,d:0,i:0},iq:{nw:'',dw:''},hq:{hp:'',hm:[],hn:'',hd:'',hi:'',hu:''},ckmsg:'',impok:false,ws:L.ws||{dias:3,av:0,sem:0,urg:0,troca:0,regra:5,evac:6,bris:4,fecal:0},cal:{y:TODAY.getFullYear(),m:TODAY.getMonth()},busy:false,authBad:false};
  if(S.cfg)applyCfg(S.cfg,true);
 }
 function applyCfg(c,quiet){
@@ -70,7 +70,7 @@ async function flush(){
 async function refresh(){
  if(!S.token)return;
  const r=await api({a:'config',c:S.code,t:S.token});
- if(r.ok){applyCfg(r.config);save()}else if(r.err==='auth'){S.authBad=true}
+ if(r.ok){applyCfg(r.config);cqCheck();save()}else if(r.err==='auth'){S.authBad=true}
  render();flush();
 }
 /* ---------- visual ---------- */
@@ -85,6 +85,31 @@ function openNight(k){
  S.draft=n?{s:n.s,f:n.f.filter(x=>x!=='med'),por:n.por,al:n.al||'',rem:n.f.includes('med')?'nao':(n.rem||'sim'),who:n.who||(n.h==='P'?'pai':(S.papel==='pai'?'pai':'mae'))}:Object.assign(draftBlank(),{who:S.papel==='pai'?'pai':(S.papel==='mae'?'mae':'')});
  if(S.p.adol)S.draft.who='adol';
  S.p.sheet={v:'night',k,step:1};
+}
+function cqAch(){
+ const a=[],ks=Object.keys(S.nights).sort(),dry=k=>S.nights[k]&&S.nights[k].s==='seca';
+ if(hasMod('n')){
+  if(ks.some(dry))a.push('n1');
+  let run=0,best=0,prev=null;ks.forEach(k=>{if(dry(k)){run=(prev&&dry(prev)&&diff(P(k),P(prev))===1)?run+1:1;best=Math.max(best,run)}else run=0;prev=k});
+  if(best>=7)a.push('n7');if(best>=14)a.push('n14');
+  const w=ks.filter(k=>{const d=diff(TODAY,P(k));return d>=0&&d<28});
+  if(w.length>=14){const f=w.filter(dry).length/w.length;if(f>=.5)a.push('p50');if(f>=.8)a.push('p80')}
+  const w2=ks.filter(k=>{const d=diff(TODAY,P(k));return d>=0&&d<21});
+  if(S.cfg&&S.cfg.inicio&&diff(TODAY,P(S.cfg.inicio))>=21&&w2.length>=14&&w2.filter(dry).length/w2.length<=.1)a.push('apoio');
+ }
+ if(hasMod('d')){const wk=Object.keys(S.weeks).sort(),z=k=>S.weeks[k]&&S.weeks[k].esc===0;
+  if(wk.some(z))a.push('d1');
+  if(wk.some((k,i)=>i>0&&z(k)&&z(wk[i-1])&&diff(P(k),P(wk[i-1]))===7))a.push('d2')}
+ return a;
+}
+function cqCheck(){
+ if(!S.token)return;const a=cqAch();
+ if(S.p.cq===undefined){S.p.cq=a.slice();return}
+ const nw=a.filter(k=>!S.p.cq.includes(k));if(!nw.length)return;
+ [['n1','n7','n14','p50','p80'],['d1','d2'],['apoio']].forEach(g=>{const hit=g.filter(k=>nw.includes(k));if(!hit.length)return;
+  g.forEach(k=>{if(a.includes(k)&&!S.p.cq.includes(k))S.p.cq.push(k)});
+  const best=hit[hit.length-1];queue('conq',{k:best});S.p.cqs=best});
+ save();
 }
 const A={
  go(d){let v=d.v;if(needStart()&&!['start','info','help'].includes(v))v='start';else if(pauseInfo()&&!['pause','info','help'].includes(v))v='pause';if(v==='menu'&&S.cfg&&S.cfg.fase==='inv'&&S.cfg.dx)v='dx';S.p.screen=v;S.p.sheet=null;save();toTop()},
@@ -101,7 +126,7 @@ const A={
  impq(d){S.iq[d.k]=String(S.iq[d.k])===d.v?'':d.v},
  hqset(d){const q=S.hq;if(d.k==='hm'){const i=q.hm.indexOf(d.v);if(i>=0)q.hm.splice(i,1);else q.hm.push(d.v)}else q[d.k]=q[d.k]===d.v?'':d.v},
  hqskip(){S.p.hqs=I(TODAY);S.p.screen='menu';save();toTop()},
- hqsend(){const q=S.hq,o={};if(q.hp)o.hp=q.hp;if(q.hp==='s'&&q.hm.length)o.hm=q.hm.slice();if(q.hn!=='')o.hn=Number(q.hn);if(q.hd!=='')o.hd=Number(q.hd);if(q.hi)o.hi=q.hi;if(!Object.keys(o).length)return 'norender';S.cfg.hq=1;queue('hist',o);S.p.screen='menu';save();toTop()},
+ hqsend(){const q=S.hq,o={};if(q.hp)o.hp=q.hp;if(q.hp==='s'&&q.hm.length)o.hm=q.hm.slice();if(q.hn!=='')o.hn=Number(q.hn);if(q.hd!=='')o.hd=Number(q.hd);if(q.hi)o.hi=q.hi;if(q.hu)o.hu=q.hu;if(!Object.keys(o).length)return 'norender';S.cfg.hq=1;queue('hist',o);S.p.screen='menu';save();toTop()},
  impset(d){S.imp[d.k]=Number(d.v)},
  impsend(){const ks=['n','d','i'].filter(k=>hasMod(k));if(!ks.every(k=>S.imp[k]>0))return 'norender';const o={};ks.forEach(k=>o[k]=S.imp[k]);if(S.iq.nw!=='')o.nw=Number(S.iq.nw);if(S.iq.dw!=='')o.dw=Number(S.iq.dw);S.iq={nw:'',dw:''};S.cfg.imp=I(TODAY);S.impok=true;S.imp={n:0,d:0,i:0};queue('imp',o);save()},
  usdone(){if(!S.cfg||!S.cfg.us)return 'norender';S.cfg.us.f=I(TODAY);queue('us',{});save()},
@@ -126,7 +151,7 @@ const A={
   else S.p.sheet={v:'rule'}},
  ruleok(){const d=S.dx;S.p.sheet=null;d.id='d'+uid();d.data=I(TODAY);d.ativo=true;S.p.screen='diary';save();toTop()},
  dxfromtrat(){S.p.screen='dx';save();toTop()},
- sheet(d){S.p.sheet=d.v?{v:d.v}:null;if(d.v==='mic')S.draft2={h:now(),v:'',nm:false,u:'ausente',p:'nenhuma',o:''};if(d.v==='liq')S.draft3={h:now(),v:0,t:'Água',vv:''};if(d.v==='fim')S.dx.fim={q:'',g:'',m:''}},
+ sheet(d){S.p.sheet=d.v?{v:d.v}:null;if(d.v==='mic')S.draft2={h:now(),v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''};if(d.v==='liq')S.draft3={h:now(),v:0,t:'Água',vv:''};if(d.v==='fim')S.dx.fim={q:'',g:'',m:''}},
  night(d){openNight(d.v)},
  dr(d){S.draft[d.k]=d.v},
  drf(d){const f=S.draft.f,i=f.indexOf(d.v);i<0?f.push(d.v):f.splice(i,1)},
@@ -137,14 +162,14 @@ const A={
   const f=dr.f.filter(x=>x!=='med').concat(dr.rem==='nao'?['med']:[]);
   S.nights[k]={h:casa,s:dr.s,f,por:dr.por,al:dr.al||'',rem:dr.rem,who:dr.who};
   queue('night',{data:k,casa,s:dr.s,por:dr.por,rem:dr.rem,al:dr.al||'',flags:f,quem:dr.who||S.papel});
-  S.p.sheet=null;save()},
+  S.p.sheet=null;cqCheck();save()},
  cm(d){let{y,m}=S.cal;m+=Number(d.v);if(m<0){m=11;y--}if(m>11){m=0;y++}S.cal={y,m}},
- d2(d){S.draft2[d.k]=d.v},
+ d2(d){S.draft2[d.k]=(d.k==='pt'&&S.draft2.pt===d.v)?'':d.v;if(d.k==='p'&&d.v==='nenhuma')S.draft2.pt=''},
  d3(d){S.draft3.v=Number(d.v);S.draft3.vv=''},
  d3t(d){S.draft3.t=d.v},
  savemic(){const m=S.draft2,dx=S.dx,ml=m.nm?0:Math.round(Number(m.v)||0);
   dx.mic.push([m.h,ml,m.u,m.p,m.o||'']);
-  queue('mic',{diario:dx.id,data:dx.data,hora:m.h,ml,urg:m.u,perda:m.p,obs:m.o||''});S.p.sheet=null;save()},
+  queue('mic',{diario:dx.id,data:dx.data,hora:m.h,ml,urg:m.u,perda:m.p,pt:m.p==='nenhuma'?'':m.pt,obs:m.o||''});S.p.sheet=null;save()},
  saveliq(){const v=Math.round(Number(S.draft3.vv)||S.draft3.v);if(!v)return 'norender';const dx=S.dx;
   dx.liq.push([S.draft3.h,v,S.draft3.t]);
   queue('liq',{diario:dx.id,data:dx.data,hora:S.draft3.h||'',ml:v,tipo:S.draft3.t});S.p.sheet=null;save()},
@@ -152,11 +177,12 @@ const A={
  fimok(){const dx=S.dx,f=dx.fim,tipo=S.cfg&&S.cfg.dx?S.cfg.dx.tipo:'inicial';
   queue('fim',{diario:dx.id,data:dx.data,tipo,sr:f.q==='sim'?'sim':'nao',g:f.g,m:f.m});
   Object.assign(S.dx,newDx());S.p.sheet=null;S.p.screen=(S.cfg&&S.cfg.fase==='trat')?'menu':'dx';save();toTop()},
+ cqok(){S.p.cqs='';save()},
  wb(d){S.ws.bris=Number(d.v)},
  savewk(){const w=S.ws,k=I(add(monday(TODAY),-7));
   S.weeks[k]={dias:w.dias,esc:w.av+w.sem,av:w.av,sem:w.sem,urg:w.urg,troca:w.troca,regra:w.regra,evac:w.evac,bris:w.bris,fecal:w.fecal};
   queue('week',{semana:k,dias:w.dias,esc:w.av+w.sem,av:w.av,sem:w.sem,urg:w.urg,troca:w.troca,regra:w.regra,evac:w.evac,bris:w.bris,fecal:w.fecal});
-  S.p.screen='menu';save();toTop()},
+  S.p.screen='menu';cqCheck();save();toTop()},
  ntq(d){const i=S.ntq.indexOf(d.v);if(i>=0)S.ntq.splice(i,1);else S.ntq.push(d.v)},
  addnote(){const f=(S.nt||'').trim(),qs=S.ntq.map(k=>M['no.c.'+k][0]).join('; ');const tx=(qs+(qs&&f?'. ':'')+f).slice(0,500);if(!tx)return 'norender';S.notes.unshift([FY(TODAY),tx]);queue('note',{data:I(TODAY),texto:tx});S.nt='';S.ntq=[]},
  st(d){const v=Math.max(Number(d.min),Math.min(Number(d.max),Number(get(d.p))+Number(d.d)));set(d.p,v);document.querySelectorAll('output[data-bind="'+d.p+'"]').forEach(o=>o.textContent=v);save();return 'norender'},
