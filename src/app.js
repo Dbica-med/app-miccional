@@ -12,14 +12,14 @@ let canStore=true;
 function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):null}catch(e){canStore=false;return null}}
 function save(){
  if(!canStore)return;
- try{localStorage.setItem(KEY,JSON.stringify({code:S.code,token:S.token,papel:S.papel,cfg:S.cfg,nights:S.nights,weeks:S.weeks,notes:S.notes,outbox:S.outbox,dx:S.dx,screen:S.p.screen,share:S.p.share,ws:S.ws}))}catch(e){canStore=false}
+ try{localStorage.setItem(KEY,JSON.stringify({code:S.code,token:S.token,papel:S.papel,cfg:S.cfg,nights:S.nights,weeks:S.weeks,notes:S.notes,outbox:S.outbox,dx:S.dx,screen:S.p.screen,share:S.p.share,hqs:S.p.hqs,ws:S.ws}))}catch(e){canStore=false}
 }
 function init(){
  const L=load()||{};
  S={code:L.code||'',token:L.token||'',papel:L.papel||'',cfg:L.cfg||null,nights:L.nights||{},weeks:L.weeks||{},notes:L.notes||[],outbox:L.outbox||[],
-  dx:Object.assign(newDx(),L.dx||{}),nt:'',p:{screen:L.token?(L.screen||'menu'):'onb',share:!!L.share},ob:blankOb(),draft:draftBlank(),
+  dx:Object.assign(newDx(),L.dx||{}),nt:'',p:{screen:L.token?(L.screen||'menu'):'onb',share:!!L.share,hqs:L.hqs||''},ob:blankOb(),draft:draftBlank(),
   draft2:{h:'12:00',v:'',nm:false,u:'ausente',p:'nenhuma',o:''},draft3:{h:'12:00',v:0,t:'Água',vv:''},
-  st:{dt:I(TODAY),ok:false,bad:false},ntq:[],ag:{q:false,dt:'',bad:false},imp:{n:0,d:0,i:0},ckmsg:'',impok:false,ws:L.ws||{dias:3,av:0,sem:0,urg:0,troca:0,regra:5,evac:6,bris:4,fecal:0},cal:{y:TODAY.getFullYear(),m:TODAY.getMonth()},busy:false,authBad:false};
+  st:{dt:I(TODAY),ok:false,bad:false},ntq:[],ag:{q:false,dt:'',bad:false},imp:{n:0,d:0,i:0},iq:{nw:'',dw:''},hq:{hp:'',hm:[],hn:'',hd:'',hi:''},ckmsg:'',impok:false,ws:L.ws||{dias:3,av:0,sem:0,urg:0,troca:0,regra:5,evac:6,bris:4,fecal:0},cal:{y:TODAY.getFullYear(),m:TODAY.getMonth()},busy:false,authBad:false};
  if(S.cfg)applyCfg(S.cfg,true);
 }
 function applyCfg(c,quiet){
@@ -98,8 +98,12 @@ const A={
  startgo(){const dt=S.st.dt;if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)||diff(TODAY,P(dt))<0||diff(TODAY,P(dt))>14){S.st.bad=true;return}
   S.st.bad=false;S.cfg.inicio=dt;if(!(S.cfg.tol>0)){S.cfg.ret=I(add(P(dt),30));S.cfg.tol=7;S.cfg.agd='';S.cfg.ag='';S.cfg.rr={m:'',d:''}}
   queue('ini',{dt:dt,ok:true});S.p.screen='menu';save();toTop()},
+ impq(d){S.iq[d.k]=String(S.iq[d.k])===d.v?'':d.v},
+ hqset(d){const q=S.hq;if(d.k==='hm'){const i=q.hm.indexOf(d.v);if(i>=0)q.hm.splice(i,1);else q.hm.push(d.v)}else q[d.k]=q[d.k]===d.v?'':d.v},
+ hqskip(){S.p.hqs=I(TODAY);S.p.screen='menu';save();toTop()},
+ hqsend(){const q=S.hq,o={};if(q.hp)o.hp=q.hp;if(q.hp==='s'&&q.hm.length)o.hm=q.hm.slice();if(q.hn!=='')o.hn=Number(q.hn);if(q.hd!=='')o.hd=Number(q.hd);if(q.hi)o.hi=q.hi;if(!Object.keys(o).length)return 'norender';S.cfg.hq=1;queue('hist',o);S.p.screen='menu';save();toTop()},
  impset(d){S.imp[d.k]=Number(d.v)},
- impsend(){const ks=['n','d','i'].filter(k=>hasMod(k));if(!ks.every(k=>S.imp[k]>0))return 'norender';const o={};ks.forEach(k=>o[k]=S.imp[k]);S.cfg.imp=I(TODAY);S.impok=true;S.imp={n:0,d:0,i:0};queue('imp',o);save()},
+ impsend(){const ks=['n','d','i'].filter(k=>hasMod(k));if(!ks.every(k=>S.imp[k]>0))return 'norender';const o={};ks.forEach(k=>o[k]=S.imp[k]);if(S.iq.nw!=='')o.nw=Number(S.iq.nw);if(S.iq.dw!=='')o.dw=Number(S.iq.dw);S.iq={nw:'',dw:''};S.cfg.imp=I(TODAY);S.impok=true;S.imp={n:0,d:0,i:0};queue('imp',o);save()},
  usdone(){if(!S.cfg||!S.cfg.us)return 'norender';S.cfg.us.f=I(TODAY);queue('us',{});save()},
  ob(d){S.ob[d.k]=d.k==='nd'?Number(d.v):d.v;S.ob.err=''},
  async obgo(){

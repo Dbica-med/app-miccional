@@ -115,13 +115,32 @@ function checkCard(){
  if(rr.m&&rr.d&&rr.d>=c.ret&&!(rr.m==='depois'&&diff(TODAY,P(rr.d))>=3))return '';
  return '<div class="card" data-ck="1" style="border-color:var(--gold)"><span class="lbl">'+t('ck.t')+'</span><p style="margin:6px 0 10px">'+t('ck.p',late,tol-late)+'</p>'+agForm()+'<div style="height:8px"></div>'+rrOpts(['vou','melhorou','custo','parou','outro','depois'])+bookBox()+'</div>';
 }
+function hqCard(){
+ const c=S.cfg;if(!c||c.hq||pauseInfo()||needStart()||c.status==='pendente')return '';
+ if(S.p.hqs&&diff(TODAY,P(S.p.hqs))<7)return '';
+ return '<div class="card" style="border-color:var(--gold)"><span class="lbl">'+t('hq.t')+'</span><p class="hint" style="margin:4px 0 10px">'+t('hq.p')+'</p><div class="row"><button class="btn sm" data-a="go" data-v="hist">'+t('hq.now')+'</button><button class="btn sm ghost" data-a="hqskip">'+t('hq.later')+'</button></div></div>';
+}
+function viewHist(){
+ const q=S.hq,ch=(k,v,txt,on)=>'<button type="button" class="chip" data-a="hqset" data-k="'+k+'" data-v="'+v+'" aria-pressed="'+on+'">'+txt+'</button>';
+ const blk=(title,body)=>'<div style="margin-top:16px"><span class="lbl">'+title+'</span><div class="chips" style="margin-top:6px">'+body+'</div></div>';
+ return '<div class="body"><div><h1>'+t('hq.t')+'</h1><p class="lead">'+t('hq.p')+'</p></div>'+
+  blk(t('hq.s1'),ch('hp','n',t('hq.no'),q.hp==='n')+ch('hp','s',t('hq.y'),q.hp==='s'))+
+  (q.hp==='s'?blk(t('hq.s2'),['bex','desm','ws','uro','out','ns'].map(k=>ch('hm',k,t('hq.m.'+k),q.hm.indexOf(k)>=0)).join('')):'')+
+  (hasMod('n')?blk(t('hq.s3'),[0,1,2,3,4].map(v=>ch('hn',v,t('hq.n'+v),String(q.hn)===String(v))).join('')):'')+
+  (hasMod('d')?blk(t('hq.s4'),[0,1,2].map(v=>ch('hd',v,t('hq.d'+v),String(q.hd)===String(v))).join('')):'')+
+  (hasMod('i')?blk(t('hq.s5'),['n','a','s'].map(v=>ch('hi',v,t('hq.i.'+v),q.hi===v)).join('')):'')+
+  '<div class="row" style="margin-top:20px"><button class="btn" data-a="hqsend">'+t('hq.send')+'</button><button class="btn ghost" data-a="hqskip">'+t('hq.later')+'</button></div></div>';
+}
 function impCard(){
  const c=S.cfg;if(!c||!c.ret||!isTrat()||!c.inicio||pauseInfo())return '';
  const to=diff(P(c.ret),TODAY);if(to>7)return '';
  if(c.imp&&diff(TODAY,P(c.imp))<=20)return S.impok?'<div class="note">'+t('im.thx')+'</div>':'';
  const ks=['n','d','i'].filter(k=>hasMod(k));if(!ks.length)return '';
  const done=ks.every(k=>S.imp[k]>0);
- return '<div class="card" style="border-color:var(--gold)"><span class="lbl">'+t('im.t')+'</span><p class="hint" style="margin:4px 0 10px">'+t('im.p')+'</p>'+ks.map(k=>'<div style="margin-bottom:10px"><b>'+t('im.'+k)+'</b><div class="chips" style="margin-top:6px">'+[1,2,3,4,5].map(v=>'<button type="button" class="chip" data-a="impset" data-k="'+k+'" data-v="'+v+'" aria-pressed="'+(S.imp[k]===v)+'">'+t('im.l'+v)+'</button>').join('')+'</div></div>').join('')+'<button class="btn sm" data-a="impsend"'+(done?'':' disabled')+'>'+t('im.send')+'</button></div>';
+ return '<div class="card" style="border-color:var(--gold)"><span class="lbl">'+t('im.t')+'</span><p class="hint" style="margin:4px 0 10px">'+t('im.p')+'</p>'+ks.map(k=>'<div style="margin-bottom:10px"><b>'+t('im.'+k)+'</b><div class="chips" style="margin-top:6px">'+[1,2,3,4,5].map(v=>'<button type="button" class="chip" data-a="impset" data-k="'+k+'" data-v="'+v+'" aria-pressed="'+(S.imp[k]===v)+'">'+t('im.l'+v)+'</button>').join('')+'</div></div>').join('')+(()=>{const rc=(o)=>Object.keys(o).filter(k=>diff(TODAY,P(k))<=21&&diff(TODAY,P(k))>=0).length;let h='';
+  if(hasMod('n')&&rc(S.nights)<10)h+='<div style="margin-bottom:10px"><b>'+t('iq.nw')+'</b><div class="chips" style="margin-top:6px">'+[0,1,2,3,4].map(v=>'<button type="button" class="chip" data-a="impq" data-k="nw" data-v="'+v+'" aria-pressed="'+(String(S.iq.nw)===String(v))+'">'+t('hq.n'+v)+'</button>').join('')+'</div></div>';
+  if(hasMod('d')&&rc(S.weeks)<3)h+='<div style="margin-bottom:10px"><b>'+t('iq.dw')+'</b><div class="chips" style="margin-top:6px">'+[0,1,2].map(v=>'<button type="button" class="chip" data-a="impq" data-k="dw" data-v="'+v+'" aria-pressed="'+(String(S.iq.dw)===String(v))+'">'+t('hq.d'+v)+'</button>').join('')+'</div></div>';
+  return h})()+'<button class="btn sm" data-a="impsend"'+(done?'':' disabled')+'>'+t('im.send')+'</button></div>';
 }
 const infoHelpItems=()=>'<button class="mi" data-a="go" data-v="info"><span class="ic">ℹ️</span><span style="flex:1"><div class="t">'+t('mn.info')+'</div><div class="d">'+t('mn.infod')+'</div></span></button><button class="mi" data-a="go" data-v="help"><span class="ic">❓</span><span style="flex:1"><div class="t">'+t('mn.help')+'</div><div class="d">'+t('mn.helpd')+'</div></span></button>';
 function viewStart(){
@@ -161,7 +180,7 @@ function viewMenu(){
  items+=mi('go','notes','✍️',t('mn.notes'),t('mn.notesd'))+mi('go','info','ℹ️',t('mn.info'),t('mn.infod'))+mi('go','dev','⏰',t('mn.dev'),t('mn.devd'))+mi('go','help','❓',t('mn.help'),t('mn.helpd'));
  const fresh=S.cfg&&S.cfg.fase==='trat'&&S.cfg.inicio&&diff(TODAY,P(S.cfg.inicio))<=2&&diff(TODAY,P(S.cfg.inicio))>=0;
  return '<div class="body"><div class="row"><div><h1>'+t('hello')+'</h1><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div><span class="sp"></span>'+(S.p.adol?'':'<span class="sem n" title="'+t('mn.stars')+'"><i style="background:var(--gold)">★</i>'+stars+'</span>')+'</div>'+
- (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+retChip()+(()=>{const k=checkCard();return k+impCard()+lateBox()+(k.includes('data-ck')?'':retCard())})()+
+ (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+retChip()+(()=>{const k=checkCard();return k+hqCard()+impCard()+lateBox()+(k.includes('data-ck')?'':retCard())})()+
  (S.p.adol?'<div class="card flat"><label class="chk"><input type="checkbox" data-c="p.share"'+(S.p.share?' checked':'')+'><span><b>'+t('mn.share')+'</b></span></label><p class="hint" style="margin-top:6px">'+t(S.p.share?'mn.shareon':'mn.shareoff')+t('mn.shareend')+'</p></div>':'')+
  '<div class="menu">'+items+'</div>'+(S.p.cas?'<div class="note">'+t('mn.cas')+'</div>':'')+'</div>';
 }
@@ -238,7 +257,7 @@ function sheetsP(){
 function viewPais(){
  let b;const sc=S.p.screen,enc=S.cfg&&S.cfg.status==='encerrado';
  if(sc==='onb')b=viewOnb();else if(sc==='wait')b='<div class="body"><h1>'+t(enc?'wait.enc':'wait.rec')+'</h1><p class="lead">'+t(enc?'wait.enct':'wait.rect')+'</p><button class="btn block" data-a="refresh">'+(S.busy?t('wait.busy'):t('wait.btn'))+'</button></div>';
- else if(sc==='dx')b=viewDx();else if(sc==='start')b=viewStart();else if(sc==='pause')b=viewPause();else if(sc==='diary')b=viewDiary();else if(sc==='menu')b=viewMenu();else if(sc==='cal')b=viewCal();else if(sc==='week')b=viewWeek();else if(sc==='notes')b=viewNotes();else if(sc==='info')b=viewInfo();else if(sc==='help')b=viewHelpP();else if(sc==='load')b='<div class="body"><p class="lead">'+t('loading')+'</p></div>';else if(sc==='dev')b=viewDev();
+ else if(sc==='dx')b=viewDx();else if(sc==='start')b=viewStart();else if(sc==='hist')b=viewHist();else if(sc==='pause')b=viewPause();else if(sc==='diary')b=viewDiary();else if(sc==='menu')b=viewMenu();else if(sc==='cal')b=viewCal();else if(sc==='week')b=viewWeek();else if(sc==='notes')b=viewNotes();else if(sc==='info')b=viewInfo();else if(sc==='help')b=viewHelpP();else if(sc==='load')b='<div class="body"><p class="lead">'+t('loading')+'</p></div>';else if(sc==='dev')b=viewDev();
  return '<div class="phone">'+hdrP()+b+footP()+sheetsP()+'</div>';
 }
 function viewHelpP(){
