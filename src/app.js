@@ -19,7 +19,7 @@ function init(){
  S={code:L.code||'',token:L.token||'',papel:L.papel||'',cfg:L.cfg||null,nights:L.nights||{},weeks:L.weeks||{},notes:L.notes||[],outbox:L.outbox||[],
   dx:Object.assign(newDx(),L.dx||{}),nt:'',p:{screen:L.token?(L.screen||'menu'):'onb',share:!!L.share},ob:blankOb(),draft:draftBlank(),
   draft2:{h:'12:00',v:'',nm:false,u:'ausente',p:'nenhuma',o:''},draft3:{h:'12:00',v:0,t:'Água',vv:''},
-  ws:L.ws||{dias:3,av:0,sem:0,urg:0,troca:0,regra:5,evac:6,bris:4,fecal:0},cal:{y:TODAY.getFullYear(),m:TODAY.getMonth()},busy:false,authBad:false};
+  st:{dt:I(TODAY),ok:false,bad:false},ag:{q:false,dt:'',bad:false},imp:{n:0,d:0,i:0},ckmsg:'',impok:false,ws:L.ws||{dias:3,av:0,sem:0,urg:0,troca:0,regra:5,evac:6,bris:4,fecal:0},cal:{y:TODAY.getFullYear(),m:TODAY.getMonth()},busy:false,authBad:false};
  if(S.cfg)applyCfg(S.cfg,true);
 }
 function applyCfg(c,quiet){
@@ -32,6 +32,9 @@ function fixScreen(){
  const c=S.cfg;if(!c){S.p.screen='onb';return}
  const sc=S.p.screen;
  if((c.fase==='trat'&&c.status!=='ativo')||c.status==='encerrado'){S.p.screen='wait';return}
+ if(needStart()){if(!['start','info','help'].includes(sc))S.p.screen='start';return}
+ if(pauseInfo()){if(!['pause','info','help'].includes(sc))S.p.screen='pause';return}
+ if(sc==='start'||sc==='pause')S.p.screen='menu';
  if(sc==='wait'||sc==='onb'||sc==='load')S.p.screen=(c.fase==='inv'&&c.dx)?'dx':'menu';
  if(c.fase==='inv'&&c.dx&&(sc==='menu'))S.p.screen='dx';
  if(c.fase==='trat'&&(sc==='dx')&&!S.dx.ativo)S.p.screen='menu';
@@ -84,11 +87,19 @@ function openNight(k){
  S.p.sheet={v:'night',k,step:1};
 }
 const A={
- go(d){let v=d.v;if(v==='menu'&&S.cfg&&S.cfg.fase==='inv'&&S.cfg.dx)v='dx';S.p.screen=v;S.p.sheet=null;save();toTop()},
+ go(d){let v=d.v;if(needStart()&&!['start','info','help'].includes(v))v='start';else if(pauseInfo()&&!['pause','info','help'].includes(v))v='pause';if(v==='menu'&&S.cfg&&S.cfg.fase==='inv'&&S.cfg.dx)v='dx';S.p.screen=v;S.p.sheet=null;save();toTop()},
  lang(d){setLang(d.v);render()},
  agenda(d){if(!S.cfg||!S.cfg.ret)return 'norender';S.cfg.ag=d.v==='1'?I(TODAY):'';queue('ag',{v:d.v==='1'?1:0});save()},
  rr(d){if(!S.cfg||!S.cfg.ret)return 'norender';const m=d.v||'';S.cfg.rr={m:m,d:m?I(TODAY):''};if(m==='agendei')S.cfg.ag=I(TODAY);S.ckmsg=m&&m!=='parou'?m:'';queue('rr',{m:m});save()},
  ckok(){S.ckmsg='';},
+ agq(){S.ag.q=true;S.ag.bad=false},
+ agsave(){const dt=S.ag.dt;if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)||diff(P(dt),TODAY)<-1||diff(P(dt),TODAY)>150){S.ag.bad=true;return}
+  S.ag.bad=false;S.ag.q=false;S.ag.dt='';S.cfg.agd=dt;S.cfg.ag=I(TODAY);S.cfg.rr={m:'agendei',d:I(TODAY)};S.ckmsg='';queue('rr',{m:'agendei',dt:dt});save();fixScreen()},
+ startgo(){const dt=S.st.dt;if(!S.st.ok)return 'norender';if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)||diff(TODAY,P(dt))<0||diff(TODAY,P(dt))>14){S.st.bad=true;return}
+  S.st.bad=false;S.cfg.inicio=dt;if(!(S.cfg.tol>0)){S.cfg.ret=I(add(P(dt),30));S.cfg.tol=7;S.cfg.agd='';S.cfg.ag='';S.cfg.rr={m:'',d:''}}
+  queue('ini',{dt:dt,ok:true});S.p.screen='menu';save();toTop()},
+ impset(d){S.imp[d.k]=Number(d.v)},
+ impsend(){const ks=['n','d','i'].filter(k=>hasMod(k));if(!ks.every(k=>S.imp[k]>0))return 'norender';const o={};ks.forEach(k=>o[k]=S.imp[k]);S.cfg.imp=I(TODAY);S.impok=true;S.imp={n:0,d:0,i:0};queue('imp',o);save()},
  usdone(){if(!S.cfg||!S.cfg.us)return 'norender';S.cfg.us.f=I(TODAY);queue('us',{});save()},
  ob(d){S.ob[d.k]=d.k==='nd'?Number(d.v):d.v;S.ob.err=''},
  async obgo(){

@@ -71,28 +71,67 @@ const alarmOn=k=>!!(S.cfg&&S.cfg.alarme&&S.cfg.alarme<=k);
 const calStart=()=>S.cfg&&S.cfg.inicio?P(S.cfg.inicio):add(TODAY,-75);
 function nightsMissing(){let m=0;for(let i=1;i<=7;i++)if(!hasNight(I(add(TODAY,-i))))m++;return m}
 
+const isTrat=()=>!!(S.cfg&&S.cfg.fase==='trat'&&S.cfg.status==='ativo');
+const needStart=()=>isTrat()&&!S.cfg.inicio;
+function pauseInfo(){
+ const c=S.cfg;if(!isTrat()||!c.inicio||!c.ret)return null;
+ const tol=c.tol||14,late=diff(TODAY,P(c.ret));
+ if(late<=tol)return null;
+ if(c.agd&&diff(TODAY,P(c.agd))<=7)return null;
+ return {late,tol};
+}
+function agForm(){
+ if(!S.ag.q)return '<button class="chip" data-a="agq">'+t('rc.ag')+'</button>';
+ const mx=I(add(TODAY,150));
+ return '<div class="field" style="max-width:260px"><label class="lbl" for="ag-dt">'+t('ag.q')+'</label><input id="ag-dt" type="date" class="in" data-i="ag.dt" min="'+I(TODAY)+'" max="'+mx+'" value="'+esc(S.ag.dt)+'"></div>'+(S.ag.bad?'<p class="hint" style="color:var(--bad)">'+t('ag.bad')+'</p>':'')+'<button class="btn sm" data-a="agsave">'+t('ag.ok')+'</button>';
+}
 function retCard(){
  const c=S.cfg;if(!c||!c.ret)return '';
- const d=P(c.ret),n=diff(d,TODAY),late=n<0;
- let left=n===0?t('rc.today'):n===1?t('rc.d1'):n<=30?t('rc.d',n):n<=90?t('rc.w',Math.round(n/7)):t('rc.m',Math.round(n/30.4));
- const ag=!!c.ag;
- return '<div class="card flat"><span class="lbl">'+t('rc.t')+'</span><p style="margin:4px 0">'+t('rc.when',MN[d.getMonth()]+' '+d.getFullYear())+(late?'':' · <span class="hint">'+left+'</span>')+'</p>'+
- (late&&!ag?'<p class="hint" style="margin-bottom:6px">'+t('rc.late')+'</p>':'')+
- (ag?'<div class="row"><span class="sem g"><i>✓</i>'+t('rc.agok').replace('✓ ','')+'</span><span class="sp"></span><button class="chip" data-a="agenda" data-v="0">'+t('rc.undo')+'</button></div>':'<div class="row wrap"><button class="chip" data-a="agenda" data-v="1">'+t('rc.ag')+'</button></div><p class="hint" style="margin-top:6px">'+t('rc.book')+'</p>')+'</div>';
+ const d=P(c.ret),n=diff(d,TODAY),ag=c.agd&&diff(P(c.agd),TODAY)>=-7;
+ const left=n===0?t('rc.today'):n===1?t('rc.d1'):n<=30?t('rc.d',n):n<=90?t('rc.w',Math.round(n/7)):t('rc.m',Math.round(n/30.4));
+ return '<div class="card flat"><span class="lbl">'+t('rc.t')+'</span><p style="margin:4px 0">'+t('rc.when',MN[d.getMonth()]+' '+d.getFullYear())+(n>=0?' · <span class="hint">'+left+'</span>':'')+'</p>'+
+ (ag?'<div class="row"><span class="sem g"><i>✓</i>'+t('rc.agok',FY(P(c.agd)))+'</span></div>':agForm()+'<p class="hint" style="margin-top:6px">'+t('rc.book')+'</p>')+'</div>';
 }
-
+function rrOpts(list){
+ return '<div style="display:flex;flex-direction:column;gap:8px">'+list.map(k=>'<button class="chip" style="justify-content:flex-start;text-align:left" data-a="rr" data-v="'+k+'">'+t('ck.o.'+k)+'</button>').join('')+'</div>';
+}
 function checkCard(){
- const c=S.cfg;if(!c||!c.ret)return '';
+ const c=S.cfg;if(!c||!c.ret||!isTrat()||!c.inicio)return '';
  const rr=c.rr||{m:'',d:''};
  if(S.ckmsg)return '<div class="note" style="border-color:var(--gold)">'+t('ck.r.'+S.ckmsg)+'<div style="margin-top:8px"><button class="chip" data-a="ckok">'+t('ck.ok')+'</button></div></div>';
  if(rr.m==='parou')return '<div class="card flat"><span class="lbl">'+t('ck.pause')+'</span><p style="margin:4px 0 8px">'+t('ck.pausep')+'</p><button class="chip" data-a="rr" data-v="">'+t('ck.resume')+'</button></div>';
- const late=diff(TODAY,P(c.ret));if(late<14)return '';
- if(rr.m&&rr.d){const since=diff(TODAY,P(rr.d));if(since<(rr.m==='depois'?7:30))return ''}
- const o=['agendei','vou','melhorou','custo','parou','outro','depois'];
- return '<div class="card" style="border-color:var(--gold)"><span class="lbl">'+t('ck.t')+'</span><p style="margin:6px 0 10px">'+t(late>=45?'ck.p2':'ck.p1',late)+'</p><div style="display:flex;flex-direction:column;gap:8px">'+o.map(k=>'<button class="chip" style="justify-content:flex-start;text-align:left" data-a="rr" data-v="'+k+'">'+t('ck.o.'+k)+'</button>').join('')+'</div></div>';
+ const tol=c.tol||14,late=diff(TODAY,P(c.ret));
+ if(late<0||late>tol)return '';
+ if(c.agd&&diff(P(c.agd),TODAY)>=-7)return '';
+ if(rr.m&&rr.d&&rr.d>=c.ret&&!(rr.m==='depois'&&diff(TODAY,P(rr.d))>=3))return '';
+ return '<div class="card" data-ck="1" style="border-color:var(--gold)"><span class="lbl">'+t('ck.t')+'</span><p style="margin:6px 0 10px">'+t('ck.p',late,tol-late)+'</p>'+agForm()+'<div style="height:8px"></div>'+rrOpts(['vou','melhorou','custo','parou','outro','depois'])+'</div>';
+}
+function impCard(){
+ const c=S.cfg;if(!c||!c.ret||!isTrat()||!c.inicio||pauseInfo())return '';
+ const to=diff(P(c.ret),TODAY);if(to>7)return '';
+ if(c.imp&&diff(TODAY,P(c.imp))<=20)return S.impok?'<div class="note">'+t('im.thx')+'</div>':'';
+ const ks=['n','d','i'].filter(k=>hasMod(k));if(!ks.length)return '';
+ const done=ks.every(k=>S.imp[k]>0);
+ return '<div class="card" style="border-color:var(--gold)"><span class="lbl">'+t('im.t')+'</span><p class="hint" style="margin:4px 0 10px">'+t('im.p')+'</p>'+ks.map(k=>'<div style="margin-bottom:10px"><b>'+t('im.'+k)+'</b><div class="chips" style="margin-top:6px">'+[1,2,3,4,5].map(v=>'<button type="button" class="chip" data-a="impset" data-k="'+k+'" data-v="'+v+'" aria-pressed="'+(S.imp[k]===v)+'">'+t('im.l'+v)+'</button>').join('')+'</div></div>').join('')+'<button class="btn sm" data-a="impsend"'+(done?'':' disabled')+'>'+t('im.send')+'</button></div>';
+}
+const infoHelpItems=()=>'<button class="mi" data-a="go" data-v="info"><span class="ic">ℹ️</span><span style="flex:1"><div class="t">'+t('mn.info')+'</div><div class="d">'+t('mn.infod')+'</div></span></button><button class="mi" data-a="go" data-v="help"><span class="ic">❓</span><span style="flex:1"><div class="t">'+t('mn.help')+'</div><div class="d">'+t('mn.helpd')+'</div></span></button>';
+function viewStart(){
+ return '<div class="body"><div><h1>'+t('st.t')+'</h1><p class="lead">'+t('st.lead')+'</p></div>'+
+ '<div class="card"><div class="field" style="max-width:260px"><label class="lbl" for="st-dt">'+t('st.date')+'</label><input id="st-dt" type="date" class="in" data-i="st.dt" min="'+I(add(TODAY,-14))+'" max="'+I(TODAY)+'" value="'+esc(S.st.dt)+'"></div>'+(S.st.bad?'<p class="hint" style="color:var(--bad)">'+t('st.bad')+'</p>':'')+'</div>'+
+ '<div class="card flat"><h3>'+t('st.ch')+'</h3><p style="margin:6px 0">'+t('st.cp')+'</p><label class="chk"><input type="checkbox" data-c="st.ok"'+(S.st.ok?' checked':'')+'><span><b>'+t('st.ok')+'</b></span></label></div>'+
+ '<button class="btn block" data-a="startgo"'+(S.st.ok?'':' disabled')+'>'+t('st.go')+'</button>'+
+ '<div class="menu">'+lockedItem('🌙',t('mn.cal'))+((hasMod('d')||hasMod('i'))?lockedItem('📋',t('mn.week')):'')+lockedItem('⏰',t('mn.dev'))+infoHelpItems()+'</div></div>';
+}
+function viewPause(){
+ const c=S.cfg||{},d=c.ret?P(c.ret):TODAY,rr=c.rr||{m:''};
+ return '<div class="body"><div><h1>'+t('ps.t')+'</h1></div>'+
+ '<div class="card" style="border-color:var(--gold)"><p>'+t('ps.p',MN[d.getMonth()]+' '+d.getFullYear())+'</p><p class="hint" style="margin-top:6px">'+t('ps.rec')+'</p></div>'+
+ (S.ckmsg?'<div class="note" style="border-color:var(--gold)">'+t('ck.r.'+S.ckmsg)+'<div style="margin-top:8px"><button class="chip" data-a="ckok">'+t('ck.ok')+'</button></div></div>':'')+
+ '<div class="card">'+agForm()+'<p class="hint" style="margin:8px 0">'+t('rc.book')+'</p>'+(rr.m==='parou'?'<button class="chip" data-a="rr" data-v="">'+t('ck.resume')+'</button>':rrOpts(['melhorou','custo','parou','outro']))+'</div>'+
+ '<div class="menu">'+infoHelpItems()+'</div></div>';
 }
 function lateBox(){
- const c=S.cfg;if(!c||c.fase!=='trat'||(c.rr&&c.rr.m==='parou'))return '';
+ const c=S.cfg;if(!c||c.fase!=='trat'||!c.inicio||pauseInfo()||(c.rr&&c.rr.m==='parou'))return '';
  const st=calStart();let miss=0;for(let i=1;i<=7;i++){const d=add(TODAY,-i);if(d>=st&&!hasNight(I(d)))miss++}
  const okW=!!(S.weeks[I(add(monday(TODAY),-7))]||c.weeks.includes(I(add(monday(TODAY),-7))));
  const wkNeed=(hasMod('d')||hasMod('i'))&&!okW&&diff(add(monday(TODAY),-7),st)>=-6;
@@ -113,7 +152,7 @@ function viewMenu(){
  items+=mi('go','notes','✍️',t('mn.notes'),t('mn.notesd'))+mi('go','info','ℹ️',t('mn.info'),t('mn.infod'))+mi('go','dev','⏰',t('mn.dev'),t('mn.devd'))+mi('go','help','❓',t('mn.help'),t('mn.helpd'));
  const fresh=S.cfg&&S.cfg.fase==='trat'&&S.cfg.inicio&&diff(TODAY,P(S.cfg.inicio))<=2&&diff(TODAY,P(S.cfg.inicio))>=0;
  return '<div class="body"><div class="row"><div><h1>'+t('hello')+'</h1><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div><span class="sp"></span>'+(S.p.adol?'':'<span class="sem n" title="'+t('mn.stars')+'"><i style="background:var(--gold)">★</i>'+stars+'</span>')+'</div>'+
- (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+(()=>{const k=checkCard();return k+lateBox()+(k.includes('data-v="agendei"')||k.includes('data-a="rr" data-v=""')?'':retCard())})()+
+ (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+(()=>{const k=checkCard();return k+impCard()+lateBox()+(k.includes('data-ck')?'':retCard())})()+
  (S.p.adol?'<div class="card flat"><label class="chk"><input type="checkbox" data-c="p.share"'+(S.p.share?' checked':'')+'><span><b>'+t('mn.share')+'</b></span></label><p class="hint" style="margin-top:6px">'+t(S.p.share?'mn.shareon':'mn.shareoff')+t('mn.shareend')+'</p></div>':'')+
  '<div class="menu">'+items+'</div>'+(S.p.cas?'<div class="note">'+t('mn.cas')+'</div>':'')+'</div>';
 }
@@ -188,7 +227,7 @@ function sheetsP(){
 function viewPais(){
  let b;const sc=S.p.screen,enc=S.cfg&&S.cfg.status==='encerrado';
  if(sc==='onb')b=viewOnb();else if(sc==='wait')b='<div class="body"><h1>'+t(enc?'wait.enc':'wait.rec')+'</h1><p class="lead">'+t(enc?'wait.enct':'wait.rect')+'</p><button class="btn block" data-a="refresh">'+(S.busy?t('wait.busy'):t('wait.btn'))+'</button></div>';
- else if(sc==='dx')b=viewDx();else if(sc==='diary')b=viewDiary();else if(sc==='menu')b=viewMenu();else if(sc==='cal')b=viewCal();else if(sc==='week')b=viewWeek();else if(sc==='notes')b=viewNotes();else if(sc==='info')b=viewInfo();else if(sc==='help')b=viewHelpP();else if(sc==='load')b='<div class="body"><p class="lead">'+t('loading')+'</p></div>';else if(sc==='dev')b=viewDev();
+ else if(sc==='dx')b=viewDx();else if(sc==='start')b=viewStart();else if(sc==='pause')b=viewPause();else if(sc==='diary')b=viewDiary();else if(sc==='menu')b=viewMenu();else if(sc==='cal')b=viewCal();else if(sc==='week')b=viewWeek();else if(sc==='notes')b=viewNotes();else if(sc==='info')b=viewInfo();else if(sc==='help')b=viewHelpP();else if(sc==='load')b='<div class="body"><p class="lead">'+t('loading')+'</p></div>';else if(sc==='dev')b=viewDev();
  return '<div class="phone">'+hdrP()+b+footP()+sheetsP()+'</div>';
 }
 function viewHelpP(){
