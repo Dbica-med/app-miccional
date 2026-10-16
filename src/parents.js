@@ -76,7 +76,7 @@ const calStart=()=>S.cfg&&S.cfg.inicio?P(S.cfg.inicio):add(TODAY,-75);
 function nightsMissing(){let m=0;for(let i=1;i<=7;i++)if(!hasNight(I(add(TODAY,-i))))m++;return m}
 
 const isTrat=()=>!!(S.cfg&&S.cfg.fase==='trat'&&S.cfg.status==='ativo');
-const needStart=()=>isTrat()&&!S.cfg.inicio;
+const needStart=()=>isTrat()&&(!S.cfg.inicio||(S.cfg.ja&&!S.cfg.cok));
 function pauseInfo(){
  const c=S.cfg;if(!isTrat()||!c.inicio||!c.ret)return null;
  const tol=c.tol||14,late=diff(TODAY,P(c.ret));
@@ -120,8 +120,8 @@ function impCard(){
 }
 const infoHelpItems=()=>'<button class="mi" data-a="go" data-v="info"><span class="ic">ℹ️</span><span style="flex:1"><div class="t">'+t('mn.info')+'</div><div class="d">'+t('mn.infod')+'</div></span></button><button class="mi" data-a="go" data-v="help"><span class="ic">❓</span><span style="flex:1"><div class="t">'+t('mn.help')+'</div><div class="d">'+t('mn.helpd')+'</div></span></button>';
 function viewStart(){
- return '<div class="body"><div><h1>'+t('st.t')+'</h1><p class="lead">'+t('st.lead')+'</p></div>'+
- '<div class="card"><div class="field" style="max-width:260px"><label class="lbl" for="st-dt">'+t('st.date')+'</label><input id="st-dt" type="date" class="in" data-i="st.dt" min="'+I(add(TODAY,-14))+'" max="'+I(TODAY)+'" value="'+esc(S.st.dt)+'"></div>'+(S.st.bad?'<p class="hint" style="color:var(--bad)">'+t('st.bad')+'</p>':'')+'</div>'+
+ return '<div class="body"><div><h1>'+t(S.cfg&&S.cfg.ja?'st.tj':'st.t')+'</h1><p class="lead">'+t(S.cfg&&S.cfg.ja?'st.leadj':'st.lead')+'</p></div>'+
+ (S.cfg&&S.cfg.ja?'':'<div class="card"><div class="field" style="max-width:260px"><label class="lbl" for="st-dt">'+t('st.date')+'</label><input id="st-dt" type="date" class="in" data-i="st.dt" min="'+I(add(TODAY,-14))+'" max="'+I(TODAY)+'" value="'+esc(S.st.dt)+'"></div>'+(S.st.bad?'<p class="hint" style="color:var(--bad)">'+t('st.bad')+'</p>':'')+'</div>')+
  '<div class="card flat"><h3>'+t('st.ch')+'</h3><p style="margin:6px 0">'+t('st.cp')+'</p><label class="chk"><input type="checkbox" data-c="st.ok"'+(S.st.ok?' checked':'')+'><span><b>'+t('st.ok')+'</b></span></label></div>'+
  '<button class="btn block" data-a="startgo"'+(S.st.ok?'':' disabled')+'>'+t('st.go')+'</button>'+
  '<div class="menu">'+lockedItem('🌙',t('mn.cal'))+((hasMod('d')||hasMod('i'))?lockedItem('📋',t('mn.week')):'')+lockedItem('⏰',t('mn.dev'))+infoHelpItems()+'</div></div>';

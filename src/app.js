@@ -95,7 +95,7 @@ const A={
  agq(){S.ag.q=true;S.ag.bad=false},
  agsave(){const dt=S.ag.dt;if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)||diff(P(dt),TODAY)<-1||diff(P(dt),TODAY)>150){S.ag.bad=true;return}
   S.ag.bad=false;S.ag.q=false;S.ag.dt='';S.cfg.agd=dt;S.cfg.ag=I(TODAY);S.cfg.rr={m:'agendei',d:I(TODAY)};S.ckmsg='';queue('rr',{m:'agendei',dt:dt});save();fixScreen()},
- startgo(){const dt=S.st.dt;if(!S.st.ok)return 'norender';if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)||diff(TODAY,P(dt))<0||diff(TODAY,P(dt))>14){S.st.bad=true;return}
+ startgo(){if(S.cfg&&S.cfg.ja){if(!S.st.ok)return 'norender';S.cfg.cok=1;queue('ini',{ja:true,ok:true});S.p.screen='menu';save();toTop();return}const dt=S.st.dt;if(!S.st.ok)return 'norender';if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)||diff(TODAY,P(dt))<0||diff(TODAY,P(dt))>14){S.st.bad=true;return}
   S.st.bad=false;S.cfg.inicio=dt;if(!(S.cfg.tol>0)){S.cfg.ret=I(add(P(dt),30));S.cfg.tol=7;S.cfg.agd='';S.cfg.ag='';S.cfg.rr={m:'',d:''}}
   queue('ini',{dt:dt,ok:true});S.p.screen='menu';save();toTop()},
  impset(d){S.imp[d.k]=Number(d.v)},

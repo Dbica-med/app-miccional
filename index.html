@@ -393,6 +393,8 @@ const M={
 'ps.t':['Acompanhamento em pausa','Follow-up paused','Suivi en pause'],
 'ps.p':['O sucesso do tratamento depende da medicação e dos ajustes de comportamento, e ambos precisam de reavaliação periódica. A consulta prevista para {0} não foi realizada. Para continuarmos juntos, marque a consulta e informe a data aqui.','Treatment success depends on medication and behavioral adjustments, and both need periodic re-evaluation. The visit expected on {0} did not take place. To continue together, please book the visit and enter the date here.','Le succès du traitement dépend des médicaments et des ajustements de comportement, et les deux nécessitent une réévaluation périodique. La consultation prévue le {0} n’a pas eu lieu. Pour continuer ensemble, prenez rendez-vous et indiquez la date ici.'],
 'ps.rec':['Calendário e resumo semanal ficam bloqueados até lá. Seus registros estão guardados.','The calendar and weekly summary stay locked until then. Your records are saved.','Le calendrier et le résumé hebdomadaire restent verrouillés jusque-là. Vos enregistrements sont conservés.'],
+'st.tj':['Acompanhamento do tratamento','Treatment follow-up','Suivi du traitement'],
+'st.leadj':['Seu filho já está em tratamento com o Dr. Domingos. Para liberar o aplicativo, leia e confirme o combinado abaixo.','Your child is already in treatment with Dr. Domingos. To unlock the app, read and confirm the agreement below.','Votre enfant est déjà en traitement avec le Dr Domingos. Pour débloquer l’application, lisez et confirmez l’accord ci-dessous.'],
 'st.t':['Tratamento prescrito','Treatment prescribed','Traitement prescrit'],
 'st.lead':['Quando o tratamento começar, informe a data abaixo. Só depois disso o calendário e os controles são liberados.','When the treatment starts, enter the date below. The calendar and controls unlock only after that.','Lorsque le traitement commence, indiquez la date ci-dessous. Le calendrier et les contrôles ne se débloquent qu’ensuite.'],
 'st.date':['Data em que o tratamento começou','Date the treatment started','Date de début du traitement'],
@@ -627,7 +629,7 @@ const calStart=()=>S.cfg&&S.cfg.inicio?P(S.cfg.inicio):add(TODAY,-75);
 function nightsMissing(){let m=0;for(let i=1;i<=7;i++)if(!hasNight(I(add(TODAY,-i))))m++;return m}
 
 const isTrat=()=>!!(S.cfg&&S.cfg.fase==='trat'&&S.cfg.status==='ativo');
-const needStart=()=>isTrat()&&!S.cfg.inicio;
+const needStart=()=>isTrat()&&(!S.cfg.inicio||(S.cfg.ja&&!S.cfg.cok));
 function pauseInfo(){
  const c=S.cfg;if(!isTrat()||!c.inicio||!c.ret)return null;
  const tol=c.tol||14,late=diff(TODAY,P(c.ret));
@@ -671,8 +673,8 @@ function impCard(){
 }
 const infoHelpItems=()=>'<button class="mi" data-a="go" data-v="info"><span class="ic">ℹ️</span><span style="flex:1"><div class="t">'+t('mn.info')+'</div><div class="d">'+t('mn.infod')+'</div></span></button><button class="mi" data-a="go" data-v="help"><span class="ic">❓</span><span style="flex:1"><div class="t">'+t('mn.help')+'</div><div class="d">'+t('mn.helpd')+'</div></span></button>';
 function viewStart(){
- return '<div class="body"><div><h1>'+t('st.t')+'</h1><p class="lead">'+t('st.lead')+'</p></div>'+
- '<div class="card"><div class="field" style="max-width:260px"><label class="lbl" for="st-dt">'+t('st.date')+'</label><input id="st-dt" type="date" class="in" data-i="st.dt" min="'+I(add(TODAY,-14))+'" max="'+I(TODAY)+'" value="'+esc(S.st.dt)+'"></div>'+(S.st.bad?'<p class="hint" style="color:var(--bad)">'+t('st.bad')+'</p>':'')+'</div>'+
+ return '<div class="body"><div><h1>'+t(S.cfg&&S.cfg.ja?'st.tj':'st.t')+'</h1><p class="lead">'+t(S.cfg&&S.cfg.ja?'st.leadj':'st.lead')+'</p></div>'+
+ (S.cfg&&S.cfg.ja?'':'<div class="card"><div class="field" style="max-width:260px"><label class="lbl" for="st-dt">'+t('st.date')+'</label><input id="st-dt" type="date" class="in" data-i="st.dt" min="'+I(add(TODAY,-14))+'" max="'+I(TODAY)+'" value="'+esc(S.st.dt)+'"></div>'+(S.st.bad?'<p class="hint" style="color:var(--bad)">'+t('st.bad')+'</p>':'')+'</div>')+
  '<div class="card flat"><h3>'+t('st.ch')+'</h3><p style="margin:6px 0">'+t('st.cp')+'</p><label class="chk"><input type="checkbox" data-c="st.ok"'+(S.st.ok?' checked':'')+'><span><b>'+t('st.ok')+'</b></span></label></div>'+
  '<button class="btn block" data-a="startgo"'+(S.st.ok?'':' disabled')+'>'+t('st.go')+'</button>'+
  '<div class="menu">'+lockedItem('🌙',t('mn.cal'))+((hasMod('d')||hasMod('i'))?lockedItem('📋',t('mn.week')):'')+lockedItem('⏰',t('mn.dev'))+infoHelpItems()+'</div></div>';
@@ -898,7 +900,7 @@ const A={
  agq(){S.ag.q=true;S.ag.bad=false},
  agsave(){const dt=S.ag.dt;if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)||diff(P(dt),TODAY)<-1||diff(P(dt),TODAY)>150){S.ag.bad=true;return}
   S.ag.bad=false;S.ag.q=false;S.ag.dt='';S.cfg.agd=dt;S.cfg.ag=I(TODAY);S.cfg.rr={m:'agendei',d:I(TODAY)};S.ckmsg='';queue('rr',{m:'agendei',dt:dt});save();fixScreen()},
- startgo(){const dt=S.st.dt;if(!S.st.ok)return 'norender';if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)||diff(TODAY,P(dt))<0||diff(TODAY,P(dt))>14){S.st.bad=true;return}
+ startgo(){if(S.cfg&&S.cfg.ja){if(!S.st.ok)return 'norender';S.cfg.cok=1;queue('ini',{ja:true,ok:true});S.p.screen='menu';save();toTop();return}const dt=S.st.dt;if(!S.st.ok)return 'norender';if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)||diff(TODAY,P(dt))<0||diff(TODAY,P(dt))>14){S.st.bad=true;return}
   S.st.bad=false;S.cfg.inicio=dt;if(!(S.cfg.tol>0)){S.cfg.ret=I(add(P(dt),30));S.cfg.tol=7;S.cfg.agd='';S.cfg.ag='';S.cfg.rr={m:'',d:''}}
   queue('ini',{dt:dt,ok:true});S.p.screen='menu';save();toTop()},
  impset(d){S.imp[d.k]=Number(d.v)},
