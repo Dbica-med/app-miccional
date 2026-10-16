@@ -2,6 +2,10 @@
 const SYM={seca:['☀️','sym.seca'],umida:['<span style="font-size:1.35em">☁️</span>','sym.umida'],pouco:['☀️<span style="font-size:.55em">☁️</span>','sym.pouco'],acordou:['🌙','sym.acordou']};
 const RAZ=['liquido','tarde','viagem','ar','estresse','doenca','outro'];
 const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]/g,'').toUpperCase();
+const WA_URL='https://wa.me/5521984814150?text=Ol%C3%A1!%20Contato%20pelo%20App-Miccional%20do%20Dr.%20Domingos',AGENDA_URL='https://www.urologistapediatrico.com/agenda-online-drbica',IG_URL='https://www.instagram.com/drdomingosbica';
+const waBtn=()=>'<a class="btn sm" href="'+WA_URL+'" target="_blank" rel="noopener">💬 '+t('ct.wa')+'</a>',agBtn=()=>'<a class="btn sm ghost" href="'+AGENDA_URL+'" target="_blank" rel="noopener">📅 '+t('ct.ag')+'</a>';
+const bookBox=()=>'<p class="hint" style="margin:6px 0">'+t('rc.book')+'</p><div class="row wrap">'+waBtn()+agBtn()+'</div>';
+const NOTEQ=['viagem','estresse','remedio','doente','tarde','liquido','ar','rotina'];
 const hasMod=m=>(S.p.mods||[]).includes(m);
 function sem(c,txt,ic){return '<span class="sem '+c+'"><i aria-hidden="true">'+ic+'</i>'+txt+'</span>'}
 const ul=a=>'<ul style="margin:8px 0 0;padding-left:20px;color:var(--ink2);display:flex;flex-direction:column;gap:6px">'+a.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
@@ -13,7 +17,7 @@ function hdrP(){
 function footP(){
  const n=S.outbox.length;
  const st=S.token?(n?'<span class="sem y"><i aria-hidden="true">…</i>'+t(n>1?'f.sendn':'f.send1',n)+'</span>':'<span class="sem g"><i aria-hidden="true">✓</i>'+t('f.sent')+'</span>'):'';
- return '<div class="foot">'+(st?'<div style="margin-bottom:8px">'+st+'</div>':'')+(S.authBad?'<div class="note" style="margin-bottom:8px">'+t('f.auth')+'</div>':'')+t('f.brand')+' · <a href="https://www.instagram.com/dr.domingosbica" target="_blank" rel="noopener">@dr.domingosbica</a><br><span style="opacity:.8">'+t('f.ver')+' '+APP_V+'</span></div>'}
+ return '<div class="foot">'+(st?'<div style="margin-bottom:8px">'+st+'</div>':'')+(S.authBad?'<div class="note" style="margin-bottom:8px">'+t('f.auth')+'</div>':'')+t('f.brand')+' · <a href="'+IG_URL+'" target="_blank" rel="noopener">@drdomingosbica</a><br><span style="opacity:.8">'+t('f.ver')+' '+APP_V+'</span></div>'}
 function stepper(path,min,max){return '<div class="stepper"><button type="button" data-a="st" data-p="'+path+'" data-d="-1" data-min="'+min+'" data-max="'+max+'" aria-label="'+t('less')+'">−</button><output data-bind="'+path+'">'+get(path)+'</output><button type="button" data-a="st" data-p="'+path+'" data-d="1" data-min="'+min+'" data-max="'+max+'" aria-label="'+t('more')+'">+</button></div>'}
 function nextSat(){let d=TODAY;while(d.getDay()!==6)d=add(d,1);return d}
 const chipB=(a,k,v,txt,on)=>'<button type="button" class="chip" data-a="'+a+'" data-k="'+k+'" data-v="'+v+'" aria-pressed="'+on+'">'+txt+'</button>';
@@ -90,7 +94,7 @@ function retCard(){
  const d=P(c.ret),n=diff(d,TODAY),ag=c.agd&&diff(P(c.agd),TODAY)>=-7;
  const left=n===0?t('rc.today'):n===1?t('rc.d1'):n<=30?t('rc.d',n):n<=90?t('rc.w',Math.round(n/7)):t('rc.m',Math.round(n/30.4));
  return '<div class="card flat"><span class="lbl">'+t('rc.t')+'</span><p style="margin:4px 0">'+t('rc.when',MN[d.getMonth()]+' '+d.getFullYear())+(n>=0?' · <span class="hint">'+left+'</span>':'')+'</p>'+
- (ag?'<div class="row"><span class="sem g"><i>✓</i>'+t('rc.agok',FY(P(c.agd)))+'</span></div>':agForm()+'<p class="hint" style="margin-top:6px">'+t('rc.book')+'</p>')+'</div>';
+ (ag?'<div class="row"><span class="sem g"><i>✓</i>'+t('rc.agok',FY(P(c.agd)))+'</span></div>':agForm()+''+bookBox()+'')+'</div>';
 }
 function rrOpts(list){
  return '<div style="display:flex;flex-direction:column;gap:8px">'+list.map(k=>'<button class="chip" style="justify-content:flex-start;text-align:left" data-a="rr" data-v="'+k+'">'+t('ck.o.'+k)+'</button>').join('')+'</div>';
@@ -104,7 +108,7 @@ function checkCard(){
  if(late<0||late>tol)return '';
  if(c.agd&&diff(P(c.agd),TODAY)>=-7)return '';
  if(rr.m&&rr.d&&rr.d>=c.ret&&!(rr.m==='depois'&&diff(TODAY,P(rr.d))>=3))return '';
- return '<div class="card" data-ck="1" style="border-color:var(--gold)"><span class="lbl">'+t('ck.t')+'</span><p style="margin:6px 0 10px">'+t('ck.p',late,tol-late)+'</p>'+agForm()+'<div style="height:8px"></div>'+rrOpts(['vou','melhorou','custo','parou','outro','depois'])+'</div>';
+ return '<div class="card" data-ck="1" style="border-color:var(--gold)"><span class="lbl">'+t('ck.t')+'</span><p style="margin:6px 0 10px">'+t('ck.p',late,tol-late)+'</p>'+agForm()+'<div style="height:8px"></div>'+rrOpts(['vou','melhorou','custo','parou','outro','depois'])+bookBox()+'</div>';
 }
 function impCard(){
  const c=S.cfg;if(!c||!c.ret||!isTrat()||!c.inicio||pauseInfo())return '';
@@ -127,7 +131,7 @@ function viewPause(){
  return '<div class="body"><div><h1>'+t('ps.t')+'</h1></div>'+
  '<div class="card" style="border-color:var(--gold)"><p>'+t('ps.p',MN[d.getMonth()]+' '+d.getFullYear())+'</p><p class="hint" style="margin-top:6px">'+t('ps.rec')+'</p></div>'+
  (S.ckmsg?'<div class="note" style="border-color:var(--gold)">'+t('ck.r.'+S.ckmsg)+'<div style="margin-top:8px"><button class="chip" data-a="ckok">'+t('ck.ok')+'</button></div></div>':'')+
- '<div class="card">'+agForm()+'<p class="hint" style="margin:8px 0">'+t('rc.book')+'</p>'+(rr.m==='parou'?'<button class="chip" data-a="rr" data-v="">'+t('ck.resume')+'</button>':rrOpts(['melhorou','custo','parou','outro']))+'</div>'+
+ '<div class="card">'+agForm()+''+bookBox()+''+(rr.m==='parou'?'<button class="chip" data-a="rr" data-v="">'+t('ck.resume')+'</button>':rrOpts(['melhorou','custo','parou','outro']))+'</div>'+
  '<div class="menu">'+infoHelpItems()+'</div></div>';
 }
 function lateBox(){
@@ -168,7 +172,9 @@ function viewCal(){
  const prev=new Date(y,m,1,12)>new Date(start.getFullYear(),start.getMonth(),1,12),next=!(y===TODAY.getFullYear()&&m>=TODAY.getMonth());
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><div class="row"><button class="chip" data-a="cm" data-v="-1"'+(prev?'':' disabled')+' aria-label="'+t('cal.prev')+'">‹</button><h2 class="sp" style="text-align:center;text-transform:capitalize">'+MN[m]+' '+y+'</h2><button class="chip" data-a="cm" data-v="1"'+(next?'':' disabled')+' aria-label="'+t('cal.next')+'">›</button></div>'+
  '<div class="cal">'+DS.map(x=>'<div class="h">'+x+'</div>').join('')+cells+'</div>'+
- '<div class="card flat"><span class="lbl">'+t('cal.child')+'</span><div class="legend">'+Object.values(SYM).map(x=>'<span>'+x[0]+' '+t(x[1])+'</span>').join('')+'</div><span class="lbl" style="margin-top:12px">'+t('cal.par')+'</span><div class="legend"><span>'+t('cal.med')+'</span><span>'+t('cal.diff')+'</span></div></div></div>';
+ '<div class="card" style="border-color:var(--gold);margin-top:12px"><span class="lbl">🧒 '+t('cal.kid')+'</span><p class="hint" style="margin:2px 0 8px">'+t('cal.kidp')+'</p><div class="legend">'+Object.values(SYM).map(x=>'<span>'+x[0]+' '+t(x[1])+'</span>').join('')+'</div></div>'+
+ '<div class="card flat" style="margin-top:16px;border-top:3px solid var(--line)"><span class="lbl">👨‍👩‍👧 '+t('cal.par')+'</span><div class="legend" style="margin-top:6px"><span>'+t('cal.med')+'</span><span>'+t('cal.diff')+'</span></div></div>'+
+ '<div class="card flat"><h3>'+t('cal.tips')+'</h3>'+ul([1,2,3,4].map(i=>t('cal.t'+i)))+'</div></div>';
 }
 function sheetNight(){
  const k=S.p.sheet.k,d=P(k),n=S.nights[k],dr=S.draft,adol=S.p.adol,step=adol?0:(S.p.sheet.step||1);
@@ -178,7 +184,7 @@ function sheetNight(){
  const child='<div class="note" style="border-color:var(--gold)">'+t('nt.child')+'</div><div><span class="lbl">'+t('nt.how')+'</span><div class="big">'+Object.keys(SYM).map(s=>'<button type="button" class="sym" data-a="dr" data-k="s" data-v="'+s+'" aria-pressed="'+(dr.s===s)+'"><b>'+SYM[s][0]+'</b>'+t(SYM[s][1])+'</button>').join('')+'</div></div>'+(adol?'':'<div class="row"><span class="hint">'+t('nt.who')+'</span>'+chip('drp','k','c',t('nt.kid'),dr.por==='c')+chip('drp','k','r',t('nt.guard'),dr.por==='r')+'</div>');
  const par=(adol?'':'<div><span class="lbl">'+t('nt.resp')+'</span><div class="chips">'+[['mae','ob.mae'],['pai','ob.pai'],['outro','ob.outro']].map(x=>chip('dr','who',x[0],t(x[1]),dr.who===x[0])).join('')+'</div></div>')+
   '<div><span class="lbl">'+t('nt.med')+'</span><div class="chips">'+[['sim','nt.yes'],['nao','nt.no'],['na','nt.na']].map(x=>chip('dr','rem',x[0],t(x[1]),dr.rem===x[0])).join('')+'</div></div>'+
-  (alarmOn(k)?'<div><span class="lbl">'+t('nt.alarm')+'</span><div class="chips">'+[['t','nt.a1'],['n','nt.a2'],['x','nt.a3']].map(x=>chip('dr','al',x[0],t(x[1]),dr.al===x[0])).join('')+'</div></div>':'')+
+  (alarmOn(k)?'<div><span class="lbl">'+t('nt.alarm')+'</span><div class="chips">'+[['t','nt.a1'],['n','nt.a2'],['z','nt.z'],['x','nt.a3']].map(x=>chip('dr','al',x[0],t(x[1]),dr.al===x[0])).join('')+'</div></div>':'')+
   '<div><span class="lbl">'+t('nt.diff')+'<span class="hint">'+t('nt.opt')+'</span></span><div class="chips">'+RAZ.map(r=>'<button type="button" class="chip" data-a="drf" data-v="'+r+'" aria-pressed="'+dr.f.includes(r)+'">'+t('raz.'+r)+'</button>').join('')+'</div></div>';
  const cancel='<button class="btn block ghost" data-a="sheet" data-v="">'+t('cancel')+'</button>';
  if(adol)return title+child+par+'<button class="btn block" data-a="savenight"'+(dr.s&&dr.rem?'':' disabled')+'>'+t('save')+'</button>'+cancel;
@@ -197,7 +203,7 @@ function viewWeek(){
 }
 const ws_b=v=>(S.ws.bris===v);
 function viewNotes(){
- return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('no.title')+'</h2><div class="card flat"><label class="lbl" for="nt">'+t('no.new')+'</label><textarea id="nt" class="in" rows="3" data-i="nt" placeholder="'+esc(t('no.ph'))+'">'+esc(S.nt)+'</textarea><p class="hint" style="margin-top:4px">'+t('no.names')+'</p><button class="btn block" style="margin-top:10px" data-a="addnote">'+t('no.save')+'</button></div>'+
+ return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('no.title')+'</h2><div class="card flat"><span class="lbl">'+t('no.q')+'</span><div class="chips" style="margin:6px 0 12px">'+NOTEQ.map(k=>'<button type="button" class="chip" data-a="ntq" data-v="'+k+'" aria-pressed="'+S.ntq.includes(k)+'">'+t('no.c.'+k)+'</button>').join('')+'</div><label class="lbl" for="nt">'+t('no.opt')+'</label><textarea id="nt" class="in" rows="3" data-i="nt" placeholder="'+esc(t('no.ph'))+'">'+esc(S.nt)+'</textarea><p class="hint" style="margin-top:4px">'+t('no.names')+'</p><button class="btn block" style="margin-top:10px" data-a="addnote">'+t('no.save')+'</button></div>'+
  S.notes.map(n=>'<div class="card flat"><div class="hint">'+n[0]+'</div><div>'+esc(n[1])+'</div></div>').join('')+'</div>';
 }
 function viewInfo(){
@@ -207,7 +213,7 @@ function viewInfo(){
  '<div class="card"><h3>'+t('in.liq')+'</h3><p class="lead" style="margin-top:6px">'+t('in.liqh')+'</p><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">'+
  [[1,95],[2,80],[3,50],[4,22],[5,3]].map(x=>'<div class="wk" style="grid-template-columns:110px 1fr 74px"><span>'+t('in.l'+x[0])+'</span><i style="width:'+x[1]+'%;background:var(--c-noite)"></i><span>'+t('in.l'+x[0]+'v')+'</span></div>').join('')+'</div></div>'+
  '<div class="card"><h3>'+t('in.hyd')+'</h3><div class="tw"><table class="t" style="margin-top:8px"><tr><th>'+t('in.age')+'</th><th>'+t('in.total')+'</th><th>'+t('in.cups')+'</th></tr>'+[1,2,3].map(i=>'<tr><td>'+t('in.a'+i)+'</td><td>'+t('in.a'+i+'t')+'</td><td>'+t('in.cups'+i)+'</td></tr>').join('')+'</table></div><p class="hint" style="margin-top:8px">'+t('in.href')+'</p></div>'+
- '<div class="card"><h3>'+t('in.hab')+'</h3>'+ul([1,2,3,4].map(i=>t('in.h'+i)))+'</div></div>';
+ '<div class="card"><h3>'+t('in.hab')+'</h3>'+ul([1,2,3,4].map(i=>t('in.h'+i)))+'</div>'+contactCard()+'</div>';
 }
 /* ----- sheets (janelas inferiores) ----- */
 function sheetsP(){
@@ -235,10 +241,11 @@ function viewHelpP(){
  '<div class="card"><h3>'+t('hp.why')+'</h3><p class="lead" style="margin-top:6px">'+t('hp.whyt')+'</p></div>'+
  '<div class="card"><h3>'+t('hp.steps')+'</h3>'+ul([1,2,3,4].map(i=>t('hp.s'+i)))+'</div>'+
  '<div class="card"><h3>'+t('hp.dev')+'</h3><p class="lead" style="margin-top:6px">'+t('hp.devt',esc(S.code||''))+'</p><button class="btn block ghost" style="margin-top:10px" data-a="sheet" data-v="sair">'+t('sh.outb')+'</button></div>'+
- '<div class="card"><h3>'+t('hp.faq')+'</h3>'+ul([1,2,3,4,5,6].map(i=>t('hp.f'+i)))+'</div></div>';
+ '<div class="card"><h3>'+t('hp.faq')+'</h3>'+ul([1,2,3,4,5,6].map(i=>t('hp.f'+i)))+'</div>'+contactCard()+'</div>';
 }
+function contactCard(){return '<div class="card"><h3>'+t('ct.t')+'</h3><div class="row wrap" style="margin-top:10px">'+waBtn()+agBtn()+'<a class="btn sm ghost" href="'+IG_URL+'" target="_blank" rel="noopener">'+t('ct.ig')+'</a></div></div>'}
 function viewDev(){
- return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('dv.title')+'</h2><div class="note">'+t('dv.note')+'</div>'+
- '<div class="card"><h3>'+t('dv.a')+'</h3><p class="lead" style="margin-top:6px">'+t('dv.at')+'</p>'+ul([1,2,3,4,5].map(i=>t('dv.a'+i)))+'</div>'+
- '<div class="card"><h3>'+t('dv.w')+'</h3><p class="lead" style="margin-top:6px">'+t('dv.wt')+'</p>'+ul([t('dv.w1'),t('dv.w2')])+'</div></div>';
+ return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('dv.title')+'</h2>'+
+ '<div class="card"><h3>'+t('dv.ws')+'</h3><p class="lead" style="margin-top:6px">'+t('dv.wst')+'</p>'+ul([1,2,3,4].map(i=>t('dv.ws'+i)))+'</div>'+
+ '<div class="card"><h3>'+t('dv.wb')+'</h3><p class="lead" style="margin-top:6px">'+t('dv.wbt')+'</p>'+ul([1,2,3,4,5].map(i=>t('dv.wb'+i)))+'</div></div>';
 }

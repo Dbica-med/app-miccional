@@ -19,7 +19,7 @@ function init(){
  S={code:L.code||'',token:L.token||'',papel:L.papel||'',cfg:L.cfg||null,nights:L.nights||{},weeks:L.weeks||{},notes:L.notes||[],outbox:L.outbox||[],
   dx:Object.assign(newDx(),L.dx||{}),nt:'',p:{screen:L.token?(L.screen||'menu'):'onb',share:!!L.share},ob:blankOb(),draft:draftBlank(),
   draft2:{h:'12:00',v:'',nm:false,u:'ausente',p:'nenhuma',o:''},draft3:{h:'12:00',v:0,t:'Água',vv:''},
-  st:{dt:I(TODAY),ok:false,bad:false},ag:{q:false,dt:'',bad:false},imp:{n:0,d:0,i:0},ckmsg:'',impok:false,ws:L.ws||{dias:3,av:0,sem:0,urg:0,troca:0,regra:5,evac:6,bris:4,fecal:0},cal:{y:TODAY.getFullYear(),m:TODAY.getMonth()},busy:false,authBad:false};
+  st:{dt:I(TODAY),ok:false,bad:false},ntq:[],ag:{q:false,dt:'',bad:false},imp:{n:0,d:0,i:0},ckmsg:'',impok:false,ws:L.ws||{dias:3,av:0,sem:0,urg:0,troca:0,regra:5,evac:6,bris:4,fecal:0},cal:{y:TODAY.getFullYear(),m:TODAY.getMonth()},busy:false,authBad:false};
  if(S.cfg)applyCfg(S.cfg,true);
 }
 function applyCfg(c,quiet){
@@ -153,7 +153,8 @@ const A={
   S.weeks[k]={dias:w.dias,esc:w.av+w.sem,av:w.av,sem:w.sem,urg:w.urg,troca:w.troca,regra:w.regra,evac:w.evac,bris:w.bris,fecal:w.fecal};
   queue('week',{semana:k,dias:w.dias,esc:w.av+w.sem,av:w.av,sem:w.sem,urg:w.urg,troca:w.troca,regra:w.regra,evac:w.evac,bris:w.bris,fecal:w.fecal});
   S.p.screen='menu';save();toTop()},
- addnote(){const t=(S.nt||'').trim();if(!t)return 'norender';S.notes.unshift([FY(TODAY),t]);queue('note',{data:I(TODAY),texto:t});S.nt=''},
+ ntq(d){const i=S.ntq.indexOf(d.v);if(i>=0)S.ntq.splice(i,1);else S.ntq.push(d.v)},
+ addnote(){const f=(S.nt||'').trim(),qs=S.ntq.map(k=>M['no.c.'+k][0]).join('; ');const tx=(qs+(qs&&f?'. ':'')+f).slice(0,500);if(!tx)return 'norender';S.notes.unshift([FY(TODAY),tx]);queue('note',{data:I(TODAY),texto:tx});S.nt='';S.ntq=[]},
  st(d){const v=Math.max(Number(d.min),Math.min(Number(d.max),Number(get(d.p))+Number(d.d)));set(d.p,v);document.querySelectorAll('output[data-bind="'+d.p+'"]').forEach(o=>o.textContent=v);save();return 'norender'},
  sheetbg(d,e){if(e.target.classList.contains('sheetbg')){S.p.sheet=null}else return 'norender'},
  sairok(){try{localStorage.removeItem(KEY)}catch(e){}init();S.p.screen='onb';render();toTop()}

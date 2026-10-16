@@ -169,3 +169,5 @@ input[type=date]::-webkit-date-and-time-value{text-align:left;min-height:1.2em}
 .lang button[aria-pressed="true"]{background:var(--sel);border-color:var(--sel-line);color:var(--ink);font-weight:700}
 .mi.locked{opacity:.55;cursor:default;background:var(--surface2)}
 .mi.locked .lock{font-size:16px;flex:none}
+
+a.btn{text-decoration:none}
