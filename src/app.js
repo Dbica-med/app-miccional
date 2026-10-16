@@ -12,12 +12,12 @@ let canStore=true;
 function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):null}catch(e){canStore=false;return null}}
 function save(){
  if(!canStore)return;
- try{localStorage.setItem(KEY,JSON.stringify({code:S.code,token:S.token,papel:S.papel,cfg:S.cfg,nights:S.nights,weeks:S.weeks,notes:S.notes,outbox:S.outbox,dx:S.dx,screen:S.p.screen,share:S.p.share,hqs:S.p.hqs,cq:S.p.cq,cqs:S.p.cqs,ws:S.ws}))}catch(e){canStore=false}
+ try{localStorage.setItem(KEY,JSON.stringify({code:S.code,token:S.token,papel:S.papel,cfg:S.cfg,nights:S.nights,weeks:S.weeks,notes:S.notes,outbox:S.outbox,dx:S.dx,screen:S.p.screen,share:S.p.share,hqs:S.p.hqs,inst:S.p.inst,cq:S.p.cq,cqs:S.p.cqs,ws:S.ws}))}catch(e){canStore=false}
 }
 function init(){
  const L=load()||{};
  S={code:L.code||'',token:L.token||'',papel:L.papel||'',cfg:L.cfg||null,nights:L.nights||{},weeks:L.weeks||{},notes:L.notes||[],outbox:L.outbox||[],
-  dx:Object.assign(newDx(),L.dx||{}),nt:'',p:{screen:L.token?(L.screen||'menu'):'onb',share:!!L.share,hqs:L.hqs||'',cq:L.cq,cqs:L.cqs||''},ob:blankOb(),draft:draftBlank(),
+  dx:Object.assign(newDx(),L.dx||{}),nt:'',p:{screen:L.token?(L.screen||'menu'):'onb',share:!!L.share,hqs:L.hqs||'',inst:L.inst||'',cq:L.cq,cqs:L.cqs||''},ob:blankOb(),draft:draftBlank(),
   draft2:{h:'12:00',v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''},draft3:{h:'12:00',v:0,t:'Água',vv:''},
   st:{dt:I(TODAY),ok:false,bad:false},ntq:[],ag:{q:false,dt:'',bad:false},imp:{n:0,d:0,i:0},iq:{nw:'',dw:''},hq:{hp:'',hm:[],hn:'',hd:'',hi:'',hu:''},ckmsg:'',impok:false,ws:L.ws||{dias:3,av:0,sem:0,urg:0,troca:0,regra:5,evac:6,bris:4,fecal:0},cal:{y:TODAY.getFullYear(),m:TODAY.getMonth()},busy:false,authBad:false};
  if(S.cfg)applyCfg(S.cfg,true);
@@ -38,6 +38,7 @@ function fixScreen(){
  if(sc==='wait'||sc==='onb'||sc==='load')S.p.screen=(c.fase==='inv'&&c.dx)?'dx':'menu';
  if(c.fase==='inv'&&c.dx&&(sc==='menu'))S.p.screen='dx';
  if(c.fase==='trat'&&(sc==='dx')&&!S.dx.ativo)S.p.screen='menu';
+ if(!S.p.inst&&instNeeded()&&['wait','onb','load'].includes(sc)&&['menu','dx'].includes(S.p.screen))S.p.screen='inst';
 }
 /* ---------- rede ---------- */
 async function api(req){
@@ -125,6 +126,10 @@ const A={
   queue('ini',{dt:dt,ok:true});S.p.screen='menu';save();toTop()},
  impq(d){S.iq[d.k]=String(S.iq[d.k])===d.v?'':d.v},
  hqset(d){const q=S.hq;if(d.k==='hm'){const i=q.hm.indexOf(d.v);if(i>=0)q.hm.splice(i,1);else q.hm.push(d.v)}else q[d.k]=q[d.k]===d.v?'':d.v},
+ instpl(d){S.instpl=d.v},
+ instnow(){const e=window._ip;if(!e)return 'norender';e.prompt();try{e.userChoice.then(r=>{if(r&&r.outcome==='accepted'){S.p.inst='ok';save()}window._ip=null;render()})}catch(x){}return 'norender'},
+ instdone(){S.p.inst='ok';S.p.screen='menu';fixScreen();save();toTop()},
+ instlater(){S.p.inst=I(TODAY);S.p.screen='menu';fixScreen();save();toTop()},
  hqskip(){S.p.hqs=I(TODAY);S.p.screen='menu';save();toTop()},
  hqsend(){const q=S.hq,o={};if(q.hp)o.hp=q.hp;if(q.hp==='s'&&q.hm.length)o.hm=q.hm.slice();if(q.hn!=='')o.hn=Number(q.hn);if(q.hd!=='')o.hd=Number(q.hd);if(q.hi)o.hi=q.hi;if(q.hu)o.hu=q.hu;if(!Object.keys(o).length)return 'norender';S.cfg.hq=1;queue('hist',o);S.p.screen='menu';save();toTop()},
  impset(d){S.imp[d.k]=Number(d.v)},
@@ -216,6 +221,8 @@ document.addEventListener('change',onField);
 window.addEventListener('online',()=>flush());
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){TODAY=mkToday();refresh()}});
 setInterval(()=>{if(S&&S.outbox.length)flush()},60000);
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window._ip=e;if(S&&S.p.screen==='inst')render()});
+window.addEventListener('appinstalled',()=>{if(S){S.p.inst='ok';save()}});
 setLang(detectLang(),true);
 init();render();
 if(S.token)refresh();
