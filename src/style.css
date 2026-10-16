@@ -74,7 +74,7 @@ a{color:inherit}
 .chip[aria-pressed="true"]{background:var(--sel);border-color:var(--sel-line)}
 .chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;cursor:pointer}
 .chk input{width:22px;height:22px;margin:1px 0 0;flex:none;accent-color:var(--brand)}
-.term{max-height:150px;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13px;color:var(--ink2);background:var(--surface2)}
+.term{max-height:min(52vh,420px);overflow:auto;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13px;color:var(--ink2);background:var(--surface2)}
 .term p{margin:0 0 7px}
 .note{font-size:12.5px;color:var(--ink2);background:var(--gold-wash);border-radius:12px;padding:10px 12px}
 .menu{display:flex;flex-direction:column;gap:10px}
