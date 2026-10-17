@@ -231,6 +231,7 @@ function viewWeek(){
 const ws_b=v=>(S.ws.bris===v);
 function viewNotes(){
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('no.title')+'</h2><div class="card flat"><span class="lbl">'+t('no.q')+'</span><div class="chips" style="margin:6px 0 12px">'+NOTEQ.map(k=>'<button type="button" class="chip" data-a="ntq" data-v="'+k+'" aria-pressed="'+S.ntq.includes(k)+'">'+t('no.c.'+k)+'</button>').join('')+'</div><label class="lbl" for="nt">'+t('no.opt')+'</label><textarea id="nt" class="in" rows="3" data-i="nt" placeholder="'+esc(t('no.ph'))+'">'+esc(S.nt)+'</textarea><p class="hint" style="margin-top:4px">'+t('no.names')+'</p><button class="btn block" style="margin-top:10px" data-a="addnote">'+t('no.save')+'</button></div>'+
+ '<div class="card flat" style="margin-top:14px"><span class="lbl">'+t('fb.t')+'</span><p class="hint" style="margin:4px 0 8px">'+t('fb.h')+'</p><textarea id="fb" class="in" rows="3" data-i="fb" placeholder="'+esc(t('fb.ph'))+'">'+esc(S.fb||'')+'</textarea><button class="btn block ghost" style="margin-top:10px" data-a="fbsend">'+t('fb.go')+'</button></div>'+
  S.notes.map(n=>'<div class="card flat"><div class="hint">'+n[0]+'</div><div>'+esc(n[1])+'</div></div>').join('')+'</div>';
 }
 function viewInfo(){

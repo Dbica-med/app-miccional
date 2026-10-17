@@ -196,7 +196,7 @@ a.btn{text-decoration:none}
 <script>
 /* Preencha API_URL com o endereço do programa do Google (termina em /exec) */
 const API_URL='https://script.google.com/macros/s/AKfycbxOjWwSj60sG7hnjUilc_hHmllMNoVv36OOzKeRVvDBodoyF36NVerPX-jxHn_pS4eX/exec';
-const APP_V='1.5';
+const APP_V='1.6';
 const TERMO_V='2026-10-v2';
 
 'use strict';
@@ -507,6 +507,7 @@ const M={
 'wk.s1':['Bolinhas duras','Hard pellets','Petites boules dures'],'wk.s2':['Duras','Hard','Dures'],'wk.s4':['Normais','Normal','Normales'],'wk.s6':['Moles','Soft','Molles'],
 'wk.fecal':['Escapes de cocô na roupa','Stool accidents in clothes','Selles dans les vêtements'],'wk.send':['Enviar resumo','Send summary','Envoyer le résumé'],
 /* notas */
+'fb.t':['Problema ou dúvida com o aplicativo?','Problem or question about the app?','Un problème ou une question sur l’application ?'],'fb.h':['Conte o que aconteceu. Ao tocar em enviar, abre o WhatsApp com a mensagem pronta para a secretaria.','Tell us what happened. Tapping send opens WhatsApp with the message ready for the secretary.','Dites-nous ce qui s’est passé. En touchant envoyer, WhatsApp s’ouvre avec le message prêt pour la secrétaire.'],'fb.ph':['Ex.: o botão não abre, não consegui salvar a noite, tenho uma dúvida…','E.g.: the button does not open, I could not save the night, I have a question…','Ex. : le bouton ne s’ouvre pas, je n’ai pas pu enregistrer la nuit, j’ai une question…'],'fb.go':['Enviar pelo WhatsApp','Send via WhatsApp','Envoyer par WhatsApp'],
 'no.title':['Anotações','Notes','Notes'],'no.new':['Nova anotação','New note','Nouvelle note'],'no.ph':['Escrever é opcional. Ex.: prova na escola, aniversário','Writing is optional. E.g.: school exam, birthday party','Écrire est facultatif. Ex. : examen à l’école, anniversaire'],
 'no.names':['Não escreva nomes de pessoas.','Do not write people’s names.','N’écrivez pas de noms de personnes.'],'no.save':['Salvar anotação','Save note','Enregistrer la note'],
 /* orientações */
@@ -828,6 +829,7 @@ function viewWeek(){
 const ws_b=v=>(S.ws.bris===v);
 function viewNotes(){
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('no.title')+'</h2><div class="card flat"><span class="lbl">'+t('no.q')+'</span><div class="chips" style="margin:6px 0 12px">'+NOTEQ.map(k=>'<button type="button" class="chip" data-a="ntq" data-v="'+k+'" aria-pressed="'+S.ntq.includes(k)+'">'+t('no.c.'+k)+'</button>').join('')+'</div><label class="lbl" for="nt">'+t('no.opt')+'</label><textarea id="nt" class="in" rows="3" data-i="nt" placeholder="'+esc(t('no.ph'))+'">'+esc(S.nt)+'</textarea><p class="hint" style="margin-top:4px">'+t('no.names')+'</p><button class="btn block" style="margin-top:10px" data-a="addnote">'+t('no.save')+'</button></div>'+
+ '<div class="card flat" style="margin-top:14px"><span class="lbl">'+t('fb.t')+'</span><p class="hint" style="margin:4px 0 8px">'+t('fb.h')+'</p><textarea id="fb" class="in" rows="3" data-i="fb" placeholder="'+esc(t('fb.ph'))+'">'+esc(S.fb||'')+'</textarea><button class="btn block ghost" style="margin-top:10px" data-a="fbsend">'+t('fb.go')+'</button></div>'+
  S.notes.map(n=>'<div class="card flat"><div class="hint">'+n[0]+'</div><div>'+esc(n[1])+'</div></div>').join('')+'</div>';
 }
 function viewInfo(){
@@ -1085,6 +1087,7 @@ const A={
   queue('week',{semana:k,dias:w.dias,esc:w.av+w.sem,av:w.av,sem:w.sem,urg:w.urg,troca:w.troca,regra:w.regra,evac:w.evac,bris:w.bris,fecal:w.fecal});
   S.p.screen='menu';cqCheck();save();toTop()},
  ntq(d){const i=S.ntq.indexOf(d.v);if(i>=0)S.ntq.splice(i,1);else S.ntq.push(d.v)},
+ fbsend(){const x=(S.fb||'').trim();if(!x)return 'norender';const tx='PROBLEMAS OU DÚVIDAS EM RELAÇÃO AO APP\n\nCódigo: '+S.code+'\nApp v'+APP_V+'\nAparelho: '+(navigator.userAgent||'').replace(/^Mozilla\/5\.0 /,'').slice(0,70)+'\n\n'+x.slice(0,700);window.open('https://wa.me/5521984814150?text='+encodeURIComponent(tx),'_blank');S.fb=''},
  addnote(){const f=(S.nt||'').trim(),qs=S.ntq.map(k=>M['no.c.'+k][0]).join('; ');const tx=(qs+(qs&&f?'. ':'')+f).slice(0,500);if(!tx)return 'norender';S.notes.unshift([FY(TODAY),tx]);queue('note',{data:I(TODAY),texto:tx});S.nt='';S.ntq=[]},
  st(d){const v=Math.max(Number(d.min),Math.min(Number(d.max),Number(get(d.p))+Number(d.d)));set(d.p,v);document.querySelectorAll('output[data-bind="'+d.p+'"]').forEach(o=>o.textContent=v);save();return 'norender'},
  sheetbg(d,e){if(e.target.classList.contains('sheetbg')){S.p.sheet=null}else return 'norender'},

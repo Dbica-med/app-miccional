@@ -189,6 +189,7 @@ const A={
   queue('week',{semana:k,dias:w.dias,esc:w.av+w.sem,av:w.av,sem:w.sem,urg:w.urg,troca:w.troca,regra:w.regra,evac:w.evac,bris:w.bris,fecal:w.fecal});
   S.p.screen='menu';cqCheck();save();toTop()},
  ntq(d){const i=S.ntq.indexOf(d.v);if(i>=0)S.ntq.splice(i,1);else S.ntq.push(d.v)},
+ fbsend(){const x=(S.fb||'').trim();if(!x)return 'norender';const tx='PROBLEMAS OU DÚVIDAS EM RELAÇÃO AO APP\n\nCódigo: '+S.code+'\nApp v'+APP_V+'\nAparelho: '+(navigator.userAgent||'').replace(/^Mozilla\/5\.0 /,'').slice(0,70)+'\n\n'+x.slice(0,700);window.open('https://wa.me/5521984814150?text='+encodeURIComponent(tx),'_blank');S.fb=''},
  addnote(){const f=(S.nt||'').trim(),qs=S.ntq.map(k=>M['no.c.'+k][0]).join('; ');const tx=(qs+(qs&&f?'. ':'')+f).slice(0,500);if(!tx)return 'norender';S.notes.unshift([FY(TODAY),tx]);queue('note',{data:I(TODAY),texto:tx});S.nt='';S.ntq=[]},
  st(d){const v=Math.max(Number(d.min),Math.min(Number(d.max),Number(get(d.p))+Number(d.d)));set(d.p,v);document.querySelectorAll('output[data-bind="'+d.p+'"]').forEach(o=>o.textContent=v);save();return 'norender'},
  sheetbg(d,e){if(e.target.classList.contains('sheetbg')){S.p.sheet=null}else return 'norender'},
