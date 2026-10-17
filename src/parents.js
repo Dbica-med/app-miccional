@@ -129,7 +129,7 @@ function viewHist(){
   blk(t('hq.s1'),ch('hp','n',t('hq.no'),q.hp==='n')+ch('hp','s',t('hq.y'),q.hp==='s'))+
   (q.hp==='s'?blk(t('hq.s2'),['bex','desm','ws','uro','out','ns'].map(k=>ch('hm',k,t('hq.m.'+k),q.hm.indexOf(k)>=0)).join('')):'')+
   (hasMod('n')?blk(t('hq.s3'),[0,1,2,3,4].map(v=>ch('hn',v,t('hq.n'+v),String(q.hn)===String(v))).join('')):'')+
-  (hasMod('d')?blk(t('hq.s4'),[0,1,2].map(v=>ch('hd',v,t('hq.d'+v),String(q.hd)===String(v))).join('')):'')+
+  (hasMod('d')?blk(t('hq.s4'),[0,1,2,3].map(v=>ch('hd',v,t('hq.d'+v),String(q.hd)===String(v))).join('')):'')+
   (hasMod('d')?blk(t('sh.pt'),['u','s','e','m'].map(v=>ch('hu',v,t('sh.pt.'+v),q.hu===v)).join('')):'')+
   (hasMod('i')?blk(t('hq.s5'),['n','a','s'].map(v=>ch('hi',v,t('hq.i.'+v),q.hi===v)).join('')):'')+
   '<div class="row" style="margin-top:20px"><button class="btn" data-a="hqsend">'+t('hq.send')+'</button><button class="btn ghost" data-a="hqskip">'+t('hq.later')+'</button></div></div>';
@@ -142,7 +142,7 @@ function impCard(){
  const done=ks.every(k=>S.imp[k]>0);
  return '<div class="card" style="border-color:var(--gold)"><span class="lbl">'+t('im.t')+'</span><p class="hint" style="margin:4px 0 10px">'+t('im.p')+'</p>'+ks.map(k=>'<div style="margin-bottom:10px"><b>'+t('im.'+k)+'</b><div class="chips" style="margin-top:6px">'+[1,2,3,4,5].map(v=>'<button type="button" class="chip" data-a="impset" data-k="'+k+'" data-v="'+v+'" aria-pressed="'+(S.imp[k]===v)+'">'+t('im.l'+v)+'</button>').join('')+'</div></div>').join('')+(()=>{const rc=(o)=>Object.keys(o).filter(k=>diff(TODAY,P(k))<=21&&diff(TODAY,P(k))>=0).length;let h='';
   if(hasMod('n')&&rc(S.nights)<10)h+='<div style="margin-bottom:10px"><b>'+t('iq.nw')+'</b><div class="chips" style="margin-top:6px">'+[0,1,2,3,4].map(v=>'<button type="button" class="chip" data-a="impq" data-k="nw" data-v="'+v+'" aria-pressed="'+(String(S.iq.nw)===String(v))+'">'+t('hq.n'+v)+'</button>').join('')+'</div></div>';
-  if(hasMod('d')&&rc(S.weeks)<3)h+='<div style="margin-bottom:10px"><b>'+t('iq.dw')+'</b><div class="chips" style="margin-top:6px">'+[0,1,2].map(v=>'<button type="button" class="chip" data-a="impq" data-k="dw" data-v="'+v+'" aria-pressed="'+(String(S.iq.dw)===String(v))+'">'+t('hq.d'+v)+'</button>').join('')+'</div></div>';
+  if(hasMod('d')&&rc(S.weeks)<3)h+='<div style="margin-bottom:10px"><b>'+t('iq.dw')+'</b><div class="chips" style="margin-top:6px">'+[0,1,2,3].map(v=>'<button type="button" class="chip" data-a="impq" data-k="dw" data-v="'+v+'" aria-pressed="'+(String(S.iq.dw)===String(v))+'">'+t('hq.d'+v)+'</button>').join('')+'</div></div>';
   return h})()+'<button class="btn sm" data-a="impsend"'+(done?'':' disabled')+'>'+t('im.send')+'</button></div>';
 }
 const infoHelpItems=()=>'<button class="mi" data-a="go" data-v="info"><span class="ic">ℹ️</span><span style="flex:1"><div class="t">'+t('mn.info')+'</div><div class="d">'+t('mn.infod')+'</div></span></button><button class="mi" data-a="go" data-v="help"><span class="ic">❓</span><span style="flex:1"><div class="t">'+t('mn.help')+'</div><div class="d">'+t('mn.helpd')+'</div></span></button>';
