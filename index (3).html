@@ -1,0 +1,1132 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<title>Calendário do xixi</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0D2340">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Calendário do xixi">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="robots" content="noindex,nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preload" href="fonts/open-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:'EB Garamond';font-weight:500;font-style:normal;font-display:swap;src:url(fonts/eb-garamond-latin-500-normal.woff2) format('woff2')}
+@font-face{font-family:'EB Garamond';font-weight:600;font-style:normal;font-display:swap;src:url(fonts/eb-garamond-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Open Sans';font-weight:400;font-style:normal;font-display:swap;src:url(fonts/open-sans-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Open Sans';font-weight:600;font-style:normal;font-display:swap;src:url(fonts/open-sans-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Open Sans';font-weight:700;font-style:normal;font-display:swap;src:url(fonts/open-sans-latin-700-normal.woff2) format('woff2')}
+/* Layout: duas superfícies. App dos pais = coluna de celular (marca azul-marinho e dourado). Painel do médico = ferramenta densa, largura total. */
+:root{
+  --bg:#F2F4F8; --surface:#FFFFFF; --surface2:#F7F8FB;
+  --ink:#0D2340; --ink2:#46546C; --muted:#78859A;
+  --line:#DCE1EA; --grid:#E4E8EF; --axis:#C3CBD8;
+  --brand:#0D2340; --hdr:#0D2340; --hdr-ink:#FFFFFF; --gold:#C8A46A; --gold-ink:#7A5B22; --gold-wash:#F6EEDD;
+  --btn:#0D2340; --btn-ink:#FFFFFF; --sel:#E6ECF6; --sel-line:#0D2340;
+  --good:#0ca30c; --warn:#fab219; --crit:#d03b3b; --info:#2a78d6;
+  --c-noite:#2a78d6; --c-dia:#eb6834; --c-int:#1baf7a; --med:#0D2340;
+  --shadow:0 1px 2px rgba(13,35,64,.06),0 6px 20px rgba(13,35,64,.06);
+  --serif:'EB Garamond',Georgia,'Times New Roman',serif; --sans:'Open Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0A1424; --surface:#12203A; --surface2:#172846;
+  --ink:#EAEFF7; --ink2:#B4C0D4; --muted:#8190A8;
+  --line:#26395A; --grid:#22344F; --axis:#34496A;
+  --hdr:#0F2848; --btn:#C8A46A; --btn-ink:#0D2340; --sel:#1C3156; --sel-line:#C8A46A; --gold-ink:#E3C48C; --gold-wash:#2A2A2E;
+  --c-noite:#3987e5; --c-dia:#d95926; --c-int:#199e70; --med:#9DB4D8;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0A1424; --surface:#12203A; --surface2:#172846;
+  --ink:#EAEFF7; --ink2:#B4C0D4; --muted:#8190A8;
+  --line:#26395A; --grid:#22344F; --axis:#34496A;
+  --hdr:#0F2848; --btn:#C8A46A; --btn-ink:#0D2340; --sel:#1C3156; --sel-line:#C8A46A; --gold-ink:#E3C48C; --gold-wash:#2A2A2E;
+  --c-noite:#3987e5; --c-dia:#d95926; --c-int:#199e70; --med:#9DB4D8;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25); color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans);padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:0 28px;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--serif);font-weight:600;margin:0;letter-spacing:.005em;text-wrap:balance}
+h1{font-size:26px;line-height:1.15} h2{font-size:21px} h3{font-size:17px}
+p{margin:0}
+a{color:inherit}
+.sr{position:absolute;left:-9999px}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+/* barra do protótipo */
+.proto{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--bg);padding:10px 0 8px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:center;max-width:1120px;margin:0 auto}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
+.seg button{border:0;background:none;padding:7px 12px;border-radius:9px;font-size:13px;font-weight:600;color:var(--ink2);white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--btn);color:var(--btn-ink)}
+.tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-ink);background:var(--gold-wash);padding:4px 9px;border-radius:99px}
+.mini{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 10px;font-size:12px;color:var(--ink2)}
+/* ===== app dos pais ===== */
+.phone{max-width:430px;margin:6px auto 0;background:var(--bg);border-radius:30px;border:1px solid var(--line);box-shadow:var(--shadow);overflow:hidden;min-height:720px;position:relative;display:flex;flex-direction:column}
+@media (max-width:520px){.phone{border-radius:0;border:0;box-shadow:none;margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)));margin-inline-end:calc(-1*max(16px,env(safe-area-inset-right,0px)))}}
+.hdr{background:var(--hdr);color:var(--hdr-ink);padding:14px 18px;display:flex;align-items:center;gap:12px}
+.hdr svg{width:34px;height:auto;flex:none}
+.hdr .nm{font-family:var(--serif);font-size:19px;font-weight:600;line-height:1.1}
+.hdr .sub{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-top:2px}
+.hdr .who{margin-left:auto;font-size:12px;color:#C9D3E4;text-align:right}
+.body{padding:18px;display:flex;flex-direction:column;gap:14px;flex:1}
+.foot{padding:14px 18px 20px;font-size:12px;color:var(--muted);text-align:center;border-top:1px solid var(--line)}
+.foot a{color:var(--gold-ink);font-weight:600;text-decoration:none}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.card.flat{box-shadow:none}
+.lead{color:var(--ink2);font-size:14px}
+.row{display:flex;gap:10px;align-items:center}
+.row.wrap{flex-wrap:wrap}
+.sp{flex:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:13px;padding:13px 18px;font-weight:700;background:var(--btn);color:var(--btn-ink);min-height:48px;font-size:15px}
+.btn.block{width:100%}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.gold{background:var(--gold);color:#0D2340}
+.btn.sm{padding:8px 12px;min-height:36px;font-size:13px;border-radius:10px}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.lbl{display:block;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink2);margin-bottom:6px}
+.in{width:100%;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;min-height:48px}
+.in:focus{outline:2px solid var(--gold);border-color:transparent}
+.field{display:flex;flex-direction:column;gap:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:99px;padding:9px 14px;font-size:14px;font-weight:600;min-height:40px;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--sel);border-color:var(--sel-line)}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;cursor:pointer}
+.chk input{width:22px;height:22px;margin:1px 0 0;flex:none;accent-color:var(--brand)}
+.term{max-height:min(52vh,420px);overflow:auto;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13px;color:var(--ink2);background:var(--surface2)}
+.term p{margin:0 0 7px}
+.note{font-size:12.5px;color:var(--ink2);background:var(--gold-wash);border-radius:12px;padding:10px 12px}
+.menu{display:flex;flex-direction:column;gap:10px}
+.mi{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;min-height:72px}
+.mi .t{font-weight:700;font-size:16px}
+.mi .d{font-size:13px;color:var(--ink2);margin-top:1px}
+.mi .ic{width:44px;height:44px;border-radius:12px;background:var(--sel);display:grid;place-items:center;flex:none;font-size:22px}
+.sem{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:4px 9px 4px 6px;border-radius:99px;background:var(--surface2);border:1px solid var(--line);white-space:nowrap}
+.sem i{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;color:#fff;font-style:normal;font-size:12px;line-height:1}
+.sem.g i{background:var(--good)} .sem.y i{background:var(--warn);color:#3a2a00} .sem.r i{background:var(--crit)} .sem.n i{background:var(--muted)}
+.back{background:none;border:0;padding:6px 0;font-weight:700;color:var(--ink2);display:inline-flex;gap:6px;align-items:center;min-height:36px}
+.big{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sym{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:2px solid var(--line);background:var(--surface);border-radius:18px;padding:14px 8px;min-height:104px;font-weight:700;font-size:13px;text-align:center}
+.sym b{font-size:34px;line-height:1;font-weight:400}
+.sym[aria-pressed="true"]{border-color:var(--sel-line);background:var(--sel)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal .h{font-size:11px;font-weight:700;text-align:center;color:var(--muted);text-transform:uppercase;padding:2px 0}
+.day{aspect-ratio:1/1.12;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:3px 2px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;font-size:11px;color:var(--ink2);min-width:0}
+.day b{font-size:18px;line-height:1;font-weight:400}
+.day .fl{font-size:9px;line-height:1;min-height:9px}
+.day.off{opacity:.38}
+.day.today{border:2px solid var(--gold)}
+.day.miss{background:var(--surface2)}
+.day.hit{cursor:pointer}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:12.5px;color:var(--ink2)}
+.sheetbg{position:fixed;inset:0;background:rgba(5,12,25,.5);z-index:60;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:430px;border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));max-height:92vh;overflow:auto;display:flex;flex-direction:column;gap:14px}
+.sheet h2{font-size:20px}
+.stepper{display:flex;align-items:center;gap:6px}
+.stepper button{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);font-size:22px;font-weight:700;line-height:1}
+.stepper output{min-width:44px;text-align:center;font-size:20px;font-weight:700}
+.qrow{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line)}
+.qrow:first-child{border-top:0}
+.qrow .q{font-size:14px;font-weight:600;flex:1}
+.q small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+table.t{width:100%;border-collapse:collapse;font-size:13px}
+table.t th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:700;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.t td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+table.t tr:last-child td{border-bottom:0}
+.tw{overflow-x:auto}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:11px 16px;border-radius:12px;font-weight:600;font-size:14px;z-index:90;box-shadow:var(--shadow)}
+#tip{position:fixed;z-index:95;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;padding:6px 9px;border-radius:8px;max-width:240px;line-height:1.35;display:none}
+/* ===== painel do médico ===== */
+.doc{max-width:1120px;margin:6px auto 0;display:flex;flex-direction:column;gap:16px}
+.dhdr{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.dhdr svg{width:34px;height:auto;flex:none}
+.dhdr .nm{font-family:var(--serif);font-size:22px;font-weight:600;line-height:1.1}
+.dhdr .sub{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-ink);font-weight:700}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.tabs button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:8px 14px;font-weight:600;font-size:14px;white-space:nowrap}
+.tabs button[aria-pressed="true"]{background:var(--btn);color:var(--btn-ink);border-color:transparent}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.kpi b{font-size:30px;line-height:1.05;font-weight:700}
+.kpi span{font-size:12.5px;color:var(--ink2)}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:99px;padding:3px 10px 3px 8px;font-size:12px;font-weight:700;background:var(--surface2);border:1px solid var(--line);white-space:nowrap}
+.pill u{width:9px;height:9px;display:inline-block;background:var(--muted);border-radius:50%}
+.pill.warn u{background:var(--warn)} .pill.crit u{background:var(--crit);border-radius:2px;transform:rotate(45deg)} .pill.ok u{background:var(--good)} .pill.info u{background:var(--info);border-radius:2px} .pill.gray u{background:var(--muted)}
+.mod{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;background:var(--sel);color:var(--ink);margin-right:3px}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.plist tr{cursor:pointer}
+.plist tr:hover td{background:var(--surface2)}
+.charttitle{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-bottom:2px}
+.charttitle h3{font-size:16px}
+.charttitle small{color:var(--muted);font-size:12.5px}
+.chartbox svg{display:block;width:100%;height:auto;overflow:visible}
+.chartbox text{fill:var(--muted);font:11px var(--sans)}
+.chartbox text.k{fill:var(--ink2)}
+.stat{display:flex;flex-direction:column;gap:2px;min-width:110px}
+.stat b{font-size:28px;line-height:1.05}
+.stat span{font-size:12.5px;color:var(--ink2)}
+.wk{display:grid;grid-template-columns:34px 1fr 48px;gap:8px;align-items:center;font-size:12.5px;color:var(--ink2)}
+.wk i{display:block;height:12px;border-radius:0 4px 4px 0;background:var(--c-noite)}
+.bar{height:14px;background:var(--grid);border-radius:7px;overflow:hidden;position:relative}
+.bar i{display:block;height:100%;background:var(--c-noite);border-radius:7px 0 0 7px}
+.flag{font-size:11px;font-weight:700;border-radius:6px;padding:1px 6px;background:var(--gold-wash);color:var(--gold-ink)}
+textarea.msg{width:100%;min-height:130px;border:1.5px solid var(--line);background:var(--surface2);border-radius:12px;padding:12px;font-size:13.5px;line-height:1.5;resize:vertical}
+.hint{font-size:12.5px;color:var(--muted)}
+details>summary{cursor:pointer;font-weight:700}
+@media (max-width:520px){.seg{max-width:100%}.seg button{padding:7px 8px;font-size:12px}.proto .seg{flex-wrap:wrap;justify-content:center}}
+.hdr .nm,.dhdr .nm{text-transform:uppercase;width:max-content;white-space:nowrap}
+.hdr .nm{font-size:17px}.hdr .sub,.dhdr .sub{width:max-content;white-space:nowrap}
+/* iPhone: evita zoom automático ao tocar em campos e rolagem lateral */
+html,body{overflow-x:hidden;overflow-x:clip;max-width:100%}
+.in,input,select,textarea{font-size:16px}
+.field{min-width:0}
+input[type=date],input[type=time],input[type=number]{min-width:0;max-width:100%;-webkit-appearance:none;appearance:none;text-align:left}
+input[type=date]::-webkit-date-and-time-value{text-align:left;min-height:1.2em}
+
+.lang{display:flex;justify-content:flex-end;gap:6px;padding:8px 16px 0;flex-wrap:wrap}
+.lang button{font:inherit;font-size:12px;min-height:30px;padding:4px 12px;border:1px solid var(--line);background:var(--surface);color:var(--ink2);border-radius:999px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--sel);border-color:var(--sel-line);color:var(--ink);font-weight:700}
+.mi.locked{opacity:.55;cursor:default;background:var(--surface2)}
+.mi.locked .lock{font-size:16px;flex:none}
+
+a.btn{text-decoration:none}
+
+</style></head><body>
+<main id="app"></main>
+<script>
+/* Preencha API_URL com o endereço do programa do Google (termina em /exec) */
+const API_URL='https://script.google.com/macros/s/AKfycbxOjWwSj60sG7hnjUilc_hHmllMNoVv36OOzKeRVvDBodoyF36NVerPX-jxHn_pS4eX/exec';
+const APP_V='1.7';
+const TERMO_V='2026-10-v2';
+
+'use strict';
+const MS=864e5;
+const mkToday=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate(),12)};
+let TODAY=mkToday();
+const P=s=>{const a=s.split('-').map(Number);return new Date(a[0],a[1]-1,a[2],12)};
+const p2=n=>String(n).padStart(2,'0');
+const I=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+const add=(d,n)=>{const r=new Date(d.getTime());r.setDate(r.getDate()+n);return r};
+const diff=(a,b)=>Math.round((a-b)/MS);
+let F=d=>p2(d.getDate())+'/'+p2(d.getMonth()+1);
+let FY=d=>F(d)+'/'+d.getFullYear();
+let DS=['dom','seg','ter','qua','qui','sex','sáb'];
+let DL=['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+let MN=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const monday=d=>add(d,-((d.getDay()+6)%7));
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=(v,dec)=>{const s=(Math.round(v*10)/10).toFixed(dec==null?1:dec);return s.replace('.',',').replace(/,0$/,'')};
+const MARK='<svg viewBox="50 45 480 715" aria-hidden="true"><path fill="currentColor" d="M126 52 L172 100 L172 496 C172 556 160 614 126 666 Z"/><path fill="#C8A46A" d="M205 118 C315 126 374 177 374 251 C374 315 330 350 250 371 C345 386 408 441 408 520 C408 611 333 663 198 691 C297 648 350 592 350 520 C350 450 310 403 218 374 C301 350 326 307 326 252 C326 190 285 145 205 118 Z"/><path fill="currentColor" d="M58 724 C185 720 311 690 408 629 C458 598 493 563 523 519 C503 578 467 628 418 664 C323 733 194 751 58 724 Z"/></svg>';
+
+
+/* ===== idiomas: português (padrão), inglês e francês =====
+   Os valores gravados na planilha continuam em português (o médico lê assim);
+   só o que aparece na tela muda. */
+const LANGS=['pt','en','fr'];
+const LANG_KEY='mic.lang';
+let LANG='pt';
+const LNAME={pt:'Português',en:'English',fr:'Français'};
+const DAYS={
+ pt:{s:['dom','seg','ter','qua','qui','sex','sáb'],l:['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'],m:['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro']},
+ en:{s:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],l:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],m:['January','February','March','April','May','June','July','August','September','October','November','December']},
+ fr:{s:['dim','lun','mar','mer','jeu','ven','sam'],l:['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'],m:['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre']}
+};
+function detectLang(){
+ try{const l=localStorage.getItem(LANG_KEY);if(LANGS.includes(l))return l}catch(e){}
+ const n=String((navigator.languages&&navigator.languages[0])||navigator.language||'pt').slice(0,2).toLowerCase();
+ return LANGS.includes(n)?n:'pt';
+}
+function setLang(l,keep){
+ if(!LANGS.includes(l))l='pt';
+ LANG=l;DS=DAYS[l].s;DL=DAYS[l].l;MN=DAYS[l].m;
+ F=l==='en'?(d=>MN[d.getMonth()].slice(0,3)+' '+d.getDate()):(d=>p2(d.getDate())+'/'+p2(d.getMonth()+1));
+ FY=l==='en'?(d=>F(d)+', '+d.getFullYear()):(d=>F(d)+'/'+d.getFullYear());
+ try{document.documentElement.lang=l==='pt'?'pt-BR':l;if(!keep)localStorage.setItem(LANG_KEY,l)}catch(e){}
+}
+const t=(k,...a)=>{const m=M[k],i=LANG==='en'?1:LANG==='fr'?2:0;let s=m?(m[i]||m[0]):k;return s.replace(/\{(\d)\}/g,(_,j)=>a[j]==null?'':a[j])};
+/* rótulo na tela de um valor que é gravado em português */
+const VL=v=>M['v.'+v]?t('v.'+v):v;
+const M={
+/* valores gravados */
+'v.ausente':['ausente','none','aucune'],'v.nenhuma':['nenhuma','none','aucune'],'v.gotas':['gotas','drops','gouttes'],'v.roupa íntima':['roupa íntima','underwear','sous-vêtements'],'v.roupa molhada':['roupa molhada','wet clothes','vêtements mouillés'],
+'v.Água':['Água','Water','Eau'],'v.Suco':['Suco','Juice','Jus'],'v.Leite':['Leite','Milk','Lait'],'v.Refrigerante':['Refrigerante','Soda','Soda'],'v.Outro':['Outro','Other','Autre'],
+/* símbolos e motivos do calendário */
+'sym.seca':['Noite seca','Dry night','Nuit sèche'],'sym.umida':['Xixi durante o sono','Wet during sleep','Pipi pendant le sommeil'],'sym.pouco':['Molhou só um pouquinho','Only a little wet','Un tout petit peu mouillé'],'sym.acordou':['Acordou sozinho para fazer xixi','Woke up alone to pee','S’est réveillé seul pour faire pipi'],
+'raz.liquido':['Bebeu líquido antes de deitar','Drank fluids before bed','A bu avant de se coucher'],'raz.tarde':['Dormiu tarde','Went to bed late','S’est couché tard'],'raz.viagem':['Viagem ou festa','Trip or party','Voyage ou fête'],'raz.ar':['Ar-condicionado ou ventilador','Air conditioning or fan','Climatisation ou ventilateur'],'raz.estresse':['Estresse','Stress','Stress'],'raz.doenca':['Doença','Illness','Maladie'],'raz.outro':['Outro','Other','Autre'],
+/* gerais */
+'back':['‹ Voltar','‹ Back','‹ Retour'],'cancel':['Cancelar','Cancel','Annuler'],'save':['Salvar','Save','Enregistrer'],'close':['Fechar','Close','Fermer'],'goback':['Voltar','Back','Retour'],
+'hello':['Olá!','Hello!','Bonjour !'],'loading':['Carregando…','Loading…','Chargement…'],'code':['Código','Code','Code'],
+'sub':['Urologista Pediátrico','Pediatric Urologist','Urologue pédiatrique'],'less':['menos','less','moins'],'more':['mais','more','plus'],
+/* rodapé */
+'f.send1':['{0} registro para enviar','{0} record to send','{0} enregistrement à envoyer'],'f.sendn':['{0} registros para enviar','{0} records to send','{0} enregistrements à envoyer'],'f.sent':['Tudo enviado','All sent','Tout est envoyé'],
+'f.auth':['Este aparelho precisa entrar de novo. Vá em “Como usar” e toque em “Sair deste aparelho”.','This device needs to sign in again. Go to “How to use” and tap “Sign out of this device”.','Cet appareil doit se reconnecter. Allez dans « Mode d’emploi » et touchez « Quitter cet appareil ».'],
+'f.brand':['Acompanhamento miccional','Voiding follow-up','Suivi mictionnel'],'f.ver':['versão','version','version'],
+/* entrada */
+'ob.title':['Bem-vindos','Welcome','Bienvenue'],
+'ob.intro':['Este é o aplicativo de acompanhamento miccional, para o tratamento dos problemas de xixi (distúrbios miccionais). Com ele, o tratamento é acompanhado com mais rigor e controle entre as consultas, e as condutas podem ser ajustadas com mais segurança. Use o código que o consultório enviou pelo WhatsApp.','This is the voiding follow-up app, for treating urinary problems in children (voiding disorders). It lets treatment be followed more closely between visits, so that decisions can be adjusted more safely. Use the code the office sent you on WhatsApp.','Voici l’application de suivi mictionnel, pour le traitement des problèmes urinaires de l’enfant (troubles mictionnels). Elle permet de suivre le traitement avec plus de rigueur entre les consultations et d’ajuster les décisions plus sûrement. Utilisez le code envoyé par le cabinet sur WhatsApp.'],
+'ob.code':['Código da criança','Child’s code','Code de l’enfant'],'ob.read':['Código lido: ','Code read: ','Code lu : '],'ob.case':['Maiúsculas e minúsculas não importam.','Upper and lower case do not matter.','Majuscules et minuscules n’ont pas d’importance.'],
+'ob.dob':['Data de nascimento da criança','Child’s date of birth','Date de naissance de l’enfant'],'ob.dobh':['Serve só para conferir o código. Não fica guardada.','Used only to check the code. It is not stored.','Sert uniquement à vérifier le code. Elle n’est pas conservée.'],
+'ob.sx':['A criança é','The child is','L’enfant est'],'ob.M':['Menino','Boy','Garçon'],'ob.F':['Menina','Girl','Fille'],
+'ob.who':['Quem usa este aparelho','Who uses this device','Qui utilise cet appareil'],'ob.mae':['Mãe','Mother','Mère'],'ob.pai':['Pai','Father','Père'],'ob.outro':['Outro responsável','Other guardian','Autre responsable légal'],'ob.adol':['Sou o adolescente','I am the teenager','Je suis l’adolescent(e)'],
+'ob.cas':['A criança divide o tempo entre duas casas (guarda compartilhada). Cada responsável usa o próprio celular, com o mesmo código.','The child splits time between two homes (shared custody). Each guardian uses their own phone, with the same code.','L’enfant partage son temps entre deux domiciles (garde partagée). Chaque responsable utilise son propre téléphone, avec le même code.'],
+'ob.phase':['Em que fase estão?','Which stage are you at?','À quelle étape en êtes-vous ?'],'ob.inv':['Em investigação','Under evaluation','En cours d’évaluation'],'ob.trat':['Já iniciou tratamento com o Dr. Domingos Bica','Already started treatment with Dr. Domingos Bica','A déjà commencé le traitement avec le Dr Domingos Bica'],
+'ob.why':['O que traz vocês ao consultório?','What brings you to the office?','Qu’est-ce qui vous amène au cabinet ?'],'ob.mn':['Xixi na cama durante a noite (enurese)','Wetting the bed at night (enuresis)','Pipi au lit la nuit (énurésie)'],
+'ob.md':['Perdas, urgência ou outros problemas para urinar durante o dia','Leaks, urgency or other problems urinating during the day','Fuites, urgences ou autres problèmes pour uriner pendant la journée'],
+'ob.nd':['O Dr. Domingos pediu quantos diários miccionais?','How many voiding diaries did Dr. Domingos ask for?','Combien de journaux mictionnels le Dr Domingos a-t-il demandés ?'],
+'ob.term':['Termo de ciência sobre o acompanhamento e a privacidade','Notice of understanding about follow-up and privacy','Avis de prise de connaissance sur le suivi et la confidentialité'],
+'ob.t0':['<b>Finalidade.</b> Este aplicativo é uma ferramenta de acompanhamento clínico do Dr. Domingos Bica. Os diários miccionais e o calendário do xixi permitem organizar os sintomas, as perdas urinárias e outras informações ao longo do tempo, facilitando a avaliação da evolução e da resposta ao tratamento.','<b>Purpose.</b> This app is a clinical follow-up tool of Dr. Domingos Bica. The voiding diaries and the pee calendar help organize symptoms, urinary leakage and other information over time, making it easier to assess progress and response to treatment.','<b>Finalité.</b> Cette application est un outil de suivi clinique du Dr Domingos Bica. Les journaux mictionnels et le calendrier du pipi permettent d’organiser les symptômes, les fuites urinaires et d’autres informations dans le temps, facilitant l’évaluation de l’évolution et de la réponse au traitement.'],
+'ob.t1':['<b>1. Participação no acompanhamento.</b> O preenchimento dos registros, nos períodos e na frequência orientados pelo médico, integra o acompanhamento proposto. A participação dos responsáveis é necessária para que as informações sejam completas e úteis às decisões clínicas.<br><br>A ausência ou o preenchimento incompleto dos registros pode impedir uma avaliação adequada e exigir revisão do plano de acompanhamento. Em caso de dificuldade para utilizar o aplicativo, entre em contato com o consultório.','<b>1. Taking part in the follow-up.</b> Filling in the records, in the periods and with the frequency set by the doctor, is part of the proposed follow-up. The guardians’ participation is necessary for the information to be complete and useful for clinical decisions.<br><br>Missing or incomplete records may prevent a proper assessment and require a review of the follow-up plan. If you have difficulty using the app, please contact the office.','<b>1. Participation au suivi.</b> Remplir les enregistrements, aux périodes et à la fréquence indiquées par le médecin, fait partie du suivi proposé. La participation des responsables est nécessaire pour que les informations soient complètes et utiles aux décisions cliniques.<br><br>L’absence ou le remplissage incomplet des enregistrements peut empêcher une évaluation adéquate et nécessiter une révision du plan de suivi. En cas de difficulté pour utiliser l’application, contactez le cabinet.'],
+'ob.t2':['<b>2. Dados registrados e identificação.</b> A planilha de acompanhamento contém o código atribuído à criança e os registros relativos aos diários, ao calendário e ao tratamento. Não contém campos para nome, endereço, telefone ou documentos. Não inclua essas informações em eventuais campos de texto livre.<br><br>O código permite ao médico relacionar os registros à criança por meio do prontuário, onde a identificação é mantida separadamente. Os registros são informações de saúde e recebem a proteção prevista na LGPD.','<b>2. Recorded data and identification.</b> The follow-up spreadsheet contains the code assigned to the child and the records about the diaries, the calendar and the treatment. It has no fields for name, address, phone number or documents. Do not enter this information in any free-text fields.<br><br>The code lets the doctor link the records to the child through the medical record, where identification is kept separately. The records are health information and are protected under Brazil’s data protection law (LGPD).','<b>2. Données enregistrées et identification.</b> Le tableur de suivi contient le code attribué à l’enfant et les enregistrements relatifs aux journaux, au calendrier et au traitement. Il ne contient aucun champ pour le nom, l’adresse, le téléphone ou les documents. N’inscrivez pas ces informations dans les éventuels champs de texte libre.<br><br>Le code permet au médecin de relier les enregistrements à l’enfant par le dossier médical, où l’identification est conservée séparément. Les enregistrements sont des informations de santé et bénéficient de la protection prévue par la loi brésilienne sur les données (LGPD).'],
+'ob.t3':['<b>3. Acesso e armazenamento.</b> Somente o Dr. Domingos Bica tem acesso à planilha de acompanhamento no Google Drive. O Google fornece a infraestrutura de armazenamento, que pode envolver processamento fora do Brasil. O acesso é restrito e sujeito às medidas de segurança adotadas pelo consultório e pelos serviços utilizados.','<b>3. Access and storage.</b> Only Dr. Domingos Bica has access to the follow-up spreadsheet on Google Drive. Google provides the storage infrastructure, which may involve processing outside Brazil. Access is restricted and subject to the security measures adopted by the office and the services used.','<b>3. Accès et stockage.</b> Seul le Dr Domingos Bica a accès au tableur de suivi sur Google Drive. Google fournit l’infrastructure de stockage, ce qui peut impliquer un traitement hors du Brésil. L’accès est restreint et soumis aux mesures de sécurité adoptées par le cabinet et par les services utilisés.'],
+'ob.t4':['<b>4. Comunicações do acompanhamento.</b> O acompanhamento inclui lembretes de consulta, de preenchimento dos diários e do calendário, além de mensagens de incentivo relacionadas ao tratamento. Quando enviados pelo consultório, serão utilizados os contatos já existentes no prontuário. Essas comunicações não substituem as avaliações médicas.','<b>4. Follow-up communications.</b> The follow-up includes reminders for visits and for filling in the diaries and the calendar, as well as encouragement messages related to the treatment. When sent by the office, the contact details already in the medical record will be used. These communications do not replace medical assessments.','<b>4. Communications du suivi.</b> Le suivi comprend des rappels de consultation et de remplissage des journaux et du calendrier, ainsi que des messages d’encouragement liés au traitement. Lorsqu’ils sont envoyés par le cabinet, les coordonnées déjà présentes dans le dossier médical sont utilisées. Ces communications ne remplacent pas les évaluations médicales.'],
+'ob.t5':['<b>5. Inatividade e desativação.</b> O acesso é destinado aos pacientes em acompanhamento ativo. Na ausência dos registros solicitados ou de continuidade do acompanhamento, o consultório poderá comunicar a necessidade de regularização, informando o prazo aplicável.<br><br>Se a situação persistir após esse prazo, o acesso poderá ser desativado. A desativação do aplicativo não representa, por si só, alta médica nem encerramento do atendimento. A retomada do uso deverá ser combinada com o consultório.','<b>5. Inactivity and deactivation.</b> Access is intended for patients in active follow-up. If the requested records are missing or the follow-up is not continued, the office may let you know that it needs to be regularized, stating the applicable deadline.<br><br>If the situation persists after that deadline, access may be deactivated. Deactivating the app is not, in itself, a medical discharge or the end of care. Resuming use should be arranged with the office.','<b>5. Inactivité et désactivation.</b> L’accès est destiné aux patients en suivi actif. En l’absence des enregistrements demandés ou de poursuite du suivi, le cabinet pourra signaler la nécessité de régularisation en indiquant le délai applicable.<br><br>Si la situation persiste après ce délai, l’accès pourra être désactivé. La désactivation de l’application ne représente pas, en soi, une sortie médicale ni la fin de la prise en charge. La reprise de l’usage devra être convenue avec le cabinet.'],
+'ob.t6':['<b>6. Conservação e direitos.</b> Os registros serão mantidos pelo tempo necessário à assistência e ao cumprimento das obrigações legais e profissionais. Informações relevantes poderão integrar o prontuário.<br><br>Dúvidas e solicitações de acesso, correção ou exclusão, quando cabível, poderão ser encaminhadas ao consultório pelo botão de contato na aba Ajuda do aplicativo. A desativação do aplicativo não implica exclusão automática dos registros.','<b>6. Retention and rights.</b> Records will be kept for as long as necessary for care and to meet legal and professional obligations. Relevant information may become part of the medical record.<br><br>Questions and requests for access, correction or deletion, where applicable, can be sent to the office through the contact button in the app’s Help tab. Deactivating the app does not automatically delete the records.','<b>6. Conservation et droits.</b> Les enregistrements seront conservés le temps nécessaire aux soins et au respect des obligations légales et professionnelles. Des informations pertinentes pourront être intégrées au dossier médical.<br><br>Les questions et demandes d’accès, de correction ou de suppression, lorsque cela est possible, peuvent être adressées au cabinet via le bouton de contact de l’onglet Aide de l’application. La désactivation de l’application n’entraîne pas la suppression automatique des enregistrements.'],
+'ob.t7':['<b>7. Limites da ferramenta.</b> Os registros são analisados nas avaliações combinadas com o médico, e não em tempo real. O preenchimento não garante leitura imediata nem ajuste automático do tratamento.<br><br>Em caso de urgência, não aguarde resposta pelo aplicativo ou por mensagens: procure um serviço de urgência.','<b>7. Limits of the tool.</b> Records are reviewed at the evaluations arranged with the doctor, not in real time. Filling them in does not guarantee immediate review or automatic treatment adjustment.<br><br>In an emergency, do not wait for a reply through the app or messages: seek emergency care.','<b>7. Limites de l’outil.</b> Les enregistrements sont analysés lors des évaluations convenues avec le médecin, et non en temps réel. Les remplir ne garantit ni lecture immédiate ni ajustement automatique du traitement.<br><br>En cas d’urgence, n’attendez pas de réponse par l’application ou par message : recourez à un service d’urgence.'],
+'ob.tv':['Versão do termo: ','Form version: ','Version du formulaire : '],
+'ob.agree':['Declaro ser mãe, pai ou responsável legal pela criança e estar ciente do funcionamento do aplicativo, da importância do preenchimento dos registros e das informações de privacidade apresentadas.','I declare that I am the mother, father or legal guardian of the child and that I understand how the app works, the importance of filling in the records and the privacy information presented.','Je déclare être la mère, le père ou le responsable légal de l’enfant et avoir compris le fonctionnement de l’application, l’importance du remplissage des enregistrements et les informations de confidentialité présentées.'],
+'ob.assent':['Entendi e concordo em participar.','I understand and agree to take part.','J’ai compris et j’accepte de participer.'],
+'ob.assenth':['Seus responsáveis só veem “preenchido ✔”. Se achar que eles devem ver como estão as suas noites, você ativa essa opção no menu, quando quiser.','Your guardians only see “done ✔”. If you decide they should see how your nights are going, you can turn this on in the menu at any time.','Vos responsables voient seulement « rempli ✔ ». Si vous pensez qu’ils doivent voir comment se passent vos nuits, vous pouvez activer cette option dans le menu quand vous voulez.'],
+'ob.go':['Li e estou ciente — iniciar acompanhamento','I have read and understand — start follow-up','J’ai lu et je suis informé(e) — commencer le suivi'],'ob.busy':['Entrando…','Signing in…','Connexion…'],
+'err.dados':['O código ou a data de nascimento não conferem. Confira com o consultório.','The code or date of birth does not match. Please check with the office.','Le code ou la date de naissance ne correspondent pas. Vérifiez auprès du cabinet.'],
+'err.bloqueado':['Muitas tentativas. Tente novamente daqui a 1 hora.','Too many attempts. Please try again in 1 hour.','Trop de tentatives. Réessayez dans 1 heure.'],
+'err.termo':['O termo mudou. Feche e abra o aplicativo de novo.','The consent form has changed. Close and reopen the app.','Le formulaire a changé. Fermez et rouvrez l’application.'],
+'err.codigo':['Código inválido. Use as iniciais e o ano de nascimento, como no exemplo.','Invalid code. Use the initials and the year of birth, as in the example.','Code invalide. Utilisez les initiales et l’année de naissance, comme dans l’exemple.'],
+'err.rede':['Sem conexão com a internet. Tente de novo.','No internet connection. Please try again.','Pas de connexion internet. Réessayez.'],
+'err.config':['O aplicativo ainda não foi configurado.','The app has not been set up yet.','L’application n’est pas encore configurée.'],
+'err.ocupado':['O serviço está ocupado. Tente de novo em instantes.','The service is busy. Please try again shortly.','Le service est occupé. Réessayez dans un instant.'],
+'err.x':['Não foi possível entrar. Tente de novo.','Could not sign in. Please try again.','Connexion impossible. Réessayez.'],
+/* espera */
+'wait.enc':['Acompanhamento encerrado','Follow-up closed','Suivi terminé'],'wait.rec':['Cadastro recebido','Registration received','Inscription reçue'],
+'wait.enct':['O acompanhamento deste código foi encerrado pelo consultório. Para voltar a usar o aplicativo, fale com o consultório.','Follow-up for this code has been closed by the office. To use the app again, please contact the office.','Le suivi de ce code a été clôturé par le cabinet. Pour réutiliser l’application, contactez le cabinet.'],
+'wait.rect':['O Dr. Domingos vai liberar o seu acompanhamento em breve. Enquanto isso, nada precisa ser preenchido.','Dr. Domingos will activate your follow-up shortly. Meanwhile, nothing needs to be filled in.','Le Dr Domingos va activer votre suivi prochainement. D’ici là, rien n’a besoin d’être rempli.'],
+'wait.btn':['Verificar agora','Check now','Vérifier maintenant'],'wait.busy':['Verificando…','Checking…','Vérification…'],
+/* fase de avaliação (tela inicial) */
+'dx.phase':['Fase de avaliação','Evaluation stage','Phase d’évaluation'],
+'dx.intro':['Vocês estão na <b>fase de avaliação</b> (investigação). Para que o Dr. Domingos possa concluir o diagnóstico e definir o tratamento, precisamos das informações abaixo. As outras funções do aplicativo são liberadas quando o tratamento começar.','You are in the <b>evaluation stage</b>. So that Dr. Domingos can reach a diagnosis and define the treatment, we need the information below. The other features of the app unlock when treatment starts.','Vous êtes en <b>phase d’évaluation</b>. Pour que le Dr Domingos puisse conclure le diagnostic et définir le traitement, nous avons besoin des informations ci-dessous. Les autres fonctions de l’application se débloquent au début du traitement.'],
+'dx.diaries':['Diários miccionais','Voiding diaries','Journaux mictionnels'],
+'dx.asked1':['O Dr. Domingos pediu <b>1</b> diário miccional.','Dr. Domingos asked for <b>1</b> voiding diary.','Le Dr Domingos a demandé <b>1</b> journal mictionnel.'],
+'dx.askedn':['O Dr. Domingos pediu <b>{0}</b> diários miccionais, cada um em um dia diferente, sem dias seguidos.','Dr. Domingos asked for <b>{0}</b> voiding diaries, each on a different day, not on consecutive days.','Le Dr Domingos a demandé <b>{0}</b> journaux mictionnels, chacun un jour différent, sans jours consécutifs.'],
+'dx.by':['Prazo: <b>{0}</b>.','Deadline: <b>{0}</b>.','Délai : <b>{0}</b>.'],
+'dx.diary':['Diário {0}','Diary {0}','Journal {0}'],
+'dx.done':['<b>Diários completos.</b> Obrigado! O Dr. Domingos já recebeu tudo e vai analisar. Entre em contato com o consultório para combinar o retorno.','<b>Diaries complete.</b> Thank you! Dr. Domingos has received everything and will review it. Please contact the office to arrange the return visit.','<b>Journaux complets.</b> Merci ! Le Dr Domingos a tout reçu et va l’analyser. Contactez le cabinet pour convenir du retour.'],
+'dx.next':['Próximo dia indicado: <b>sábado {0}</b> (ou feriado), em casa, sem atividades externas.','Suggested next day: <b>Saturday {0}</b> (or a holiday), at home, with no outside activities.','Prochain jour conseillé : <b>samedi {0}</b> (ou jour férié), à la maison, sans activités extérieures.'],
+'dx.cont':['Continuar o diário de hoje','Continue today’s diary','Continuer le journal d’aujourd’hui'],'dx.start':['Iniciar o diário de hoje','Start today’s diary','Commencer le journal d’aujourd’hui'],
+'dx.fr1':['Cada diário inclui a fralda e o primeiro xixi da manhã seguinte.','Each diary includes the night diaper and the first pee of the next morning.','Chaque journal inclut la couche de la nuit et la première miction du lendemain matin.'],
+'dx.us':['Ultrassom dinâmico','Dynamic ultrasound','Échographie dynamique'],
+'dx.usask':['O Dr. Domingos solicitou o ultrassom dinâmico. Quando fizerem o exame, toque no botão abaixo.','Dr. Domingos has requested the dynamic ultrasound. When the exam is done, tap the button below.','Le Dr Domingos a demandé l’échographie dynamique. Lorsque l’examen est fait, touchez le bouton ci-dessous.'],
+'dx.usbtn':['Já realizei o ultrassom dinâmico','I have had the dynamic ultrasound','L’échographie dynamique a été réalisée'],
+'dx.usdone':['<b>Realizado em {0}.</b> Entregue o laudo no consultório, e o Dr. Domingos lança as informações.','<b>Done on {0}.</b> Please bring the report to the office, and Dr. Domingos will enter the information.','<b>Réalisée le {0}.</b> Apportez le compte rendu au cabinet, et le Dr Domingos saisira les informations.'],
+'dx.how':['Como preencher o diário','How to fill in the diary','Comment remplir le journal'],
+'dx.h1':['Escolha um sábado, domingo ou feriado em que a criança fique em casa.','Choose a Saturday, Sunday or holiday when the child stays at home.','Choisissez un samedi, un dimanche ou un jour férié où l’enfant reste à la maison.'],
+'dx.h2':['<b>Nenhuma micção pode ficar sem registro.</b> Toque em “Registrar micção agora” a cada xixi.','<b>No urination may go unrecorded.</b> Tap “Record urination now” every time.','<b>Aucune miction ne doit rester sans enregistrement.</b> Touchez « Enregistrer une miction » à chaque pipi.'],
+'dx.h3':['Meça o volume em um copo graduado e anote em mL.','Measure the volume in a measuring cup and write it down in mL.','Mesurez le volume dans un gobelet gradué et notez-le en mL.'],
+'dx.h4':['<b>Neste dia, não peça nem lembre a criança de fazer xixi.</b> Ela deve urinar sozinha, quando sentir vontade. Só neste dia é proibido estimular. Você só anota.','<b>On this day, do not ask or remind the child to pee.</b> The child should go alone, when they feel the need. Only on this day, prompting is not allowed. You only write it down.','<b>Ce jour-là, ne demandez pas à l’enfant d’aller faire pipi et ne le lui rappelez pas.</b> Il doit uriner seul, quand il en ressent le besoin. Seulement ce jour-là, il est interdit de l’y inciter. Vous notez simplement.'],
+'dx.h5':['Mantenha o dia comum e a ingestão de líquidos habitual: <b>nem menos, nem mais</b> que o normal.','Keep the day ordinary and fluid intake usual: <b>neither less nor more</b> than normal.','Gardez une journée ordinaire et une consommation de liquides habituelle : <b>ni moins, ni plus</b> que d’habitude.'],
+'dx.h6':['Anote <b>tudo</b> que a criança beber durante o dia (água, suco, leite, sopa). O horário é opcional.','Write down <b>everything</b> the child drinks during the day (water, juice, milk, soup). The time is optional.','Notez <b>tout</b> ce que l’enfant boit pendant la journée (eau, jus, lait, soupe). L’heure est facultative.'],
+'dx.h7a':['Na noite do diário, coloque uma fralda e pese de manhã. Meça o primeiro xixi do dia seguinte.','On the night of the diary, put on a diaper and weigh it in the morning. Measure the first pee of the next day.','La nuit du journal, mettez une couche et pesez-la le matin. Mesurez la première miction du lendemain.'],
+'dx.h7b':['O dia do diário vai do acordar até a criança dormir. Não é preciso pesar fralda.','The diary day runs from waking up until the child goes to sleep. There is no need to weigh a diaper.','La journée du journal va du réveil jusqu’au coucher de l’enfant. Inutile de peser la couche.'],
+'dx.n1':['O envio é automático. Cada registro vai para o Dr. Domingos assim que a internet estiver disponível.','Sending is automatic. Each record goes to Dr. Domingos as soon as there is internet.','L’envoi est automatique. Chaque enregistrement part vers le Dr Domingos dès qu’internet est disponible.'],
+'dx.n2':['Exames e laudos não precisam ser enviados pelo aplicativo. Entregue no consultório, e o Dr. Domingos lança as informações.','Exams and reports do not need to be sent through the app. Bring them to the office, and Dr. Domingos will enter the information.','Les examens et comptes rendus n’ont pas besoin d’être envoyés par l’application. Apportez-les au cabinet, et le Dr Domingos saisira les informations.'],
+'dx.soon':['Disponível quando o tratamento começar','Available when treatment starts','Disponible au début du traitement'],
+'dx.title2':['Diário de acompanhamento','Follow-up diary','Journal de suivi'],
+/* diário do dia */
+'dy.title':['Diário {0} de {1}','Diary {0} of {1}','Journal {0} sur {1}'],
+'dy.night':['Noite do diário: fralda e primeiro xixi','Night of the diary: diaper and first pee','Nuit du journal : couche et première miction'],
+'dy.rem':['<b>Lembrete:</b> não peça nem lembre a criança de urinar. Anote só o que ela fizer por conta própria.','<b>Reminder:</b> do not ask or remind the child to pee. Only write down what the child does on their own.','<b>Rappel :</b> ne demandez pas à l’enfant d’uriner et ne le lui rappelez pas. Notez seulement ce qu’il fait de lui-même.'],
+'dy.addmic':['＋ Registrar micção agora','＋ Record urination now','＋ Enregistrer une miction'],'dy.addliq':['Registrei líquido','I recorded a drink','J’ai noté une boisson'],
+'dy.today':['Hoje','Today','Aujourd’hui'],'dy.m1':['micção','urination','miction'],'dy.mn':['micções','urinations','mictions'],'dy.liq':['líquidos','fluids','liquides'],
+'dy.hour':['Hora','Time','Heure'],'dy.urg':['Urgência','Urgency','Urgence'],'dy.loss':['Perda','Leak','Fuite'],'dy.obs':['Obs.','Notes','Remarques'],'dy.nm':['não medido','not measured','non mesuré'],
+'dy.none':['Nenhuma micção registrada ainda.','No urination recorded yet.','Aucune miction enregistrée pour l’instant.'],
+'dy.liqt':['Líquidos de hoje','Today’s fluids','Liquides d’aujourd’hui'],'dy.what':['O quê','What','Quoi'],
+'dy.end':['Encerrar o dia','End the day','Terminer la journée'],
+/* menu */
+'mn.cal':['Calendário do xixi','Pee calendar','Calendrier pipi'],'mn.calok':['Noite de ontem registrada','Last night recorded','Nuit d’hier enregistrée'],'mn.calno':['Falta registrar a noite de ontem','Last night is not recorded yet','Il manque la nuit d’hier'],
+'mn.miss':[' · faltam {0} nos últimos 7 dias',' · {0} missing in the last 7 days',' · {0} manquantes ces 7 derniers jours'],
+'mn.uptodate':['Em dia','Up to date','À jour'],'mn.missn':['Faltam {0}','{0} missing','{0} manquantes'],'mn.miss1':['Falta','Missing','Manquant'],
+'mn.week':['Resumo semanal','Weekly summary','Résumé hebdomadaire'],'mn.weekd':['Semana de {0} a {1}','Week of {0} to {1}','Semaine du {0} au {1}'],'mn.sent':['Enviado','Sent','Envoyé'],'mn.pend':['Pendente','Pending','En attente'],
+'mn.dia':['Diário miccional','Voiding diary','Journal mictionnel'],
+'mn.dia1':['O Dr. Domingos pediu {0} diário miccional','Dr. Domingos asked for {0} voiding diary','Le Dr Domingos a demandé {0} journal mictionnel'],'mn.dian':['O Dr. Domingos pediu {0} diários miccionais','Dr. Domingos asked for {0} voiding diaries','Le Dr Domingos a demandé {0} journaux mictionnels'],
+'mn.until':[' até {0}',' by {0}',' avant le {0}'],'mn.asked':['Pedido','Requested','Demandé'],
+'mn.notes':['Anotações','Notes','Notes'],'mn.notesd':['Remédio, viagem, acontecimentos','Medication, trips, events','Médicament, voyage, événements'],
+'mn.info':['Orientações','Guidance','Conseils'],'mn.infod':['Líquidos, horários e hábitos','Fluids, schedules and habits','Liquides, horaires et habitudes'],
+'mn.dev':['Alarme e relógio','Alarm and watch','Alarme et montre'],'mn.devd':['Wet-Stop (noite) e WobL (dia)','Wet-Stop (night) and WobL (day)','Wet-Stop (nuit) et WobL (jour)'],
+'mn.help':['Como usar o aplicativo','How to use the app','Mode d’emploi de l’application'],'mn.helpd':['Passo a passo e dúvidas comuns','Step by step and common questions','Pas à pas et questions fréquentes'],
+'mn.stars':['Estrelas da criança','Child’s stars','Étoiles de l’enfant'],
+'lt.n1':['Falta registrar a noite de ontem.','Last night is not recorded yet.','La nuit dernière n’est pas encore enregistrée.'],
+'lt.nn':['Faltam {0} noites nos últimos 7 dias.','{0} nights missing in the last 7 days.','Il manque {0} nuits sur les 7 derniers jours.'],
+'lt.w':['O resumo da semana passada ainda não foi enviado.','Last week’s summary has not been sent yet.','Le résumé de la semaine dernière n’a pas encore été envoyé.'],
+'lt.m0':['Cada registro ajuda o Dr. Domingos a ajustar o tratamento no momento certo.','Every entry helps Dr. Domingos adjust the treatment at the right time.','Chaque enregistrement aide le Dr Domingos à ajuster le traitement au bon moment.'],
+'lt.m1':['Registrar todos os dias é o que mais aumenta a chance de sucesso do tratamento.','Recording every day is what most increases the chance of treatment success.','Enregistrer chaque jour est ce qui augmente le plus les chances de réussite du traitement.'],
+'lt.m2':['Sem os registros, a consulta vira palpite. Com eles, vira decisão.','Without records, the visit is guesswork. With them, it becomes a decision.','Sans enregistrements, la consultation repose sur des suppositions. Avec eux, elle devient une décision.'],
+'lt.m3':['Leva menos de um minuto e faz diferença no resultado do seu filho.','It takes less than a minute and makes a difference to your child’s result.','Cela prend moins d’une minute et fait la différence pour le résultat de votre enfant.'],
+'lt.m4':['Mesmo as noites difíceis são importantes: registre-as também.','Even the difficult nights matter: record them too.','Même les nuits difficiles comptent : enregistrez-les aussi.'],
+'rc.t':['Próxima consulta do tratamento','Next treatment visit','Prochaine consultation du traitement'],
+'rc.when':['Prevista para <b>{0}</b>','Expected on <b>{0}</b>','Prévue pour <b>{0}</b>'],
+'rc.d':['faltam {0} dias','{0} days left','dans {0} jours'],
+'rc.d1':['falta 1 dia','1 day left','dans 1 jour'],
+'rc.today':['é hoje','it is today','c’est aujourd’hui'],
+'rc.w':['faltam cerca de {0} semanas','about {0} weeks left','dans environ {0} semaines'],
+'rc.m':['faltam cerca de {0} meses','about {0} months left','dans environ {0} mois'],
+'rc.book':['Ainda não marcou? Fale com o consultório ou agende online.','Not booked yet? Talk to the office or book online.','Pas encore de rendez-vous ? Contactez le cabinet ou réservez en ligne.'],
+'rc.ag':['Já marquei a consulta','I have booked the visit','J’ai pris rendez-vous'],
+'rc.agok':['Consulta marcada para {0}','Visit booked for {0}','Rendez-vous pris pour le {0}'],
+'rc.undo':['Desfazer','Undo','Annuler'],
+'ag.q':['Qual é a data da consulta marcada?','What is the date of the booked visit?','Quelle est la date du rendez-vous pris ?'],
+'ag.ok':['Informar','Confirm','Confirmer'],
+'ag.bad':['Informe uma data a partir de hoje, em até 5 meses.','Enter a date from today, within 5 months.','Indiquez une date à partir d’aujourd’hui, dans les 5 mois.'],
+'ck.t':['A consulta do tratamento está chegando ao prazo','The treatment visit is reaching its deadline','La consultation du traitement atteint son échéance'],
+'ck.p':['A data prevista da consulta foi há {0} dias. As consultas fazem parte do tratamento: é nelas que ajustamos a medicação e os cuidados de comportamento. Para não pausarmos o acompanhamento, conte-nos como estão as coisas. Faltam {1} dias para a pausa.','The expected visit date was {0} days ago. Visits are part of the treatment: that is where we adjust medication and behavioral care. To avoid pausing the follow-up, please tell us how things are. {1} days left before the pause.','La date prévue de la consultation était il y a {0} jours. Les consultations font partie du traitement : c’est là que nous ajustons les médicaments et les soins comportementaux. Pour éviter de mettre le suivi en pause, dites-nous où vous en êtes. Il reste {1} jours avant la pause.'],
+'ck.o.vou':['Vou marcar em breve','I will book it soon','Je vais prendre rendez-vous bientôt'],
+'ck.o.melhorou':['Meu filho melhorou e prefiro aguardar','My child improved and I prefer to wait','Mon enfant va mieux et je préfère attendre'],
+'ck.o.custo':['Tenho dificuldade de custo ou de horário','I have difficulty with cost or schedule','J’ai des difficultés de coût ou d’horaire'],
+'ck.o.parou':['Interrompemos o tratamento','We stopped the treatment','Nous avons arrêté le traitement'],
+'ck.o.outro':['Outro motivo','Another reason','Autre raison'],
+'ck.r.vou':['Combinado! Ligue para o consultório assim que puder e informe a data aqui.','Agreed! Please call the office as soon as you can and enter the date here.','Entendu ! Appelez le cabinet dès que possible et indiquez la date ici.'],
+'ck.r.melhorou':['Que boa notícia! Mesmo com a melhora, as consultas continuam importantes: a medicação costuma precisar de redução cuidadosa e os ajustes de comportamento são metade do sucesso. O Dr. Domingos será informado.','Great news! Even with improvement, visits remain important: medication usually needs careful tapering and behavioral adjustments are half of the success. Dr. Domingos will be informed.','Bonne nouvelle ! Même avec l’amélioration, les consultations restent importantes : le médicament doit souvent être réduit avec soin et les ajustements de comportement font la moitié du succès. Le Dr Domingos sera informé.'],
+'ck.r.custo':['Obrigado por contar. O Dr. Domingos prefere saber da dificuldade para buscar uma solução junto com vocês. Fale com o consultório.','Thank you for telling us. Dr. Domingos prefers to know about the difficulty so a solution can be found together. Please contact the office.','Merci de nous le dire. Le Dr Domingos préfère connaître la difficulté pour chercher une solution avec vous. Contactez le cabinet.'],
+'ck.r.parou':['Obrigado por nos contar. O Dr. Domingos será informado. Se mudarem de ideia, é só tocar em Retomar. Os registros ficam guardados.','Thank you for telling us. Dr. Domingos will be informed. If you change your mind, just tap Resume. Your records stay saved.','Merci de nous le dire. Le Dr Domingos sera informé. Si vous changez d’avis, touchez simplement Reprendre. Vos enregistrements restent conservés.'],
+'ck.r.outro':['Obrigado por avisar. O Dr. Domingos será informado.','Thank you for letting us know. Dr. Domingos will be informed.','Merci de nous prévenir. Le Dr Domingos sera informé.'],
+'ck.r.depois':['Tudo bem, perguntamos de novo em alguns dias.','All right, we will ask again in a few days.','D’accord, nous vous le redemanderons dans quelques jours.'],
+'ck.o.depois':['Lembrar mais tarde','Remind me later','Me le rappeler plus tard'],
+'ck.o.vou2':['Ainda não marquei','I have not booked yet','Je n’ai pas encore pris rendez-vous'],
+'ck.pause':['Acompanhamento pausado','Follow-up paused','Suivi en pause'],
+'ck.pausep':['Vocês informaram que o tratamento foi interrompido. O Dr. Domingos foi avisado e os registros continuam guardados.','You said the treatment was stopped. Dr. Domingos has been notified and your records remain saved.','Vous avez indiqué que le traitement a été arrêté. Le Dr Domingos a été informé et vos enregistrements restent conservés.'],
+'ck.resume':['Retomar o acompanhamento','Resume follow-up','Reprendre le suivi'],
+'ck.ok':['Entendi','Got it','Compris'],
+'ps.t':['Acompanhamento em pausa','Follow-up paused','Suivi en pause'],
+'ps.p':['O sucesso do tratamento depende da medicação e dos ajustes de comportamento, e ambos precisam de reavaliação periódica. A consulta prevista para {0} não foi realizada. Para continuarmos juntos, marque a consulta e informe a data aqui.','Treatment success depends on medication and behavioral adjustments, and both need periodic re-evaluation. The visit expected on {0} did not take place. To continue together, please book the visit and enter the date here.','Le succès du traitement dépend des médicaments et des ajustements de comportement, et les deux nécessitent une réévaluation périodique. La consultation prévue le {0} n’a pas eu lieu. Pour continuer ensemble, prenez rendez-vous et indiquez la date ici.'],
+'ps.rec':['Calendário e resumo semanal ficam bloqueados até lá. Seus registros estão guardados.','The calendar and weekly summary stay locked until then. Your records are saved.','Le calendrier et le résumé hebdomadaire restent verrouillés jusque-là. Vos enregistrements sont conservés.'],
+'st.t':['Tratamento prescrito','Treatment prescribed','Traitement prescrit'],
+'st.lead':['Quando o tratamento começar, informe a data abaixo. Só depois disso o calendário e os controles são liberados.','When the treatment starts, enter the date below. The calendar and controls unlock only after that.','Lorsque le traitement commence, indiquez la date ci-dessous. Le calendrier et les contrôles ne se débloquent qu’ensuite.'],
+'st.date':['Data em que o tratamento começou','Date the treatment started','Date de début du traitement'],
+'st.ch':['Ritmo das consultas','Visit schedule','Rythme des consultations'],
+'st.cp':['Em geral, o tratamento dos distúrbios da micção segue um ritmo de reavaliação: a primeira consulta cerca de 30 dias após o início, as três seguintes a cada 45 dias e, depois, a cada 2 meses, ou antes se o Dr. Domingos indicar. É esse acompanhamento próximo, com ajustes da medicação e dos hábitos no momento certo, que dá ao tratamento a melhor chance de evolução favorável. Se a consulta passar da data prevista em mais de 1 a 2 semanas, o acompanhamento no aplicativo fica em pausa até a consulta ser marcada.','In general, treating voiding disorders follows a rhythm of reassessment: the first visit about 30 days after starting, the next three every 45 days and then every 2 months, or sooner if Dr. Domingos advises. This close follow-up, adjusting medication and habits at the right time, gives the treatment its best chance of a favorable outcome. If a visit goes more than 1 to 2 weeks past the expected date, follow-up in the app is paused until the visit is booked.','En général, le traitement des troubles mictionnels suit un rythme de réévaluation : la première consultation environ 30 jours après le début, les trois suivantes tous les 45 jours, puis tous les 2 mois, ou plus tôt si le Dr Domingos l’indique. C’est ce suivi rapproché, avec des ajustements des médicaments et des habitudes au bon moment, qui donne au traitement les meilleures chances d’évolution favorable. Si une consultation dépasse la date prévue de plus de 1 à 2 semaines, le suivi dans l’application est mis en pause jusqu’à la prise de rendez-vous.'],
+'rc.chip':['Próxima consulta do tratamento: {0}','Next treatment visit: {0}','Prochaine consultation du traitement : {0}'],
+'st.go':['Começar o acompanhamento','Start follow-up','Commencer le suivi'],
+'st.bad':['A data não pode ser futura nem anterior a 14 dias.','The date cannot be in the future or more than 14 days ago.','La date ne peut pas être future ni antérieure à 14 jours.'],
+'im.t':['Antes da consulta','Before the visit','Avant la consultation'],
+'im.p':['Em poucos toques, conte ao Dr. Domingos como está cada problema, comparado com antes de começar o tratamento.','In a few taps, tell Dr. Domingos how each problem is, compared with before the treatment started.','En quelques touches, dites au Dr Domingos où en est chaque problème par rapport au début du traitement.'],
+'im.n':['Noites molhadas (enurese)','Wet nights (bedwetting)','Nuits mouillées (énurésie)'],
+'im.d':['Perdas de xixi e urgência durante o dia','Daytime leaks and urgency','Fuites et urgences pendant la journée'],
+'im.i':['Intestino (prisão de ventre, fezes na roupa)','Bowel (constipation, soiling)','Intestin (constipation, souillures)'],
+'im.l1':['Não melhorou','Not improved','Pas d’amélioration'],
+'im.l2':['Discreta melhora','Slight improvement','Légère amélioration'],
+'im.l3':['Melhora razoável','Fair improvement','Amélioration correcte'],
+'im.l4':['Boa melhora','Good improvement','Bonne amélioration'],
+'im.l5':['Resolvido','Resolved','Résolu'],
+'im.send':['Enviar','Send','Envoyer'],
+'im.thx':['Obrigado! O Dr. Domingos verá suas respostas na consulta.','Thank you! Dr. Domingos will see your answers at the visit.','Merci ! Le Dr Domingos verra vos réponses lors de la consultation.'],
+'sh.pt':['Que tipo de perda foi?','What kind of leak was it?','Quel type de fuite était-ce ?'],
+'sh.pt.u':['Veio com urgência','Came with urgency','Avec urgence'],'sh.pt.s':['Sem perceber','Without noticing','Sans s’en rendre compte'],'sh.pt.e':['Ao rir ou fazer esforço','When laughing or straining','En riant ou en forçant'],'sh.pt.m':['Mais de um tipo','More than one kind','Plus d’un type'],
+'cq.ok':['Obrigado!','Thank you!','Merci !'],
+'cq.t.n1':['Primeira noite seca! 🎉','First dry night! 🎉','Première nuit sèche ! 🎉'],'cq.m.n1':['Um passo importante. Continue registrando as noites.','An important step. Keep recording the nights.','Une étape importante. Continuez à noter les nuits.'],
+'cq.t.n7':['7 noites secas seguidas! 🎉','7 dry nights in a row! 🎉','7 nuits sèches de suite ! 🎉'],'cq.m.n7':['Que conquista! É resultado da dedicação da família.','What an achievement! It is the result of the family’s dedication.','Quelle réussite ! C’est le fruit du dévouement de la famille.'],
+'cq.t.n14':['14 noites secas seguidas! 🎉','14 dry nights in a row! 🎉','14 nuits sèches de suite ! 🎉'],'cq.m.n14':['Parabéns à criança e a vocês. Sigam firmes.','Congratulations to your child and to you. Keep going.','Félicitations à l’enfant et à vous. Continuez ainsi.'],
+'cq.t.p50':['Mais da metade das noites secas!','More than half of the nights are dry!','Plus de la moitié des nuits sont sèches !'],'cq.m.p50':['O esforço está dando resultado.','The effort is paying off.','Les efforts portent leurs fruits.'],
+'cq.t.p80':['Mais de 80% das noites secas! 🌟','Over 80% dry nights! 🌟','Plus de 80 % de nuits sèches ! 🌟'],'cq.m.p80':['Resultado excelente. Parabéns à família!','Excellent result. Congratulations to the family!','Excellent résultat. Félicitations à la famille !'],
+'cq.t.d1':['Uma semana sem escapes de dia! 🎉','A week without daytime leaks! 🎉','Une semaine sans fuites en journée ! 🎉'],'cq.m.d1':['Ótimo avanço. Continuem com a rotina.','Great progress. Keep up the routine.','Beau progrès. Gardez la routine.'],
+'cq.t.d2':['2 semanas sem escapes de dia! 🌟','2 weeks without daytime leaks! 🌟','2 semaines sans fuites en journée ! 🌟'],'cq.m.d2':['Parabéns! A rotina está funcionando.','Congratulations! The routine is working.','Félicitations ! La routine fonctionne.'],
+'cq.t.apoio':['Você não está sozinho','You are not alone','Vous n’êtes pas seuls'],'cq.m.apoio':['No começo é comum a resposta demorar um pouco, na maior parte das crianças. O que mais importa é persistir. O Dr. Domingos vê tudo na consulta.','At the beginning it is common for the response to take a while, in most children. What matters most is persistence. Dr. Domingos reviews everything at the visit.','Au début, il est fréquent que la réponse tarde un peu, chez la plupart des enfants. Le plus important est de persévérer. Le Dr Domingos examine tout lors de la consultation.'],
+'hq.t':['Conte a história do seu filho (2 minutos)','Tell us your child’s story (2 minutes)','Racontez l’histoire de votre enfant (2 minutes)'],
+'hq.p':['Isso ajuda o Dr. Domingos a entender o que já foi tentado e como tudo começou. Dá para fazer agora ou depois.','This helps Dr. Domingos understand what was already tried and how it all began. You can do it now or later.','Cela aide le Dr Domingos à comprendre ce qui a déjà été essayé et comment tout a commencé. Vous pouvez le faire maintenant ou plus tard.'],
+'hq.now':['Responder agora','Answer now','Répondre maintenant'],'hq.later':['Agora não','Not now','Pas maintenant'],
+'hq.s1':['Seu filho já fez algum tratamento antes de vir ao Dr. Domingos?','Did your child have any treatment before seeing Dr. Domingos?','Votre enfant a-t-il déjà suivi un traitement avant de consulter le Dr Domingos ?'],
+'hq.y':['Sim','Yes','Oui'],'hq.no':['Não','No','Non'],
+'hq.s2':['O que foi usado (toque em tudo que se aplica)','What was used (tap everything that applies)','Ce qui a été utilisé (touchez tout ce qui s’applique)'],
+'hq.m.bex':['Remédio para a bexiga','Bladder medicine','Médicament pour la vessie'],'hq.m.desm':['Desmopressina','Desmopressin','Desmopressine'],'hq.m.ws':['Alarme','Alarm','Alarme'],'hq.m.uro':['Uroterapia (orientações e treino)','Urotherapy (guidance and training)','Urothérapie (conseils et entraînement)'],'hq.m.out':['Outro','Other','Autre'],'hq.m.ns':['Não sei','I don’t know','Je ne sais pas'],
+'hq.s3':['Quantas noites por semana ele molhava a cama, antes de tratar?','How many nights a week did he wet the bed, before treatment?','Combien de nuits par semaine mouillait-il le lit, avant le traitement ?'],
+'hq.n0':['Nenhuma','None','Aucune'],'hq.n1':['1 a 2','1 to 2','1 à 2'],'hq.n2':['3 a 4','3 to 4','3 à 4'],'hq.n3':['5 a 6','5 to 6','5 à 6'],'hq.n4':['Todas','Every night','Toutes'],
+'hq.s4':['Escapes de xixi durante o dia, antes de tratar','Daytime pee leaks, before treatment','Fuites d’urine pendant la journée, avant le traitement'],
+'hq.d0':['Nenhum dia','No days','Aucun jour'],'hq.d1':['1 a 2 dias por semana','1 to 2 days a week','1 à 2 jours par semaine'],'hq.d2':['3 a 4 dias por semana','3 to 4 days a week','3 à 4 jours par semaine'],'hq.d3':['5 a 6 dias por semana','5 to 6 days a week','5 à 6 jours par semaine'],'hq.d4':['Todos os dias','Every day','Tous les jours'],
+'hq.s5':['Como é o intestino?','How is the bowel?','Comment est l’intestin ?'],'hq.i.n':['Normal','Normal','Normal'],'hq.i.a':['Às vezes preso','Sometimes constipated','Parfois constipé'],'hq.i.s':['Preso ou difícil','Constipated or difficult','Constipé ou difficile'],
+'hq.send':['Enviar','Send','Envoyer'],'hq.back':['Voltar','Back','Retour'],'hq.thx':['Obrigado! Isso ajuda muito.','Thank you! This helps a lot.','Merci ! Cela aide beaucoup.'],
+'iq.nw':['Nas últimas semanas, quantas noites por semana a cama ficou molhada?','In recent weeks, how many nights a week was the bed wet?','Ces dernières semaines, combien de nuits par semaine le lit était-il mouillé ?'],
+'iq.dw':['Nas últimas semanas, houve escapes de xixi durante o dia?','In recent weeks, were there daytime pee leaks?','Ces dernières semaines, y a-t-il eu des fuites d’urine pendant la journée ?'],
+'nt.z':['Usou o alarme e não tocou (noite seca)','Alarm used and it did not ring (dry night)','Alarme utilisée et elle n’a pas sonné (nuit sèche)'],
+'ct.wa':['WhatsApp do consultório','Office WhatsApp','WhatsApp du cabinet'],
+'ct.ag':['Agendar online (24h)','Book online (24h)','Prendre rendez-vous en ligne (24 h)'],
+'ct.t':['Falar com o consultório','Contact the office','Contacter le cabinet'],
+'ct.ig':['Instagram do Dr. Domingos','Dr. Domingos on Instagram','Instagram du Dr Domingos'],
+'dv.ws':['Wet-Stop · alarme da noite (xixi na cama)','Wet-Stop · night alarm (bedwetting)','Wet-Stop · alarme de nuit (pipi au lit)'],
+'dv.wst':['Um sensor avisa, com som ou vibração, nos primeiros pingos de xixi. Ele ajuda a criança a aprender a acordar quando a bexiga pede.','A sensor alerts, with sound or vibration, at the first drops of pee. It helps the child learn to wake up when the bladder asks.','Un capteur prévient, par un son ou une vibration, dès les premières gouttes. Il aide l’enfant à apprendre à se réveiller quand la vessie le demande.'],
+'dv.ws1':['Use todas as noites e teste o aparelho antes de dormir.','Use it every night and test the device before bed.','Utilisez-le toutes les nuits et testez l’appareil avant de dormir.'],
+'dv.ws2':['Quando tocar, a criança acorda, desliga, vai ao banheiro e troca a roupa. No começo, os adultos ajudam a acordar.','When it rings, the child wakes up, turns it off, goes to the bathroom and changes clothes. At first, adults help wake the child.','Quand il sonne, l’enfant se réveille, l’éteint, va aux toilettes et change de vêtements. Au début, les adultes aident à le réveiller.'],
+'dv.ws3':['<b>Anote no calendário o que aconteceu:</b> se o alarme acordou a criança nas primeiras gotas e a cama ficou seca, ou se ela molhou a cama e não acordou com o alarme. Essa informação orienta o tratamento.','<b>Record in the calendar what happened:</b> whether the alarm woke the child at the first drops and the bed stayed dry, or the child wet the bed and did not wake up. This guides the treatment.','<b>Notez dans le calendrier ce qui s’est passé :</b> si l’alarme a réveillé l’enfant dès les premières gouttes et le lit est resté sec, ou si l’enfant a mouillé le lit sans se réveiller. Cette information guide le traitement.'],
+'dv.ws4':['O Dr. Domingos decide quando parar. Não interrompa por conta própria.','Dr. Domingos decides when to stop. Do not stop on your own.','Le Dr Domingos décide quand arrêter. N’arrêtez pas de vous-même.'],
+'dv.wb':['WobL · relógio do “xixi legal” (de dia)','WobL · the “pee on time” watch (daytime)','WobL · la montre du « pipi à l’heure » (en journée)'],
+'dv.wbt':['O relógio vibra ou toca em horários regulares e ajuda a criança a lembrar de urinar, sem que os pais precisem ficar pedindo. Faz parte do programa de micção em horários (“xixi legal”).','The watch vibrates or rings at regular times and helps the child remember to pee, without parents having to keep asking. It is part of the timed voiding program (“pee on time”).','La montre vibre ou sonne à heures régulières et aide l’enfant à penser à uriner, sans que les parents aient à le rappeler. Elle fait partie du programme de mictions à heures fixes (« pipi à l’heure »).'],
+'dv.wb1':['<b>De manhã:</b> enquanto a criança estiver bebendo bastante líquido, programe o intervalo entre 1 hora e 1h30.','<b>Morning:</b> while the child is drinking plenty of fluids, set the interval between 1 hour and 1h30.','<b>Le matin :</b> tant que l’enfant boit beaucoup, réglez l’intervalle entre 1 heure et 1h30.'],
+'dv.wb2':['<b>À tarde:</b> intervalo entre 1h30 e 2 horas, ajustando aos horários de almoço, lanche, chegada à escola e outras rotinas.','<b>Afternoon:</b> interval between 1h30 and 2 hours, adjusted to lunch, snack, arrival at school and other routines.','<b>L’après-midi :</b> intervalle entre 1h30 et 2 heures, adapté au déjeuner, au goûter, à l’arrivée à l’école et aux autres routines.'],
+'dv.wb3':['<b>A criança pode e deve fazer xixi quando sentir vontade.</b> Ela não deve esperar o relógio tocar ou vibrar para ir ao banheiro.','<b>The child can and should pee whenever they feel the urge.</b> They should not wait for the watch to ring or vibrate.','<b>L’enfant peut et doit uriner dès qu’il en ressent le besoin.</b> Il ne doit pas attendre que la montre sonne ou vibre.'],
+'dv.wb4':['Se ela não urinou nos 30 minutos antes do alarme, deve ir ao banheiro quando o relógio tocar ou vibrar.','If the child has not peed in the 30 minutes before the alarm, they should go to the bathroom when the watch rings or vibrates.','S’il n’a pas uriné dans les 30 minutes avant l’alarme, l’enfant doit aller aux toilettes quand la montre sonne ou vibre.'],
+'dv.wb5':['<b>No dia do diário miccional, não use.</b> Nesse dia a criança vai sozinha, sem lembretes.','<b>On the voiding diary day, do not use it.</b> On that day the child goes alone, without reminders.','<b>Le jour du journal mictionnel, ne l’utilisez pas.</b> Ce jour-là, l’enfant y va seul, sans rappel.'],
+'no.q':['O que aconteceu? Toque para marcar','What happened? Tap to mark','Que s’est-il passé ? Touchez pour marquer'],
+'no.c.viagem':['Viagem','Trip','Voyage'],
+'no.c.estresse':['Estresse','Stress','Stress'],
+'no.c.remedio':['Remédio esquecido','Missed medication','Médicament oublié'],
+'no.c.doente':['Doente','Sick','Malade'],
+'no.c.tarde':['Dormiu tarde','Slept late','Couché tard'],
+'no.c.liquido':['Muito líquido à noite','Lots of fluids at night','Beaucoup de liquide le soir'],
+'no.c.ar':['Ar-condicionado','Air conditioning','Climatisation'],
+'no.c.rotina':['Mudança na rotina','Change in routine','Changement de routine'],
+'no.opt':['Escrever algo (opcional)','Write something (optional)','Écrire quelque chose (facultatif)'],
+'cal.kid':['A criança preenche a parte dela','The child fills in their own part','L’enfant remplit sa propre partie'],
+'cal.kidp':['Ela escolhe o desenho de como foi a noite.','The child picks the picture for how the night went.','L’enfant choisit le dessin de la nuit.'],
+'cal.tips':['Para os pais','For parents','Pour les parents'],
+'cal.t1':['<b>É importante que a criança preencha a parte dela.</b> Esse envolvimento é fundamental para o sucesso do tratamento.','<b>It is important that the child fills in their own part.</b> This involvement is essential to treatment success.','<b>Il est important que l’enfant remplisse sa propre partie.</b> Cet engagement est essentiel à la réussite du traitement.'],
+'cal.t2':['Incentivem cada sol conquistado.','Celebrate every sun earned.','Encouragez chaque soleil obtenu.'],
+'cal.t3':['Se houve uma noite molhada por alguma falha (excesso de líquidos, dormiu tarde, ar-condicionado…), conversem com a criança sobre o quanto isso é importante nesta fase do tratamento.','If there was a wet night because of a slip (too many fluids, late bedtime, air conditioning…), talk with the child about how important this is at this stage of the treatment.','S’il y a eu une nuit mouillée à cause d’un écart (trop de liquide, coucher tardif, climatisation…), parlez avec l’enfant de l’importance de cette phase du traitement.'],
+'cal.t4':['Depois, tudo vai se normalizar.','Afterwards, everything will normalize.','Ensuite, tout rentrera dans l’ordre.'],
+'mn.started':['<b>O tratamento começou!</b> A partir de agora, registre as noites no calendário.','<b>Treatment has started!</b> From now on, record the nights in the calendar.','<b>Le traitement a commencé !</b> À partir de maintenant, enregistrez les nuits dans le calendrier.'],
+'mn.share':['Mostrar meu calendário aos meus responsáveis','Show my calendar to my guardians','Montrer mon calendrier à mes responsables'],
+'mn.shareon':['Ativado: seus responsáveis veem como foram as suas noites. Você pode desativar quando quiser.','On: your guardians can see how your nights went. You can turn it off whenever you like.','Activé : vos responsables voient comment se sont passées vos nuits. Vous pouvez le désactiver quand vous voulez.'],
+'mn.shareoff':['Desativado: seus responsáveis veem apenas “preenchido ✔”. Ative esta opção quando achar que eles devem ver como estão as suas noites.','Off: your guardians only see “done ✔”. Turn this on when you feel they should see how your nights are going.','Désactivé : vos responsables voient seulement « rempli ✔ ». Activez cette option quand vous pensez qu’ils doivent voir comment se passent vos nuits.'],
+'mn.shareend':[' O Dr. Domingos sempre vê os registros, como informado no termo.',' Dr. Domingos always sees the records, as stated in the consent form.',' Le Dr Domingos voit toujours les enregistrements, comme indiqué dans le formulaire.'],
+'mn.cas':['Guarda compartilhada: você vê só “✔ preenchido” nas noites da outra casa.','Shared custody: you only see “✔ done” for nights at the other home.','Garde partagée : vous voyez seulement « ✔ rempli » pour les nuits de l’autre domicile.'],
+/* calendário */
+'cal.filled':['Preenchido','Done','Rempli'],'cal.prev':['mês anterior','previous month','mois précédent'],'cal.next':['próximo mês','next month','mois suivant'],
+'cal.child':['Para a criança','For the child','Pour l’enfant'],'cal.par':['Observações dos responsáveis','Guardians’ notes','Remarques des responsables'],
+'cal.med':['🔵 Remédio fora do horário ou não dado','🔵 Medication late or not given','🔵 Médicament en retard ou non donné'],'cal.diff':['🔺 Algo diferente na noite','🔺 Something different that night','🔺 Quelque chose de différent cette nuit'],
+/* noite */
+'nt.title':['Noite de {0} {1}','Night of {0} {1}','Nuit du {0} {1}'],'nt.other':['✔ Já preenchida pela outra casa.','✔ Already filled in by the other home.','✔ Déjà remplie par l’autre domicile.'],
+'nt.child':['<b>🧒 Esta parte é da criança!</b> Ela mesma escolhe o desenho. Os adultos só ajudam a segurar o celular.','<b>🧒 This part is for the child!</b> The child picks the picture. Adults only help hold the phone.','<b>🧒 Cette partie est pour l’enfant !</b> C’est lui qui choisit le dessin. Les adultes aident seulement à tenir le téléphone.'],
+'nt.how':['Como foi a noite?','How was the night?','Comment s’est passée la nuit ?'],'nt.who':['Quem escolheu o desenho?','Who picked the picture?','Qui a choisi le dessin ?'],'nt.kid':['Criança','Child','Enfant'],'nt.guard':['Responsável','Guardian','Responsable'],
+'nt.resp':['Quem está respondendo agora?','Who is answering now?','Qui répond maintenant ?'],
+'nt.med':['O remédio foi dado no horário?','Was the medication given on time?','Le médicament a-t-il été donné à l’heure ?'],'nt.yes':['Sim','Yes','Oui'],'nt.no':['Não, atrasou ou não foi dado','No, it was late or not given','Non, en retard ou non donné'],'nt.na':['Não toma remédio','Takes no medication','Ne prend pas de médicament'],
+'nt.alarm':['O alarme foi usado nesta noite?','Was the alarm used tonight?','L’alarme a-t-elle été utilisée cette nuit ?'],'nt.a1':['Tocou e a criança acordou (cama seca ou só as primeiras gotas)','It rang and the child woke up (dry bed or only the first drops)','Elle a sonné et l’enfant s’est réveillé (lit sec ou seulement les premières gouttes)'],'nt.a2':['Tocou e a criança não acordou (molhou a cama)','It rang and the child did not wake up (wet the bed)','Elle a sonné et l’enfant ne s’est pas réveillé (lit mouillé)'],'nt.a3':['Não usou o alarme','Alarm not used','Alarme non utilisée'],
+'nt.diff':['Aconteceu algo diferente nesta noite? ','Did anything different happen tonight? ','Quelque chose de différent s’est-il passé cette nuit ? '],'nt.opt':['(opcional)','(optional)','(facultatif)'],
+'nt.step1':['Passo 1 de 2 · Criança','Step 1 of 2 · Child','Étape 1 sur 2 · Enfant'],'nt.step2':['Passo 2 de 2 · Responsáveis','Step 2 of 2 · Guardians','Étape 2 sur 2 · Responsables'],
+'nt.cont':['Continuar','Continue','Continuer'],'nt.draw':['Desenho da criança: ','Child’s picture: ','Dessin de l’enfant : '],'nt.back':['‹ Voltar à parte da criança','‹ Back to the child’s part','‹ Retour à la partie de l’enfant'],
+/* resumo semanal */
+'wk.title':['Resumo da semana','Weekly summary','Résumé de la semaine'],'wk.lead':['De {0} a {1}. Leva cerca de 1 minuto.','From {0} to {1}. Takes about 1 minute.','Du {0} au {1}. Environ 1 minute.'],
+'wk.dias':['Dias desta semana com a criança','Days this week with the child','Jours de cette semaine avec l’enfant'],'wk.diash':['Só os dias em que ela esteve com você','Only the days the child was with you','Seulement les jours où l’enfant était avec vous'],
+'wk.av':['Escapes de xixi no dia','Daytime pee accidents','Fuites d’urine dans la journée'],'wk.avh':['Com aviso: deu vontade e não deu tempo','With warning: felt the need but did not make it in time','Avec avertissement : envie ressentie mais pas le temps'],
+'wk.sem':['Escapes sem aviso','Accidents without warning','Fuites sans avertissement'],'wk.semh':['Só percebeu a roupa molhada','Only noticed wet clothes','S’en est aperçu seulement en voyant les vêtements mouillés'],
+'wk.urg':['Episódios de urgência','Urgency episodes','Épisodes d’urgence'],'wk.troca':['Trocas de roupa por causa do xixi','Clothing changes because of pee','Changements de vêtements à cause de l’urine'],
+'wk.regra':['Dias em que seguiu a regra dos líquidos','Days the fluid rule was followed','Jours où la règle des liquides a été suivie'],'wk.regrah':['2 a 3 copos ao acordar, pouco no jantar, nada 2 h antes de dormir','2 to 3 glasses on waking, little at dinner, none 2 h before bed','2 à 3 verres au réveil, peu au dîner, rien 2 h avant le coucher'],
+'wk.evac':['Vezes em que fez cocô na semana','Bowel movements this week','Selles dans la semaine'],'wk.stool':['Como foram as fezes, em geral?','What were the stools like, in general?','Comment étaient les selles, en général ?'],
+'wk.s1':['Bolinhas duras','Hard pellets','Petites boules dures'],'wk.s2':['Duras','Hard','Dures'],'wk.s4':['Normais','Normal','Normales'],'wk.s6':['Moles','Soft','Molles'],
+'wk.fecal':['Escapes de cocô na roupa','Stool accidents in clothes','Selles dans les vêtements'],'wk.send':['Enviar resumo','Send summary','Envoyer le résumé'],
+/* notas */
+'fb.t':['Problema ou dúvida com o aplicativo?','Problem or question about the app?','Un problème ou une question sur l’application ?'],'fb.h':['Conte o que aconteceu. Ao tocar em enviar, abre o WhatsApp com a mensagem pronta para a secretaria.','Tell us what happened. Tapping send opens WhatsApp with the message ready for the secretary.','Dites-nous ce qui s’est passé. En touchant envoyer, WhatsApp s’ouvre avec le message prêt pour la secrétaire.'],'fb.ph':['Ex.: o botão não abre, não consegui salvar a noite, tenho uma dúvida…','E.g.: the button does not open, I could not save the night, I have a question…','Ex. : le bouton ne s’ouvre pas, je n’ai pas pu enregistrer la nuit, j’ai une question…'],'fb.go':['Enviar pelo WhatsApp','Send via WhatsApp','Envoyer par WhatsApp'],
+'no.title':['Anotações','Notes','Notes'],'no.new':['Nova anotação','New note','Nouvelle note'],'no.ph':['Escrever é opcional. Ex.: prova na escola, aniversário','Writing is optional. E.g.: school exam, birthday party','Écrire est facultatif. Ex. : examen à l’école, anniversaire'],
+'no.names':['Não escreva nomes de pessoas.','Do not write people’s names.','N’écrivez pas de noms de personnes.'],'no.save':['Salvar anotação','Save note','Enregistrer la note'],
+/* orientações */
+'in.title':['Orientações','Guidance','Conseils'],'in.note':['Texto de exemplo para revisão do Dr. Domingos. As orientações completas continuam sendo enviadas em PDF pelo consultório.','Sample text for Dr. Domingos to review. The full guidance is still sent as a PDF by the office.','Texte d’exemple à relire par le Dr Domingos. Les conseils complets continuent d’être envoyés en PDF par le cabinet.'],
+'in.how':['Como fazer o diário miccional','How to do the voiding diary','Comment faire le journal mictionnel'],
+'in.1':['Escolha um sábado, domingo ou feriado, em casa, sem atividades externas.','Choose a Saturday, Sunday or holiday, at home, with no outside activities.','Choisissez un samedi, un dimanche ou un jour férié, à la maison, sans activités extérieures.'],
+'in.2':['<b>Neste dia, não peça nem lembre a criança de fazer xixi.</b> Ela vai sozinha, quando sentir vontade. Você só anota.','<b>On this day, do not ask or remind the child to pee.</b> The child goes alone, when they feel the need. You only write it down.','<b>Ce jour-là, ne demandez pas à l’enfant d’aller faire pipi et ne le lui rappelez pas.</b> Il y va seul, quand il en ressent le besoin. Vous notez simplement.'],
+'in.3':['Mantenha a ingestão de líquidos habitual: <b>nem menos, nem mais</b> que o normal.','Keep fluid intake usual: <b>neither less nor more</b> than normal.','Gardez une consommation de liquides habituelle : <b>ni moins, ni plus</b> que d’habitude.'],
+'in.4':['Anote cada micção (volume, urgência, perdas) e tudo que a criança beber. O horário dos líquidos é opcional.','Record every urination (volume, urgency, leaks) and everything the child drinks. The time of drinks is optional.','Notez chaque miction (volume, urgence, fuites) et tout ce que l’enfant boit. L’heure des boissons est facultative.'],
+'in.5':['<b>Diário inicial, se há xixi na cama:</b> na noite do diário, coloque fralda e pese de manhã. Meça também o primeiro xixi do dia seguinte.','<b>Initial diary, if there is bedwetting:</b> on the night of the diary, put on a diaper and weigh it in the morning. Also measure the first pee of the next day.','<b>Journal initial, en cas de pipi au lit :</b> la nuit du journal, mettez une couche et pesez-la le matin. Mesurez aussi la première miction du lendemain.'],
+'in.6':['<b>Diário de acompanhamento:</b> vai do acordar até a criança dormir, sem fralda.','<b>Follow-up diary:</b> runs from waking up until the child goes to sleep, without a diaper.','<b>Journal de suivi :</b> du réveil jusqu’au coucher de l’enfant, sans couche.'],
+'in.other':['Nos outros dias','On other days','Les autres jours'],
+'in.o1':['É recomendado lembrar a criança de urinar em horários regulares. Os pais podem pedir, ou ela pode usar um relógio ou dispositivo com alarme.','It is recommended to remind the child to pee at regular times. Parents can ask, or the child can use a watch or device with an alarm.','Il est recommandé de rappeler à l’enfant d’uriner à heures régulières. Les parents peuvent le demander, ou l’enfant peut utiliser une montre ou un appareil avec alarme.'],
+'in.o2':['No calendário do xixi, <b>a criança escolhe o desenho</b> de como foi a noite. Os adultos completam o remédio e as observações.','In the pee calendar, <b>the child picks the picture</b> for how the night went. Adults fill in the medication and notes.','Dans le calendrier pipi, <b>l’enfant choisit le dessin</b> de la nuit. Les adultes complètent le médicament et les remarques.'],
+'in.liq':['Líquidos ao longo do dia','Fluids through the day','Liquides au cours de la journée'],'in.liqh':['A distribuição importa tanto quanto a quantidade.','The distribution matters as much as the amount.','La répartition compte autant que la quantité.'],
+'in.l1':['Ao acordar','On waking','Au réveil'],'in.l1v':['2 a 3 copos','2 to 3 glasses','2 à 3 verres'],'in.l2':['Manhã','Morning','Matin'],'in.l2v':['Bastante','Plenty','Beaucoup'],'in.l3':['Tarde','Afternoon','Après-midi'],'in.l3v':['Moderado','Moderate','Modéré'],'in.l4':['Jantar','Dinner','Dîner'],'in.l4v':['Pouco','Little','Peu'],'in.l5':['2 horas antes de dormir','2 hours before bed','2 heures avant le coucher'],'in.l5v':['Nenhum','None','Aucun'],
+'in.hyd':['Quanto beber por dia','How much to drink per day','Combien boire par jour'],'in.age':['Idade','Age','Âge'],'in.total':['Total','Total','Total'],'in.cups':['Em copos de 200 mL','In 200 mL glasses','En verres de 200 mL'],
+'in.a1':['4 a 8 anos','4 to 8 years','4 à 8 ans'],'in.a1t':['cerca de 1,7 L','about 1.7 L','environ 1,7 L'],'in.a2':['9 a 13 anos','9 to 13 years','9 à 13 ans'],'in.a2t':['2,1 a 2,4 L','2.1 to 2.4 L','2,1 à 2,4 L'],'in.a3':['14 a 18 anos','14 to 18 years','14 à 18 ans'],'in.a3t':['2,5 a 3,3 L','2.5 to 3.3 L','2,5 à 3,3 L'],
+'in.cups1':['8 a 9','8 to 9','8 à 9'],'in.cups2':['10 a 12','10 to 12','10 à 12'],'in.cups3':['12 a 16','12 to 16','12 à 16'],
+'in.href':['Referência de hidratação infantil da Sociedade Brasileira de Pediatria, conforme o Dr. Domingos.','Child hydration reference from the Brazilian Society of Pediatrics, as used by Dr. Domingos.','Référence d’hydratation de l’enfant de la Société brésilienne de pédiatrie, selon le Dr Domingos.'],
+'in.hab':['Hábitos','Habits','Habitudes'],'in.h1':['Urinar em horários regulares, cerca de 8 vezes por dia (fora do dia do diário).','Pee at regular times, about 8 times a day (except on diary day).','Uriner à heures régulières, environ 8 fois par jour (hors jour du journal).'],
+'in.h2':['Não segurar o xixi nem prolongar os intervalos.','Do not hold pee in or stretch the intervals.','Ne pas se retenir ni espacer les mictions.'],'in.h3':['Prevenir a prisão de ventre.','Prevent constipation.','Prévenir la constipation.'],'in.h4':['Dormir e acordar em horários regulares.','Go to sleep and wake up at regular times.','Se coucher et se réveiller à heures régulières.'],
+/* janelas */
+'sh.rule':['Hoje é {0}','Today is {0}','Aujourd’hui, c’est {0}'],
+'sh.rulet':['O diário deve ser feito em <b>sábado, domingo ou feriado</b>, em um dia sem atividades externas, para que nenhuma micção seja perdida.','The diary should be done on a <b>Saturday, Sunday or holiday</b>, on a day with no outside activities, so that no urination is missed.','Le journal doit être fait un <b>samedi, un dimanche ou un jour férié</b>, sans activités extérieures, pour qu’aucune miction ne soit manquée.'],
+'sh.rulec':['Hoje é um feriado ou um dia em que a criança fica em casa.','Today is a holiday or a day when the child stays at home.','Aujourd’hui est un jour férié ou un jour où l’enfant reste à la maison.'],
+'sh.rulego':['Começar o diário','Start the diary','Commencer le journal'],'sh.ruleno':['Voltar e escolher outro dia','Go back and choose another day','Revenir et choisir un autre jour'],
+'sh.mic':['Registrar micção','Record urination','Enregistrer une miction'],'sh.time':['Hora','Time','Heure'],'sh.vol':['Volume (mL)','Volume (mL)','Volume (mL)'],'sh.ex':['Ex.: 150','E.g.: 150','Ex. : 150'],'sh.nm':['Não consegui medir','I could not measure','Je n’ai pas pu mesurer'],
+'sh.urg':['Urgência','Urgency','Urgence'],'sh.leak':['Perda de xixi','Pee leak','Fuite d’urine'],'sh.obs':['Observação (opcional)','Note (optional)','Remarque (facultatif)'],'sh.obsph':['Ex.: estava brincando','E.g.: was playing','Ex. : jouait'],
+'sh.liq':['Registrar líquido','Record a drink','Enregistrer une boisson'],'sh.timeo':['Hora (opcional)','Time (optional)','Heure (facultatif)'],'sh.drank':['O que bebeu','What was drunk','Ce qui a été bu'],'sh.qty':['Quantidade (mL)','Amount (mL)','Quantité (mL)'],'sh.qtyt':['Ou digite o volume (mL)','Or type the volume (mL)','Ou saisissez le volume (mL)'],
+'sh.out':['Sair deste aparelho?','Sign out of this device?','Quitter cet appareil ?'],'sh.outt':['Os registros já enviados continuam com o Dr. Domingos.','Records already sent stay with Dr. Domingos.','Les enregistrements déjà envoyés restent chez le Dr Domingos.'],
+'sh.outl':[' <b>Há {0} registro(s) ainda não enviados, que serão perdidos.</b>',' <b>{0} record(s) not yet sent will be lost.</b>',' <b>{0} enregistrement(s) non encore envoyés seront perdus.</b>'],
+'sh.outr':[' Para entrar de novo, será preciso o código e a data de nascimento.',' To sign in again, you will need the code and the date of birth.',' Pour vous reconnecter, il faudra le code et la date de naissance.'],'sh.outb':['Sair deste aparelho','Sign out of this device','Quitter cet appareil'],
+'sh.fim':['Encerrar o dia','End the day','Terminer la journée'],'sh.fimq':['Alguma micção ficou sem registro hoje?','Was any urination left unrecorded today?','Une miction est-elle restée sans enregistrement aujourd’hui ?'],'sh.fimn':['Não, registrei todas','No, I recorded them all','Non, je les ai toutes enregistrées'],'sh.fims':['Sim, alguma ficou sem registro','Yes, some were not recorded','Oui, certaines n’ont pas été enregistrées'],
+'sh.fimnote':['<b>Esta noite:</b> coloque uma fralda e pese de manhã. Meça o primeiro xixi do dia seguinte. (Na demonstração, você pode preencher agora.)','<b>Tonight:</b> put on a diaper and weigh it in the morning. Measure the first pee of the next day. (In the demo, you can fill this in now.)','<b>Cette nuit :</b> mettez une couche et pesez-la le matin. Mesurez la première miction du lendemain. (Dans la démonstration, vous pouvez remplir maintenant.)'],
+'sh.fg':['Peso da fralda (g)','Diaper weight (g)','Poids de la couche (g)'],'sh.fm':['Primeiro xixi da manhã (mL)','First pee of the morning (mL)','Première miction du matin (mL)'],
+'sh.fimfu':['Neste diário de acompanhamento, não é preciso pesar a fralda. O dia termina quando a criança for dormir.','In this follow-up diary there is no need to weigh the diaper. The day ends when the child goes to sleep.','Dans ce journal de suivi, inutile de peser la couche. La journée se termine au coucher de l’enfant.'],
+'sh.fimok':['Concluir diário','Finish diary','Terminer le journal'],
+/* como usar */
+'hp.title':['Como usar o aplicativo','How to use the app','Mode d’emploi de l’application'],'hp.why':['Para que serve','What it is for','À quoi ça sert'],
+'hp.whyt':['É uma forma de oferecer um tratamento melhor, com mais visibilidade do que acontece com a criança entre as consultas e do efeito de cada mudança de conduta. Os registros são analisados pelo Dr. Domingos nas consultas, e não em tempo real. <b>Não use o aplicativo para urgências.</b>','It is a way to offer better treatment, with more visibility into what happens to the child between visits and into the effect of each change in treatment. The records are reviewed by Dr. Domingos at the visits, not in real time. <b>Do not use the app for emergencies.</b>','C’est un moyen d’offrir un meilleur traitement, avec plus de visibilité sur ce qui se passe entre les consultations et sur l’effet de chaque changement de prise en charge. Les enregistrements sont examinés par le Dr Domingos lors des consultations, et non en temps réel. <b>N’utilisez pas l’application pour les urgences.</b>'],
+'hp.steps':['Passo a passo','Step by step','Pas à pas'],
+'hp.s1':['Todo dia de manhã, a criança diz como foi a noite e o calendário recebe o símbolo.','Every morning, the child says how the night went and the calendar gets the symbol.','Chaque matin, l’enfant dit comment s’est passée la nuit et le calendrier reçoit le symbole.'],
+'hp.s2':['Toda semana, os pais respondem o resumo (cerca de 1 minuto).','Every week, parents answer the summary (about 1 minute).','Chaque semaine, les parents remplissent le résumé (environ 1 minute).'],
+'hp.s3':['Quando o Dr. Domingos pedir um diário miccional, ele aparece no menu com o prazo.','When Dr. Domingos asks for a voiding diary, it appears in the menu with the deadline.','Lorsque le Dr Domingos demande un journal mictionnel, il apparaît dans le menu avec le délai.'],
+'in.t':['Coloque o ícone na tela inicial','Put the icon on your home screen','Mettez l’icône sur l’écran d’accueil'],
+'in.lead':['Assim o app abre com um toque, como qualquer outro aplicativo do celular. Leva menos de 1 minuto.','That way the app opens with one tap, like any other app. It takes less than a minute.','Ainsi l’application s’ouvre d’un seul toucher, comme toute autre. Moins d’une minute.'],
+'in.ios':['iPhone','iPhone','iPhone'],'in.and':['Android','Android','Android'],
+'in.web':['Você abriu por dentro de outro aplicativo (WhatsApp, Instagram…). Antes, abra no Safari: toque nos três pontinhos ou no ícone de bússola e escolha “Abrir no Safari”. Depois siga os passos abaixo.','You opened this inside another app (WhatsApp, Instagram…). First open it in Safari: tap the three dots or the compass icon and choose “Open in Safari”. Then follow the steps below.','Vous avez ouvert dans une autre application (WhatsApp, Instagram…). Ouvrez d’abord dans Safari : touchez les trois points ou la boussole et choisissez « Ouvrir dans Safari ». Suivez ensuite les étapes.'],
+'in.i1':['Abra este endereço no <b>Safari</b> (o navegador azul com uma bússola).','Open this address in <b>Safari</b> (the blue browser with a compass).','Ouvrez cette adresse dans <b>Safari</b> (le navigateur bleu avec une boussole).'],
+'in.i2':['Toque no botão <b>Compartilhar</b> <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M5 11v9h14v-9"/></svg> (quadrado com uma seta para cima), na barra de baixo da tela.','Tap the <b>Share</b> button <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M5 11v9h14v-9"/></svg> (a square with an arrow pointing up) in the bottom bar.','Touchez le bouton <b>Partager</b> <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M5 11v9h14v-9"/></svg> (un carré avec une flèche vers le haut), dans la barre du bas.'],
+'in.i3':['Role a lista e toque em <b>“Adicionar à Tela de Início”</b>.','Scroll the list and tap <b>“Add to Home Screen”</b>.','Faites défiler et touchez <b>« Sur l’écran d’accueil »</b>.'],
+'in.i4':['Toque em <b>Adicionar</b>. O ícone “Calendário do xixi” aparece na tela inicial.','Tap <b>Add</b>. The “Calendário do xixi” icon appears on your home screen.','Touchez <b>Ajouter</b>. L’icône « Calendário do xixi » apparaît sur l’écran d’accueil.'],
+'in.a1':['Abra este endereço no <b>Chrome</b>.','Open this address in <b>Chrome</b>.','Ouvrez cette adresse dans <b>Chrome</b>.'],
+'in.a2':['Toque nos <b>três pontinhos</b> ⋮ no canto de cima da tela.','Tap the <b>three dots</b> ⋮ at the top of the screen.','Touchez les <b>trois points</b> ⋮ en haut de l’écran.'],
+'in.a3':['Toque em <b>“Instalar app”</b> (ou “Adicionar à tela inicial”) e confirme.','Tap <b>“Install app”</b> (or “Add to Home screen”) and confirm.','Touchez <b>« Installer l’application »</b> (ou « Ajouter à l’écran d’accueil ») et confirmez.'],
+'in.a4':['O ícone “Calendário do xixi” aparece na tela inicial.','The “Calendário do xixi” icon appears on your home screen.','L’icône « Calendário do xixi » apparaît sur l’écran d’accueil.'],
+'in.last':['<b>Importante:</b> daqui para a frente, abra sempre pelo ícone. Na primeira vez que abrir por ele, o app vai pedir o código da criança e a data de nascimento de novo. É normal e só acontece essa vez.','<b>Important:</b> from now on, always open the app from the icon. The first time, it will ask for the child’s code and date of birth again. That is normal and happens only once.','<b>Important :</b> désormais, ouvrez toujours par l’icône. La première fois, l’application redemandera le code de l’enfant et la date de naissance. C’est normal et n’arrive qu’une fois.'],
+'in.now':['Instalar agora','Install now','Installer maintenant'],
+'in.done':['Já coloquei o ícone','I added the icon','J’ai ajouté l’icône'],
+'in.later':['Agora não','Not now','Pas maintenant'],
+'in.card':['Deixe o app a um toque: coloque o ícone na tela inicial do celular.','Keep the app one tap away: put the icon on your phone’s home screen.','Gardez l’application à portée : mettez l’icône sur l’écran d’accueil.'],
+'in.how':['Ver como','See how','Voir comment'],
+'hp.s4':['Em consultas, o Dr. Domingos marca no calendário os dias em que o remédio mudou (✳️).','At visits, Dr. Domingos marks in the calendar the days the medication changed (✳️).','Lors des consultations, le Dr Domingos marque dans le calendrier les jours où le médicament a changé (✳️).'],
+'hp.dev':['Este aparelho','This device','Cet appareil'],'hp.devt':['Código: <b>{0}</b>. Se o aparelho for trocado ou emprestado, você pode sair daqui.','Code: <b>{0}</b>. If the device is replaced or lent, you can sign out here.','Code : <b>{0}</b>. Si l’appareil est changé ou prêté, vous pouvez vous déconnecter ici.'],
+'hp.faq':['Dúvidas comuns','Common questions','Questions fréquentes'],
+'hp.f1':['<b>Esqueci de registrar um dia.</b> Toque no dia no calendário e registre depois.','<b>I forgot to record a day.</b> Tap the day in the calendar and record it later.','<b>J’ai oublié d’enregistrer un jour.</b> Touchez le jour dans le calendrier et enregistrez-le plus tard.'],
+'hp.f2':['<b>Trocei de celular.</b> Entre de novo com o código da criança e a data de nascimento. Seu histórico volta.','<b>I changed phones.</b> Sign in again with the child’s code and date of birth. Your history comes back.','<b>J’ai changé de téléphone.</b> Reconnectez-vous avec le code de l’enfant et sa date de naissance. Votre historique revient.'],
+'hp.f3':['<b>Guarda compartilhada.</b> Cada responsável usa o próprio celular, com o mesmo código. Cada um vê só “✔ preenchido” na casa do outro.','<b>Shared custody.</b> Each guardian uses their own phone, with the same code. Each sees only “✔ done” for the other home.','<b>Garde partagée.</b> Chaque responsable utilise son propre téléphone, avec le même code. Chacun voit seulement « ✔ rempli » pour l’autre domicile.'],
+'hp.f4':['<b>Quem vê os registros?</b> Somente o Dr. Domingos. Nada é enviado a outras pessoas.','<b>Who sees the records?</b> Only Dr. Domingos. Nothing is sent to anyone else.','<b>Qui voit les enregistrements ?</b> Uniquement le Dr Domingos. Rien n’est envoyé à d’autres personnes.'],
+'hp.f5':['<b>Sem internet.</b> O registro fica guardado e é enviado quando a conexão voltar.','<b>No internet.</b> The record is saved and sent when the connection returns.','<b>Pas d’internet.</b> L’enregistrement est conservé et envoyé au retour de la connexion.'],
+'hp.f6':['<b>Quero falar com o consultório.</b> Toque em “WhatsApp do consultório” ou em “Agendar online (24h)”, logo abaixo.','<b>I want to talk to the office.</b> Tap “Office WhatsApp” or “Book online (24h)” just below.','<b>Je veux parler au cabinet.</b> Touchez « WhatsApp du cabinet » ou « Prendre rendez-vous en ligne (24 h) », juste en dessous.'],
+/* dispositivos */
+'dv.title':['Wet-Stop e WobL','Wet-Stop and WobL','Wet-Stop et WobL'],'dv.note':['Texto de exemplo para revisão do Dr. Domingos. O modelo e o tempo de uso são definidos por ele para cada criança.','Sample text for Dr. Domingos to review. The model and duration of use are decided by him for each child.','Texte d’exemple à relire par le Dr Domingos. Le modèle et la durée d’utilisation sont définis par lui pour chaque enfant.'],
+'dv.a':['Alarme noturno (para xixi na cama)','Bedwetting alarm (for wetting the bed)','Alarme de nuit (pour le pipi au lit)'],
+'dv.at':['Um sensor na roupa íntima ou no protetor de cama avisa, com som ou vibração, nos primeiros pingos de xixi. Ele ajuda a criança a aprender a acordar quando a bexiga pede.','A sensor in the underwear or bed pad alerts, with sound or vibration, at the first drops of pee. It helps the child learn to wake up when the bladder calls.','Un capteur dans le sous-vêtement ou la alèse prévient, par un son ou une vibration, dès les premières gouttes. Il aide l’enfant à apprendre à se réveiller quand la vessie le demande.'],
+'dv.a1':['Modelos como Wet-Stop e WOBL, conforme a indicação do Dr. Domingos.','Models such as Wet-Stop and WOBL, as recommended by Dr. Domingos.','Modèles comme Wet-Stop et WOBL, selon l’indication du Dr Domingos.'],
+'dv.a2':['Use todas as noites, e teste o aparelho antes de dormir.','Use it every night, and test the device before bed.','Utilisez-le toutes les nuits et testez l’appareil avant de dormir.'],
+'dv.a3':['Quando tocar, a criança acorda, desliga, vai ao banheiro e troca a roupa. No começo, os adultos ajudam a acordar.','When it rings, the child wakes up, turns it off, goes to the bathroom and changes clothes. At first, adults help with waking up.','Quand il sonne, l’enfant se réveille, l’éteint, va aux toilettes et change de vêtements. Au début, les adultes aident à le réveiller.'],
+'dv.a4':['Marque no calendário se o alarme foi usado e se tocou. Isso ajuda a avaliar o tratamento.','Mark in the calendar whether the alarm was used and whether it rang. This helps evaluate treatment.','Indiquez dans le calendrier si l’alarme a été utilisée et si elle a sonné. Cela aide à évaluer le traitement.'],
+'dv.a5':['O Dr. Domingos decide quando parar. Não interrompa por conta própria.','Dr. Domingos decides when to stop. Do not stop on your own.','Le Dr Domingos décide quand arrêter. N’arrêtez pas de vous-même.'],
+'dv.w':['Relógio ou dispositivo com lembrete (de dia)','Watch or device with reminder (daytime)','Montre ou appareil avec rappel (en journée)'],
+'dv.wt':['Um relógio com alarme ou vibração programado ajuda a criança a lembrar de urinar em horários regulares, sem que os pais precisem ficar pedindo.','A watch with a programmed alarm or vibration helps the child remember to pee at regular times, without parents having to keep asking.','Une montre avec alarme ou vibration programmée aide l’enfant à penser à uriner à heures régulières, sans que les parents aient à le demander.'],
+'dv.w1':['Use nos dias comuns, em intervalos combinados com o Dr. Domingos.','Use it on ordinary days, at intervals agreed with Dr. Domingos.','Utilisez-la les jours ordinaires, à des intervalles convenus avec le Dr Domingos.'],
+'dv.w2':['<b>No dia do diário miccional, não use.</b> Nesse dia a criança vai sozinha, sem lembretes.','<b>On the day of the voiding diary, do not use it.</b> On that day the child goes alone, without reminders.','<b>Le jour du journal mictionnel, ne l’utilisez pas.</b> Ce jour-là, l’enfant y va seul, sans rappel.'],
+'lang':['Idioma','Language','Langue']
+};
+
+/* ===== app dos pais ===== */
+const SYM={seca:['☀️','sym.seca'],umida:['<span style="font-size:1.35em">☁️</span>','sym.umida'],pouco:['☀️<span style="font-size:.55em">☁️</span>','sym.pouco'],acordou:['🌙','sym.acordou']};
+const RAZ=['liquido','tarde','viagem','ar','estresse','doenca','outro'];
+const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]/g,'').toUpperCase();
+const WA_URL='https://wa.me/5521984814150?text=Ol%C3%A1!%20Contato%20pelo%20App-Miccional%20do%20Dr.%20Domingos',AGENDA_URL='https://www.urologistapediatrico.com/agenda-online-drbica',IG_URL='https://www.instagram.com/drdomingosbica';
+const waBtn=()=>'<a class="btn sm" href="'+WA_URL+'" target="_blank" rel="noopener">💬 '+t('ct.wa')+'</a>',agBtn=()=>'<a class="btn sm ghost" href="'+AGENDA_URL+'" target="_blank" rel="noopener">📅 '+t('ct.ag')+'</a>';
+const bookBox=()=>'<p class="hint" style="margin:6px 0">'+t('rc.book')+'</p><div class="row wrap">'+waBtn()+agBtn()+'</div>';
+const NOTEQ=['viagem','estresse','remedio','doente','tarde','liquido','ar','rotina'];
+const hasMod=m=>(S.p.mods||[]).includes(m);
+function sem(c,txt,ic){return '<span class="sem '+c+'"><i aria-hidden="true">'+ic+'</i>'+txt+'</span>'}
+const ul=a=>'<ul style="margin:8px 0 0;padding-left:20px;color:var(--ink2);display:flex;flex-direction:column;gap:6px">'+a.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+const ONB_LANGS=()=>'<div class="lang" role="group" aria-label="'+t('lang')+'">'+LANGS.map(l=>'<button type="button" data-a="lang" data-v="'+l+'" aria-pressed="'+(LANG===l)+'">'+LNAME[l]+'</button>').join('')+'</div>';
+function hdrP(){
+ const sub=S.p.screen==='onb'?'':(S.p.code?'<div class="who">'+t('code')+'<br><b style="color:#fff;font-size:15px;letter-spacing:.06em">'+S.p.code+'</b></div>':'');
+ return '<div class="hdr">'+MARK+'<div><div class="nm">Dr. Domingos Bica</div><div class="sub">'+t('sub')+'</div></div>'+sub+'</div>'+ONB_LANGS();
+}
+function footP(){
+ const n=S.outbox.length;
+ const st=S.token?(n?'<span class="sem y"><i aria-hidden="true">…</i>'+t(n>1?'f.sendn':'f.send1',n)+'</span>':'<span class="sem g"><i aria-hidden="true">✓</i>'+t('f.sent')+'</span>'):'';
+ return '<div class="foot">'+(st?'<div style="margin-bottom:8px">'+st+'</div>':'')+(S.authBad?'<div class="note" style="margin-bottom:8px">'+t('f.auth')+'</div>':'')+t('f.brand')+' · <a href="'+IG_URL+'" target="_blank" rel="noopener">@drdomingosbica</a><br><span style="opacity:.8">'+t('f.ver')+' '+APP_V+'</span></div>'}
+function stepper(path,min,max){return '<div class="stepper"><button type="button" data-a="st" data-p="'+path+'" data-d="-1" data-min="'+min+'" data-max="'+max+'" aria-label="'+t('less')+'">−</button><output data-bind="'+path+'">'+get(path)+'</output><button type="button" data-a="st" data-p="'+path+'" data-d="1" data-min="'+min+'" data-max="'+max+'" aria-label="'+t('more')+'">+</button></div>'}
+function nextSat(){let d=TODAY;while(d.getDay()!==6)d=add(d,1);return d}
+const chipB=(a,k,v,txt,on)=>'<button type="button" class="chip" data-a="'+a+'" data-k="'+k+'" data-v="'+v+'" aria-pressed="'+on+'">'+txt+'</button>';
+
+/* ----- entrada ----- */
+function obValid(){const o=S.ob;return norm(o.code).length>=4&&o.dob&&o.sx&&o.papel&&o.sit&&o.termo&&(o.papel!=='adol'||o.assent)&&(o.sit!=='investigacao'||o.mn||o.md)}
+function obNormHtml(){return norm(S.ob.code)?t('ob.read')+'<b>'+norm(S.ob.code)+'</b>':t('ob.case')}
+function viewOnb(){
+ const o=S.ob;
+ return '<div class="body"><div><h1>'+t('ob.title')+'</h1><p class="lead" style="margin-top:6px">'+t('ob.intro')+'</p></div>'+
+ '<div class="card flat"><div class="field"><label class="lbl" for="ob-code">'+t('ob.code')+'</label><input id="ob-code" class="in" data-i="ob.code" data-u="ob" value="'+esc(o.code)+'" autocapitalize="characters" autocomplete="off" placeholder="Ex.: TG2013"><div class="hint" id="ob-norm" style="margin-top:4px">'+obNormHtml()+'</div></div>'+
+ '<div class="field" style="margin-top:12px"><label class="lbl" for="ob-dob">'+t('ob.dob')+'</label><input id="ob-dob" type="date" class="in" data-i="ob.dob" data-u="ob" value="'+esc(o.dob)+'"><div class="hint" style="margin-top:4px">'+t('ob.dobh')+'</div></div>'+
+ '<div style="margin-top:12px"><span class="lbl">'+t('ob.sx')+'</span><div class="chips">'+['M','F'].map(k=>chipB('ob','sx',k,t('ob.'+k),o.sx===k)).join('')+'</div></div>'+
+ '<div style="margin-top:12px"><span class="lbl">'+t('ob.who')+'</span><div class="chips">'+['mae','pai','outro','adol'].map(k=>chipB('ob','papel',k,t('ob.'+k),o.papel===k)).join('')+'</div></div>'+
+ '<label class="chk" style="margin-top:12px"><input type="checkbox" data-c="ob.cas"'+(o.cas?' checked':'')+'><span>'+t('ob.cas')+'</span></label></div>'+
+ '<div class="card flat"><span class="lbl">'+t('ob.phase')+'</span><div class="chips">'+[['investigacao','ob.inv'],['tratamento','ob.trat']].map(x=>chipB('ob','sit',x[0],t(x[1]),o.sit===x[0])).join('')+'</div>'+
+ (o.sit==='investigacao'?'<div style="margin-top:12px"><span class="lbl">'+t('ob.why')+'</span><label class="chk"><input type="checkbox" data-c="ob.mn"'+(o.mn?' checked':'')+'><span>'+t('ob.mn')+'</span></label><label class="chk" style="margin-top:8px"><input type="checkbox" data-c="ob.md"'+(o.md?' checked':'')+'><span>'+t('ob.md')+'</span></label>'+
+ '<div style="margin-top:12px"><span class="lbl">'+t('ob.nd')+'</span><div class="chips">'+[1,2,3].map(n=>chipB('ob','nd',n,n,o.nd===n)).join('')+'</div></div></div>':'')+'</div>'+
+ '<div class="card flat"><h3>'+t('ob.term')+'</h3><div class="term" style="margin-top:8px">'+[0,1,2,3,4,5,6,7].map(i=>'<p>'+t('ob.t'+i)+'</p>').join('')+'<p class="hint">'+t('ob.tv')+TERMO_V+'</p></div>'+
+ '<label class="chk" style="margin-top:12px"><input type="checkbox" data-c="ob.termo"'+(o.termo?' checked':'')+'><span>'+t('ob.agree')+'</span></label>'+
+ (o.papel==='adol'?'<label class="chk" style="margin-top:8px"><input type="checkbox" data-c="ob.assent"'+(o.assent?' checked':'')+'><span>'+t('ob.assent')+'</span></label><p class="hint" style="margin-top:6px">'+t('ob.assenth')+'</p>':'')+'</div>'+
+ (o.err?'<div class="note" style="border-color:var(--crit)">'+esc(o.err)+'</div>':'')+'<button type="button" class="btn block" id="ob-go" data-a="obgo"'+(obValid()&&!o.busy?'':' disabled')+'>'+(o.busy?t('ob.busy'):t('ob.go'))+'</button></div>';
+}
+/* ----- fase de avaliação: tela inicial de quem ainda está em investigação ----- */
+const dxFeitos=()=>((S.cfg&&S.cfg.dx?S.cfg.dx.feitos:0)+S.outbox.filter(e=>e.a==='fim').length);
+function lockedItem(ic,title){return '<div class="mi locked" aria-disabled="true"><span class="ic">'+ic+'</span><span style="flex:1"><div class="t">'+title+'</div><div class="d">'+t('dx.soon')+'</div></span><span class="lock" aria-hidden="true">🔒</span></div>'}
+function viewDx(){
+ const d=Object.assign({},S.cfg&&S.cfg.dx||{n:0,tipo:'inicial',prazo:''}),n=d.n,fe=dxFeitos(),done=n>0&&fe>=n,us=(S.cfg&&S.cfg.us)||{p:false,f:''};
+ const seg=d.tipo==='seguimento',nightDx=!seg&&hasMod('n');
+ let h='<div class="body"><div><h1>'+t('hello')+'</h1><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div>'+
+ '<div class="card"><span class="sem y"><i aria-hidden="true">🔎</i>'+(seg?t('dx.title2'):t('dx.phase'))+'</span><p class="lead" style="margin-top:10px">'+t('dx.intro')+'</p></div>';
+ h+='<div class="card"><h3>1 · '+t('dx.diaries')+'</h3><p class="lead" style="margin-top:6px">'+t(n===1?'dx.asked1':'dx.askedn',n)+(d.prazo?' '+t('dx.by',FY(P(d.prazo))):'')+'</p>'+(nightDx?'<p class="hint" style="margin-top:4px">'+t('dx.fr1')+'</p>':'')+
+ '<div class="row wrap" style="gap:8px;margin-top:10px">'+Array.from({length:n},(_,i)=>sem(i<fe?'g':(i===fe&&S.dx.ativo?'y':'n'),t('dx.diary',i+1),i<fe?'✓':(i===fe&&S.dx.ativo?'…':'·'))).join('')+'</div>'+
+ (done?'<p style="margin-top:12px">'+t('dx.done')+'</p>':'<p class="lead" style="margin-top:12px">'+t('dx.next',F(nextSat()))+'</p><button type="button" class="btn block" style="margin-top:12px" data-a="dxstart">'+(S.dx.ativo?t('dx.cont'):t('dx.start'))+'</button>')+'</div>';
+ if(us.p)h+='<div class="card"><h3>2 · '+t('dx.us')+'</h3>'+(us.f?'<p class="lead" style="margin-top:6px">'+t('dx.usdone',FY(P(us.f)))+'</p>':'<p class="lead" style="margin-top:6px">'+t('dx.usask')+'</p><button type="button" class="btn block ghost" style="margin-top:10px" data-a="usdone">'+t('dx.usbtn')+'</button>')+'</div>';
+ {const k=checkCard();h+=k+(k.includes('data-v="agendei"')?'':retCard())}
+ h+='<div class="card flat"><h3>'+t('dx.how')+'</h3><ol style="margin:8px 0 0;padding-left:20px;color:var(--ink2);font-size:14px;display:flex;flex-direction:column;gap:6px">'+['dx.h1','dx.h2','dx.h3','dx.h4','dx.h5','dx.h6'].map(k=>'<li>'+t(k)+'</li>').join('')+'<li>'+t(nightDx?'dx.h7a':'dx.h7b')+'</li></ol></div>';
+ h+='<div class="menu">'+lockedItem('🌙',t('mn.cal'))+((hasMod('d')||hasMod('i'))?lockedItem('📋',t('mn.week')):'')+lockedItem('⏰',t('mn.dev'))+
+  '<button class="mi" data-a="go" data-v="info"><span class="ic">ℹ️</span><span style="flex:1"><div class="t">'+t('mn.info')+'</div><div class="d">'+t('mn.infod')+'</div></span></button>'+
+  '<button class="mi" data-a="go" data-v="help"><span class="ic">❓</span><span style="flex:1"><div class="t">'+t('mn.help')+'</div><div class="d">'+t('mn.helpd')+'</div></span></button></div>';
+ h+='<div class="note">'+t('dx.n1')+'</div><div class="note">'+t('dx.n2')+'</div></div>';
+ return h;
+}
+const dxNight=()=>((S.cfg&&S.cfg.dx&&S.cfg.dx.tipo)||'inicial')==='inicial'&&hasMod('n');
+function viewDiary(){
+ const d=S.dx,mic=d.mic.slice().sort((a,b)=>a[0]<b[0]?-1:1),tot=mic.reduce((s,x)=>s+(x[1]||0),0),liq=d.liq.reduce((s,x)=>s+x[1],0);
+ return '<div class="body"><button class="back" data-a="go" data-v="dx">'+t('back')+'</button><div><h2>'+t('dy.title',dxFeitos()+1,(S.cfg&&S.cfg.dx&&S.cfg.dx.n)||1)+'</h2><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div>'+
+ '<div class="note">'+t('dy.rem')+'</div><button class="btn block" data-a="sheet" data-v="mic">'+t('dy.addmic')+'</button><button class="btn block ghost" data-a="sheet" data-v="liq">'+t('dy.addliq')+'</button>'+
+ '<div class="card"><div class="row"><h3>'+t('dy.today')+'</h3><span class="sp"></span><span class="hint">'+mic.length+' '+t(mic.length===1?'dy.m1':'dy.mn')+' · '+tot+' mL · '+t('dy.liq')+' '+liq+' mL</span></div>'+
+ (mic.length?'<div class="tw"><table class="t" style="margin-top:6px"><tr><th>'+t('dy.hour')+'</th><th>mL</th><th>'+t('dy.urg')+'</th><th>'+t('dy.loss')+'</th><th>'+t('dy.obs')+'</th></tr>'+mic.map(x=>'<tr><td>'+x[0]+'</td><td>'+(x[1]||t('dy.nm'))+'</td><td>'+VL(x[2])+'</td><td>'+VL(x[3])+'</td><td>'+esc(x[4]||'')+'</td></tr>').join('')+'</table></div>':'<p class="hint" style="margin-top:8px">'+t('dy.none')+'</p>')+'</div>'+
+ (d.liq.length?'<div class="card"><h3>'+t('dy.liqt')+'</h3><div class="tw"><table class="t" style="margin-top:6px"><tr><th>'+t('dy.hour')+'</th><th>'+t('dy.what')+'</th><th>mL</th></tr>'+d.liq.map(x=>'<tr><td>'+(x[0]||'—')+'</td><td>'+esc(VL(x[2]||''))+'</td><td>'+x[1]+'</td></tr>').join('')+'</table></div></div>':'')+(dxNight()?'<div class="card"><h3>🌙 '+t('dy.night')+'</h3><p class="hint" style="margin:4px 0 8px">'+t('sh.fimnote')+'</p><div class="field"><label class="lbl" for="fg2">'+t('sh.fg')+'</label><input id="fg2" type="number" inputmode="numeric" class="in" data-i="dx.fim.g" value="'+esc(d.fim.g)+'"></div><div class="field"><label class="lbl" for="fm2">'+t('sh.fm')+'</label><input id="fm2" type="number" inputmode="numeric" class="in" data-i="dx.fim.m" value="'+esc(d.fim.m)+'"></div></div>':'')+'<button class="btn block gold" data-a="sheet" data-v="fim"'+(mic.length?'':' disabled')+'>'+t('dy.end')+'</button></div>';
+}
+/* ----- tratamento ----- */
+const hasNight=k=>!!(S.nights[k]||(S.cfg&&S.cfg.nights&&S.cfg.nights[k]));
+const alarmOn=k=>!!(S.cfg&&S.cfg.alarme&&S.cfg.alarme<=k);
+const calStart=()=>S.cfg&&S.cfg.inicio?P(S.cfg.inicio):add(TODAY,-75);
+function nightsMissing(){let m=0;for(let i=1;i<=7;i++)if(!hasNight(I(add(TODAY,-i))))m++;return m}
+
+const isTrat=()=>!!(S.cfg&&S.cfg.fase==='trat'&&S.cfg.status==='ativo');
+const needStart=()=>isTrat()&&!S.cfg.inicio;
+function pauseInfo(){
+ const c=S.cfg;if(!isTrat()||!c.inicio||!c.ret)return null;
+ const tol=c.tol||14,late=diff(TODAY,P(c.ret));
+ if(late<=tol)return null;
+ if(c.agd&&diff(TODAY,P(c.agd))<=7)return null;
+ return {late,tol};
+}
+function agForm(){
+ if(!S.ag.q)return '<button class="chip" data-a="agq">'+t('rc.ag')+'</button>';
+ const mx=I(add(TODAY,150));
+ return '<div class="field" style="max-width:260px"><label class="lbl" for="ag-dt">'+t('ag.q')+'</label><input id="ag-dt" type="date" class="in" data-i="ag.dt" min="'+I(TODAY)+'" max="'+mx+'" value="'+esc(S.ag.dt)+'"></div>'+(S.ag.bad?'<p class="hint" style="color:var(--bad)">'+t('ag.bad')+'</p>':'')+'<button class="btn sm" data-a="agsave">'+t('ag.ok')+'</button>';
+}
+function retCard(){
+ const c=S.cfg;if(!c||!c.ret)return '';
+ const d=P(c.ret),n=diff(d,TODAY),ag=c.agd&&diff(P(c.agd),TODAY)>=-7;
+ const left=n===0?t('rc.today'):n===1?t('rc.d1'):n<=30?t('rc.d',n):n<=90?t('rc.w',Math.round(n/7)):t('rc.m',Math.round(n/30.4));
+ return '<div class="card flat"><span class="lbl">'+t('rc.t')+'</span><p style="margin:4px 0">'+t('rc.when',MN[d.getMonth()]+' '+d.getFullYear())+'</p>'+
+ (ag?'<div class="row"><span class="sem g"><i>✓</i>'+t('rc.agok',FY(P(c.agd)))+'</span></div>':agForm()+''+bookBox()+'')+'</div>';
+}
+function retChip(){
+ const c=S.cfg;if(!c||!c.ret||!isTrat()||!c.inicio||pauseInfo())return '';
+ const n=diff(P(c.ret),TODAY);if(n<0)return '';
+ const left=n===0?t('rc.today'):n===1?t('rc.d1'):n<=30?t('rc.d',n):n<=90?t('rc.w',Math.round(n/7)):t('rc.m',Math.round(n/30.4));
+ return '<p class="hint" style="margin:-4px 0 10px">📅 '+t('rc.chip','<b>'+left+'</b>')+'</p>'}
+function rrOpts(list){
+ return '<div style="display:flex;flex-direction:column;gap:8px">'+list.map(k=>'<button class="chip" style="justify-content:flex-start;text-align:left" data-a="rr" data-v="'+k+'">'+t('ck.o.'+k)+'</button>').join('')+'</div>';
+}
+function checkCard(){
+ const c=S.cfg;if(!c||!c.ret||!isTrat()||!c.inicio)return '';
+ const rr=c.rr||{m:'',d:''};
+ if(S.ckmsg)return '<div class="note" style="border-color:var(--gold)">'+t('ck.r.'+S.ckmsg)+'<div style="margin-top:8px"><button class="chip" data-a="ckok">'+t('ck.ok')+'</button></div></div>';
+ if(rr.m==='parou')return '<div class="card flat"><span class="lbl">'+t('ck.pause')+'</span><p style="margin:4px 0 8px">'+t('ck.pausep')+'</p><button class="chip" data-a="rr" data-v="">'+t('ck.resume')+'</button></div>';
+ const tol=c.tol||14,late=diff(TODAY,P(c.ret));
+ if(late<0||late>tol)return '';
+ if(c.agd&&diff(P(c.agd),TODAY)>=-7)return '';
+ if(rr.m&&rr.d&&rr.d>=c.ret&&!(rr.m==='depois'&&diff(TODAY,P(rr.d))>=3))return '';
+ return '<div class="card" data-ck="1" style="border-color:var(--gold)"><span class="lbl">'+t('ck.t')+'</span><p style="margin:6px 0 10px">'+t('ck.p',late,tol-late)+'</p>'+agForm()+'<div style="height:8px"></div>'+rrOpts(['vou','melhorou','custo','parou','outro','depois'])+bookBox()+'</div>';
+}
+function cqCard(){const k=S.p.cqs;if(!k||!M['cq.t.'+k])return '';
+ return '<div class="card" style="border-color:var(--gold)"><span class="lbl">'+t('cq.t.'+k)+'</span><p style="margin:6px 0 10px">'+t('cq.m.'+k)+'</p><button class="btn sm" data-a="cqok">'+t('cq.ok')+'</button></div>'}
+function hqCard(){
+ const c=S.cfg;if(!c||c.hq||pauseInfo()||needStart()||c.status==='pendente')return '';
+ if(S.p.hqs&&diff(TODAY,P(S.p.hqs))<7)return '';
+ return '<div class="card" style="border-color:var(--gold)"><span class="lbl">'+t('hq.t')+'</span><p class="hint" style="margin:4px 0 10px">'+t('hq.p')+'</p><div class="row"><button class="btn sm" data-a="go" data-v="hist">'+t('hq.now')+'</button><button class="btn sm ghost" data-a="hqskip">'+t('hq.later')+'</button></div></div>';
+}
+function viewHist(){
+ const q=S.hq,ch=(k,v,txt,on)=>'<button type="button" class="chip" data-a="hqset" data-k="'+k+'" data-v="'+v+'" aria-pressed="'+on+'">'+txt+'</button>';
+ const blk=(title,body)=>'<div style="margin-top:16px"><span class="lbl">'+title+'</span><div class="chips" style="margin-top:6px">'+body+'</div></div>';
+ return '<div class="body"><div><h1>'+t('hq.t')+'</h1><p class="lead">'+t('hq.p')+'</p></div>'+
+  blk(t('hq.s1'),ch('hp','n',t('hq.no'),q.hp==='n')+ch('hp','s',t('hq.y'),q.hp==='s'))+
+  (q.hp==='s'?blk(t('hq.s2'),['bex','desm','ws','uro','out','ns'].map(k=>ch('hm',k,t('hq.m.'+k),q.hm.indexOf(k)>=0)).join('')):'')+
+  (hasMod('n')?blk(t('hq.s3'),[0,1,2,3,4].map(v=>ch('hn',v,t('hq.n'+v),String(q.hn)===String(v))).join('')):'')+
+  (hasMod('d')?blk(t('hq.s4'),[0,1,2,3,4].map(v=>ch('hd',v,t('hq.d'+v),String(q.hd)===String(v))).join('')):'')+
+  (hasMod('d')?blk(t('sh.pt'),['u','s','e','m'].map(v=>ch('hu',v,t('sh.pt.'+v),q.hu===v)).join('')):'')+
+  (hasMod('i')?blk(t('hq.s5'),['n','a','s'].map(v=>ch('hi',v,t('hq.i.'+v),q.hi===v)).join('')):'')+
+  '<div class="row" style="margin-top:20px"><button class="btn" data-a="hqsend">'+t('hq.send')+'</button><button class="btn ghost" data-a="hqskip">'+t('hq.later')+'</button></div></div>';
+}
+function impCard(){
+ const c=S.cfg;if(!c||!c.ret||!isTrat()||!c.inicio||pauseInfo())return '';
+ const to=diff(P(c.ret),TODAY);if(to>7)return '';
+ if(c.imp&&diff(TODAY,P(c.imp))<=20)return S.impok?'<div class="note">'+t('im.thx')+'</div>':'';
+ const ks=['n','d','i'].filter(k=>hasMod(k));if(!ks.length)return '';
+ const done=ks.every(k=>S.imp[k]>0);
+ return '<div class="card" style="border-color:var(--gold)"><span class="lbl">'+t('im.t')+'</span><p class="hint" style="margin:4px 0 10px">'+t('im.p')+'</p>'+ks.map(k=>'<div style="margin-bottom:10px"><b>'+t('im.'+k)+'</b><div class="chips" style="margin-top:6px">'+[1,2,3,4,5].map(v=>'<button type="button" class="chip" data-a="impset" data-k="'+k+'" data-v="'+v+'" aria-pressed="'+(S.imp[k]===v)+'">'+t('im.l'+v)+'</button>').join('')+'</div></div>').join('')+(()=>{const rc=(o)=>Object.keys(o).filter(k=>diff(TODAY,P(k))<=21&&diff(TODAY,P(k))>=0).length;let h='';
+  if(hasMod('n')&&rc(S.nights)<10)h+='<div style="margin-bottom:10px"><b>'+t('iq.nw')+'</b><div class="chips" style="margin-top:6px">'+[0,1,2,3,4].map(v=>'<button type="button" class="chip" data-a="impq" data-k="nw" data-v="'+v+'" aria-pressed="'+(String(S.iq.nw)===String(v))+'">'+t('hq.n'+v)+'</button>').join('')+'</div></div>';
+  if(hasMod('d')&&rc(S.weeks)<3)h+='<div style="margin-bottom:10px"><b>'+t('iq.dw')+'</b><div class="chips" style="margin-top:6px">'+[0,1,2,3,4].map(v=>'<button type="button" class="chip" data-a="impq" data-k="dw" data-v="'+v+'" aria-pressed="'+(String(S.iq.dw)===String(v))+'">'+t('hq.d'+v)+'</button>').join('')+'</div></div>';
+  return h})()+'<button class="btn sm" data-a="impsend"'+(done?'':' disabled')+'>'+t('im.send')+'</button></div>';
+}
+const infoHelpItems=()=>'<button class="mi" data-a="go" data-v="info"><span class="ic">ℹ️</span><span style="flex:1"><div class="t">'+t('mn.info')+'</div><div class="d">'+t('mn.infod')+'</div></span></button><button class="mi" data-a="go" data-v="help"><span class="ic">❓</span><span style="flex:1"><div class="t">'+t('mn.help')+'</div><div class="d">'+t('mn.helpd')+'</div></span></button>';
+function viewStart(){
+ return '<div class="body"><div><h1>'+t('st.t')+'</h1><p class="lead">'+t('st.lead')+'</p></div>'+
+'<div class="card"><div class="field" style="max-width:260px"><label class="lbl" for="st-dt">'+t('st.date')+'</label><input id="st-dt" type="date" class="in" data-i="st.dt" min="'+I(add(TODAY,-14))+'" max="'+I(TODAY)+'" value="'+esc(S.st.dt)+'"></div>'+(S.st.bad?'<p class="hint" style="color:var(--bad)">'+t('st.bad')+'</p>':'')+'</div>'+
+ '<div class="card flat"><h3>'+t('st.ch')+'</h3><p style="margin:6px 0">'+t('st.cp')+'</p></div>'+
+ '<button class="btn block" data-a="startgo">'+t('st.go')+'</button>'+
+ '<div class="menu">'+lockedItem('🌙',t('mn.cal'))+((hasMod('d')||hasMod('i'))?lockedItem('📋',t('mn.week')):'')+lockedItem('⏰',t('mn.dev'))+infoHelpItems()+'</div></div>';
+}
+function viewPause(){
+ const c=S.cfg||{},d=c.ret?P(c.ret):TODAY,rr=c.rr||{m:''};
+ return '<div class="body"><div><h1>'+t('ps.t')+'</h1></div>'+
+ '<div class="card" style="border-color:var(--gold)"><p>'+t('ps.p',MN[d.getMonth()]+' '+d.getFullYear())+'</p><p class="hint" style="margin-top:6px">'+t('ps.rec')+'</p></div>'+
+ (S.ckmsg?'<div class="note" style="border-color:var(--gold)">'+t('ck.r.'+S.ckmsg)+'<div style="margin-top:8px"><button class="chip" data-a="ckok">'+t('ck.ok')+'</button></div></div>':'')+
+ '<div class="card">'+agForm()+''+bookBox()+''+(rr.m==='parou'?'<button class="chip" data-a="rr" data-v="">'+t('ck.resume')+'</button>':rrOpts(['melhorou','custo','parou','outro']))+'</div>'+
+ '<div class="menu">'+infoHelpItems()+'</div></div>';
+}
+function lateBox(){
+ const c=S.cfg;if(!c||c.fase!=='trat'||!c.inicio||pauseInfo()||(c.rr&&c.rr.m==='parou'))return '';
+ const st=calStart();let miss=0;for(let i=1;i<=7;i++){const d=add(TODAY,-i);if(d>=st&&!hasNight(I(d)))miss++}
+ const okW=!!(S.weeks[I(add(monday(TODAY),-7))]||c.weeks.includes(I(add(monday(TODAY),-7))));
+ const wkNeed=(hasMod('d')||hasMod('i'))&&!okW&&diff(add(monday(TODAY),-7),st)>=-6;
+ if(!miss&&!wkNeed)return '';
+ const k=((diff(TODAY,new Date(2026,0,1,12))%5)+5)%5;
+ const l=[];if(miss)l.push(t(miss===1&&!hasNight(I(add(TODAY,-1)))?'lt.n1':'lt.nn',miss));if(wkNeed)l.push(t('lt.w'));
+ return '<div class="note" style="border-color:var(--gold)"><b>'+l.join(' ')+'</b><br>'+t('lt.m'+k)+'</div>';
+}
+function viewMenu(){
+ const y=I(add(TODAY,-1)),okN=hasNight(y),miss=nightsMissing();
+ const wk=I(add(monday(TODAY),-7)),okW=!!(S.weeks[wk]||(S.cfg&&S.cfg.weeks.includes(wk)));
+ const stars=Object.values(S.nights).filter(n=>n.por==='c').length;
+ const mi=(a,v,ic,ti,de,badge)=>'<button class="mi" data-a="'+a+'" data-v="'+v+'"><span class="ic">'+ic+'</span><span style="flex:1"><div class="t">'+ti+'</div><div class="d">'+de+'</div></span>'+(badge||'')+'</button>';
+ let items=mi('go','cal','🌙',t('mn.cal'),(okN?t('mn.calok'):t('mn.calno'))+(miss&&okN?t('mn.miss',miss):''),okN?sem('g',t('mn.uptodate'),'✓'):sem('r',miss>1?t('mn.missn',miss):t('mn.miss1'),'!'));
+ if(hasMod('d')||hasMod('i'))items+=mi('go','week','📋',t('mn.week'),t('mn.weekd',F(add(monday(TODAY),-7)),F(add(monday(TODAY),-1))),okW?sem('g',t('mn.sent'),'✓'):sem('r',t('mn.pend'),'!'));
+ const dxc=S.cfg&&S.cfg.fase==='trat'&&S.cfg.dx&&dxFeitos()<S.cfg.dx.n?S.cfg.dx:null;
+ if(dxc){const r=dxc.n-dxFeitos();items+=mi('dxfromtrat','','💧',t('mn.dia'),t(r>1?'mn.dian':'mn.dia1',r)+(dxc.prazo?t('mn.until',FY(P(dxc.prazo))):''),sem('y',t('mn.asked'),'…'))}
+ items+=mi('go','notes','✍️',t('mn.notes'),t('mn.notesd'))+mi('go','info','ℹ️',t('mn.info'),t('mn.infod'))+mi('go','dev','⏰',t('mn.dev'),t('mn.devd'))+mi('go','help','❓',t('mn.help'),t('mn.helpd'));
+ const fresh=S.cfg&&S.cfg.fase==='trat'&&S.cfg.inicio&&diff(TODAY,P(S.cfg.inicio))<=2&&diff(TODAY,P(S.cfg.inicio))>=0;
+ return '<div class="body"><div class="row"><div><h1>'+t('hello')+'</h1><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div><span class="sp"></span>'+(S.p.adol?'':'<span class="sem n" title="'+t('mn.stars')+'"><i style="background:var(--gold)">★</i>'+stars+'</span>')+'</div>'+
+ (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+retChip()+(()=>{const k=checkCard();return cqCard()+k+hqCard()+impCard()+lateBox()+(k.includes('data-ck')?'':retCard())})()+instCard()+
+ (S.p.adol?'<div class="card flat"><label class="chk"><input type="checkbox" data-c="p.share"'+(S.p.share?' checked':'')+'><span><b>'+t('mn.share')+'</b></span></label><p class="hint" style="margin-top:6px">'+t(S.p.share?'mn.shareon':'mn.shareoff')+t('mn.shareend')+'</p></div>':'')+
+ '<div class="menu">'+items+'</div>'+(S.p.cas?'<div class="note">'+t('mn.cas')+'</div>':'')+'</div>';
+}
+function viewCal(){
+ const {y,m}=S.cal,start=calStart(),first=new Date(y,m,1,12),nd=new Date(y,m+1,0).getDate(),lead=first.getDay();
+ let cells='';for(let i=0;i<lead;i++)cells+='<div></div>';
+ for(let dd=1;dd<=nd;dd++){const d=new Date(y,m,dd,12),k=I(d),n=S.nights[k],sv=S.cfg&&S.cfg.nights?S.cfg.nights[k]:null,past=d<=add(TODAY,-1)&&d>=start,isT=I(d)===I(TODAY);
+  let sym='',fl='';
+  if(!n&&sv){sym=sv.s?'<span style="font-size:17px;line-height:1">'+SYM[sv.s][0]+'</span>':'<span style="font-size:15px;color:var(--good)" title="'+t('cal.filled')+'">✔</span>'}
+  else if(n){sym='<span style="font-size:17px;line-height:1">'+SYM[n.s][0]+'</span>';
+   {fl=(n.f.includes('med')?'🔵':'')+(n.f.some(f=>f!=='med')?'🔺':'')}}
+  cells+='<button type="button" class="day'+(past?' hit':' off')+(isT?' today':'')+(past&&!n&&!sv?' miss':'')+'"'+(past?' data-a="night" data-v="'+k+'"':' disabled')+' aria-label="'+DS[d.getDay()]+' '+dd+'"><span style="font-size:10px">'+DS[d.getDay()]+'</span><b>'+dd+'</b><span>'+sym+'</span><span class="fl">'+fl+'</span></button>'}
+ const prev=new Date(y,m,1,12)>new Date(start.getFullYear(),start.getMonth(),1,12),next=!(y===TODAY.getFullYear()&&m>=TODAY.getMonth());
+ return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><div class="row"><button class="chip" data-a="cm" data-v="-1"'+(prev?'':' disabled')+' aria-label="'+t('cal.prev')+'">‹</button><h2 class="sp" style="text-align:center;text-transform:capitalize">'+MN[m]+' '+y+'</h2><button class="chip" data-a="cm" data-v="1"'+(next?'':' disabled')+' aria-label="'+t('cal.next')+'">›</button></div>'+
+ '<div class="cal">'+DS.map(x=>'<div class="h">'+x+'</div>').join('')+cells+'</div>'+
+ '<div class="card" style="border-color:var(--gold);margin-top:12px"><span class="lbl">🧒 '+t('cal.kid')+'</span><p class="hint" style="margin:2px 0 8px">'+t('cal.kidp')+'</p><div class="legend">'+Object.values(SYM).map(x=>'<span>'+x[0]+' '+t(x[1])+'</span>').join('')+'</div></div>'+
+ '<div class="card flat" style="margin-top:16px;border-top:3px solid var(--line)"><span class="lbl">👨‍👩‍👧 '+t('cal.par')+'</span><div class="legend" style="margin-top:6px"><span>'+t('cal.med')+'</span><span>'+t('cal.diff')+'</span></div></div>'+
+ '<div class="card flat"><h3>'+t('cal.tips')+'</h3>'+ul([1,2,3,4].map(i=>t('cal.t'+i)))+'</div></div>';
+}
+function sheetNight(){
+ const k=S.p.sheet.k,d=P(k),n=S.nights[k],dr=S.draft,adol=S.p.adol,step=adol?0:(S.p.sheet.step||1);
+ const title='<h2>'+t('nt.title',DS[d.getDay()],F(d))+'</h2>';
+ if(!n&&S.p.cas&&S.cfg&&S.cfg.nights&&S.cfg.nights[k])return title+'<p>'+t('nt.other')+'</p><button class="btn block" data-a="sheet" data-v="">'+t('close')+'</button>';
+ const chip=(a,k,v,tx,on)=>chipB(a,k,v,tx,on);
+ const child='<div class="note" style="border-color:var(--gold)">'+t('nt.child')+'</div><div><span class="lbl">'+t('nt.how')+'</span><div class="big">'+Object.keys(SYM).map(s=>'<button type="button" class="sym" data-a="dr" data-k="s" data-v="'+s+'" aria-pressed="'+(dr.s===s)+'"><b>'+SYM[s][0]+'</b>'+t(SYM[s][1])+'</button>').join('')+'</div></div>'+(adol?'':'<div class="row"><span class="hint">'+t('nt.who')+'</span>'+chip('drp','k','c',t('nt.kid'),dr.por==='c')+chip('drp','k','r',t('nt.guard'),dr.por==='r')+'</div>');
+ const par=(adol?'':'<div><span class="lbl">'+t('nt.resp')+'</span><div class="chips">'+[['mae','ob.mae'],['pai','ob.pai'],['outro','ob.outro']].map(x=>chip('dr','who',x[0],t(x[1]),dr.who===x[0])).join('')+'</div></div>')+
+  '<div><span class="lbl">'+t('nt.med')+'</span><div class="chips">'+[['sim','nt.yes'],['nao','nt.no'],['na','nt.na']].map(x=>chip('dr','rem',x[0],t(x[1]),dr.rem===x[0])).join('')+'</div></div>'+
+  (alarmOn(k)?'<div><span class="lbl">'+t('nt.alarm')+'</span><div class="chips">'+[['t','nt.a1'],['n','nt.a2'],['z','nt.z'],['x','nt.a3']].map(x=>chip('dr','al',x[0],t(x[1]),dr.al===x[0])).join('')+'</div></div>':'')+
+  '<div><span class="lbl">'+t('nt.diff')+'<span class="hint">'+t('nt.opt')+'</span></span><div class="chips">'+RAZ.map(r=>'<button type="button" class="chip" data-a="drf" data-v="'+r+'" aria-pressed="'+dr.f.includes(r)+'">'+t('raz.'+r)+'</button>').join('')+'</div></div>';
+ const cancel='<button class="btn block ghost" data-a="sheet" data-v="">'+t('cancel')+'</button>';
+ if(adol)return title+child+par+'<button class="btn block" data-a="savenight"'+(dr.s&&dr.rem?'':' disabled')+'>'+t('save')+'</button>'+cancel;
+ if(step===1)return title+'<span class="hint">'+t('nt.step1')+'</span>'+child+'<button class="btn block" data-a="nstep" data-v="2"'+(dr.s?'':' disabled')+'>'+t('nt.cont')+'</button>'+cancel;
+ return title+'<span class="hint">'+t('nt.step2')+'</span><p class="lead">'+t('nt.draw')+'<b style="font-size:1.1em">'+SYM[dr.s][0]+'</b> '+t(SYM[dr.s][1])+'</p>'+par+'<button class="btn block" data-a="savenight"'+(dr.rem&&dr.who?'':' disabled')+'>'+t('save')+'</button><button class="btn block ghost" data-a="nstep" data-v="1">'+t('nt.back')+'</button>';
+}
+function viewWeek(){
+ const w=S.ws,a=add(monday(TODAY),-7);
+ const q=(ti,sub,p,mn,mx)=>'<div class="qrow"><div class="q">'+ti+(sub?'<small>'+sub+'</small>':'')+'</div>'+stepper(p,mn,mx)+'</div>';
+ return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><div><h2>'+t('wk.title')+'</h2><p class="lead">'+t('wk.lead',F(a),F(add(a,6)))+'</p></div>'+
+ '<div class="card">'+(S.p.cas?q(t('wk.dias'),t('wk.diash'),'ws.dias',0,7):'')+
+ (hasMod('d')?q(t('wk.av'),t('wk.avh'),'ws.av',0,40)+q(t('wk.sem'),t('wk.semh'),'ws.sem',0,40)+q(t('wk.urg'),'','ws.urg',0,60)+q(t('wk.troca'),'','ws.troca',0,40):'')+
+ q(t('wk.regra'),t('wk.regrah'),'ws.regra',0,7)+
+ (hasMod('i')?q(t('wk.evac'),'','ws.evac',0,21)+'<div class="qrow"><div class="q">'+t('wk.stool')+'</div></div><div class="chips">'+[1,2,4,6].map(v=>'<button type="button" class="chip" data-a="wb" data-v="'+v+'" aria-pressed="'+(ws_b(v))+'">'+t('wk.s'+v)+'</button>').join('')+'</div>'+q(t('wk.fecal'),'','ws.fecal',0,21):'')+'</div>'+
+ '<button class="btn block" data-a="savewk">'+t('wk.send')+'</button></div>';
+}
+const ws_b=v=>(S.ws.bris===v);
+function viewNotes(){
+ return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('no.title')+'</h2><div class="card flat"><span class="lbl">'+t('no.q')+'</span><div class="chips" style="margin:6px 0 12px">'+NOTEQ.map(k=>'<button type="button" class="chip" data-a="ntq" data-v="'+k+'" aria-pressed="'+S.ntq.includes(k)+'">'+t('no.c.'+k)+'</button>').join('')+'</div><label class="lbl" for="nt">'+t('no.opt')+'</label><textarea id="nt" class="in" rows="3" data-i="nt" placeholder="'+esc(t('no.ph'))+'">'+esc(S.nt)+'</textarea><p class="hint" style="margin-top:4px">'+t('no.names')+'</p><button class="btn block" style="margin-top:10px" data-a="addnote">'+t('no.save')+'</button></div>'+
+ '<div class="card flat" style="margin-top:14px"><span class="lbl">'+t('fb.t')+'</span><p class="hint" style="margin:4px 0 8px">'+t('fb.h')+'</p><textarea id="fb" class="in" rows="3" data-i="fb" placeholder="'+esc(t('fb.ph'))+'">'+esc(S.fb||'')+'</textarea><button class="btn block ghost" style="margin-top:10px" data-a="fbsend">'+t('fb.go')+'</button></div>'+
+ S.notes.map(n=>'<div class="card flat"><div class="hint">'+n[0]+'</div><div>'+esc(n[1])+'</div></div>').join('')+'</div>';
+}
+function viewInfo(){
+ return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('in.title')+'</h2><div class="note">'+t('in.note')+'</div>'+
+ (isTrat()?'<div class="card"><h3>'+t('st.ch')+'</h3><p style="margin:6px 0">'+t('st.cp')+'</p></div>':'')+'<div class="card"><h3>'+t('in.how')+'</h3>'+ul([1,2,3,4,5,6].map(i=>t('in.'+i)))+'</div>'+
+ '<div class="card"><h3>'+t('in.other')+'</h3>'+ul([t('in.o1'),t('in.o2')])+'</div>'+
+ '<div class="card"><h3>'+t('in.liq')+'</h3><p class="lead" style="margin-top:6px">'+t('in.liqh')+'</p><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">'+
+ [[1,95],[2,80],[3,50],[4,22],[5,3]].map(x=>'<div class="wk" style="grid-template-columns:110px 1fr 74px"><span>'+t('in.l'+x[0])+'</span><i style="width:'+x[1]+'%;background:var(--c-noite)"></i><span>'+t('in.l'+x[0]+'v')+'</span></div>').join('')+'</div></div>'+
+ '<div class="card"><h3>'+t('in.hyd')+'</h3><div class="tw"><table class="t" style="margin-top:8px"><tr><th>'+t('in.age')+'</th><th>'+t('in.total')+'</th><th>'+t('in.cups')+'</th></tr>'+[1,2,3].map(i=>'<tr><td>'+t('in.a'+i)+'</td><td>'+t('in.a'+i+'t')+'</td><td>'+t('in.cups'+i)+'</td></tr>').join('')+'</table></div><p class="hint" style="margin-top:8px">'+t('in.href')+'</p></div>'+
+ '<div class="card"><h3>'+t('in.hab')+'</h3>'+ul([1,2,3,4].map(i=>t('in.h'+i)))+'</div>'+contactCard()+'</div>';
+}
+/* ----- sheets (janelas inferiores) ----- */
+function sheetsP(){
+ const sh=S.p.sheet;if(!sh)return'';let c='';
+ const cancel='<button class="btn block ghost" data-a="sheet" data-v="">'+t('cancel')+'</button>';
+ if(sh.v==='night')c=sheetNight();
+ else if(sh.v==='rule')c='<h2>'+t('sh.rule',DL[TODAY.getDay()])+'</h2><p>'+t('sh.rulet')+'</p><label class="chk"><input type="checkbox" data-c="dx.ack"'+(S.dx.ack?' checked':'')+'><span>'+t('sh.rulec')+'</span></label><button class="btn block" data-a="ruleok"'+(S.dx.ack?'':' disabled')+'>'+t('sh.rulego')+'</button><button class="btn block ghost" data-a="sheet" data-v="">'+t('sh.ruleno')+'</button>';
+ else if(sh.v==='mic'){const m=S.draft2;c='<h2>'+t('sh.mic')+'</h2><div class="field"><label class="lbl" for="mh">'+t('sh.time')+'</label><input id="mh" type="time" class="in" data-i="draft2.h" value="'+m.h+'"></div><div class="field"><label class="lbl" for="mv">'+t('sh.vol')+'</label><input id="mv" type="number" inputmode="numeric" class="in" data-i="draft2.v" value="'+(m.nm?'':m.v)+'" placeholder="'+t('sh.ex')+'"'+(m.nm?' disabled':'')+'></div><label class="chk"><input type="checkbox" data-c="draft2.nm"'+(m.nm?' checked':'')+'><span>'+t('sh.nm')+'</span></label><div><span class="lbl">'+t('sh.urg')+'</span><div class="chips">'+['ausente','+','++','+++'].map(u=>chipB('d2','u',u,VL(u),m.u===u)).join('')+'</div></div><div><span class="lbl">'+t('sh.leak')+'</span><div class="chips">'+['nenhuma','gotas','roupa íntima','roupa molhada'].map(u=>chipB('d2','p',u,VL(u),m.p===u)).join('')+'</div></div>'+(m.p!=='nenhuma'?'<div><span class="lbl">'+t('sh.pt')+'</span><div class="chips">'+['u','s','e'].map(u=>chipB('d2','pt',u,t('sh.pt.'+u),m.pt===u)).join('')+'</div></div>':'')+'<div class="field"><label class="lbl" for="mo">'+t('sh.obs')+'</label><input id="mo" class="in" data-i="draft2.o" value="'+esc(m.o||'')+'" placeholder="'+esc(t('sh.obsph'))+'"></div><button class="btn block" data-a="savemic">'+t('save')+'</button>'+cancel}
+ else if(sh.v==='liq'){const m=S.draft3;c='<h2>'+t('sh.liq')+'</h2><div class="field"><label class="lbl" for="lh">'+t('sh.timeo')+'</label><input id="lh" type="time" class="in" data-i="draft3.h" value="'+m.h+'"></div><div><span class="lbl">'+t('sh.drank')+'</span><div class="chips">'+['Água','Suco','Leite','Refrigerante','Outro'].map(x=>'<button type="button" class="chip" data-a="d3t" data-v="'+x+'" aria-pressed="'+(m.t===x)+'">'+VL(x)+'</button>').join('')+'</div></div><div><span class="lbl">'+t('sh.qty')+'</span><div class="chips">'+[100,200,300,500].map(v=>'<button type="button" class="chip" data-a="d3" data-v="'+v+'" aria-pressed="'+(m.v===v&&!m.vv)+'">'+v+'</button>').join('')+'</div></div><div class="field"><label class="lbl" for="lv">'+t('sh.qtyt')+'</label><input id="lv" type="number" inputmode="numeric" class="in" data-i="draft3.vv" value="'+esc(m.vv||'')+'"></div><button class="btn block" data-a="saveliq">'+t('save')+'</button>'+cancel}
+ else if(sh.v==='sair')c='<h2>'+t('sh.out')+'</h2><p>'+t('sh.outt')+(S.outbox.length?t('sh.outl',S.outbox.length):'')+t('sh.outr')+'</p><button class="btn block" data-a="sairok">'+t('sh.outb')+'</button>'+cancel;
+ else if(sh.v==='fim'){const f=S.dx.fim;
+  c='<h2>'+t('sh.fim')+'</h2><div><span class="lbl">'+t('sh.fimq')+'</span><div class="chips">'+[['nao','sh.fimn'],['sim','sh.fims']].map(x=>chipB('fim','k',x[0],t(x[1]),f.q===x[0])).join('')+'</div></div>'+
+  (dxNight()?'<div class="note">'+t('sh.fimnote')+'</div><div class="field"><label class="lbl" for="fg">'+t('sh.fg')+'</label><input id="fg" type="number" inputmode="numeric" class="in" data-i="dx.fim.g" value="'+esc(f.g)+'"></div><div class="field"><label class="lbl" for="fm">'+t('sh.fm')+'</label><input id="fm" type="number" inputmode="numeric" class="in" data-i="dx.fim.m" value="'+esc(f.m)+'"></div>':(hasMod('n')?'<div class="note">'+t('sh.fimfu')+'</div>':''))+
+  '<button class="btn block" data-a="fimok"'+(f.q?'':' disabled')+'>'+t('sh.fimok')+'</button><button class="btn block ghost" data-a="sheet" data-v="">'+t('goback')+'</button>'}
+ return '<div class="sheetbg" data-a="sheetbg"><div class="sheet" role="dialog" aria-modal="true">'+c+'</div></div>';
+}
+function viewPais(){
+ let b;const sc=S.p.screen,enc=S.cfg&&S.cfg.status==='encerrado';
+ if(sc==='onb')b=viewOnb();else if(sc==='wait')b='<div class="body"><h1>'+t(enc?'wait.enc':'wait.rec')+'</h1><p class="lead">'+t(enc?'wait.enct':'wait.rect')+'</p><button class="btn block" data-a="refresh">'+(S.busy?t('wait.busy'):t('wait.btn'))+'</button></div>';
+ else if(sc==='dx')b=viewDx();else if(sc==='start')b=viewStart();else if(sc==='hist')b=viewHist();else if(sc==='pause')b=viewPause();else if(sc==='diary')b=viewDiary();else if(sc==='menu')b=viewMenu();else if(sc==='cal')b=viewCal();else if(sc==='week')b=viewWeek();else if(sc==='notes')b=viewNotes();else if(sc==='info')b=viewInfo();else if(sc==='help')b=viewHelpP();else if(sc==='load')b='<div class="body"><p class="lead">'+t('loading')+'</p></div>';else if(sc==='dev')b=viewDev();else if(sc==='inst')b=viewInst();
+ return '<div class="phone">'+hdrP()+b+footP()+sheetsP()+'</div>';
+}
+
+/* ----- ícone na tela inicial ----- */
+const isStandalone=()=>{try{return (window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true}catch(e){return false}};
+const isIOS=()=>/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const iosWebview=()=>isIOS()&&!/Safari\//.test(navigator.userAgent);
+function instNeeded(){return !isStandalone()&&S.p.inst!=='ok'&&canStore}
+function instCard(){
+ const c=S.cfg;if(!c||!instNeeded()||pauseInfo()||needStart()||c.status==='pendente')return '';
+ if(S.p.inst&&diff(TODAY,P(S.p.inst))<3)return '';
+ return '<div class="card" style="border-color:var(--gold)"><p class="hint" style="margin:0 0 10px;color:var(--ink)">'+t('in.card')+'</p><div class="row"><button class="btn sm" data-a="go" data-v="inst">'+t('in.how')+'</button><button class="btn sm ghost" data-a="instlater">'+t('in.later')+'</button></div></div>'
+}
+function viewInst(){
+ const pl=S.instpl||(isIOS()?'ios':'and'),ol=a=>'<ol style="margin:10px 0 0;padding-left:22px;display:flex;flex-direction:column;gap:10px">'+a.map(x=>'<li>'+x+'</li>').join('')+'</ol>';
+ return '<div class="body">'+(S.p.inst?'<button class="back" data-a="go" data-v="menu">'+t('back')+'</button>':'')+'<div><h1>'+t('in.t')+'</h1><p class="lead">'+t('in.lead')+'</p></div>'+
+ '<div class="chips">'+[['ios','in.ios'],['and','in.and']].map(x=>'<button type="button" class="chip" data-a="instpl" data-v="'+x[0]+'" aria-pressed="'+(pl===x[0])+'">'+t(x[1])+'</button>').join('')+'</div>'+
+ (pl==='ios'&&iosWebview()?'<div class="note" style="border-color:var(--gold)">'+t('in.web')+'</div>':'')+
+ '<div class="card">'+(pl==='ios'?ol([1,2,3,4].map(i=>t('in.i'+i))):ol([1,2,3,4].map(i=>t('in.a'+i))))+(pl==='and'&&window._ip?'<button class="btn block" style="margin-top:14px" data-a="instnow">'+t('in.now')+'</button>':'')+'</div>'+
+ '<div class="note">'+t('in.last')+'</div>'+
+ '<button class="btn block" data-a="instdone">'+t('in.done')+'</button><button class="btn block ghost" data-a="instlater">'+t('in.later')+'</button></div>'
+}
+function viewHelpP(){
+ return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('hp.title')+'</h2>'+
+ '<div class="card"><h3>'+t('hp.why')+'</h3><p class="lead" style="margin-top:6px">'+t('hp.whyt')+'</p></div>'+
+ '<div class="card"><h3>'+t('hp.steps')+'</h3>'+ul([1,2,3,4].map(i=>t('hp.s'+i)))+'</div>'+
+ (instNeeded()?'<div class="card"><h3>'+t('in.t')+'</h3><button class="btn block ghost" style="margin-top:10px" data-a="go" data-v="inst">'+t('in.how')+'</button></div>':'')+'<div class="card"><h3>'+t('hp.dev')+'</h3><p class="lead" style="margin-top:6px">'+t('hp.devt',esc(S.code||''))+'</p><button class="btn block ghost" style="margin-top:10px" data-a="sheet" data-v="sair">'+t('sh.outb')+'</button></div>'+
+ '<div class="card"><h3>'+t('hp.faq')+'</h3>'+ul([1,2,3,4,5,6].map(i=>t('hp.f'+i)))+'</div>'+contactCard()+'</div>';
+}
+function contactCard(){return '<div class="card"><h3>'+t('ct.t')+'</h3><div class="row wrap" style="margin-top:10px">'+waBtn()+agBtn()+'<a class="btn sm ghost" href="'+IG_URL+'" target="_blank" rel="noopener">'+t('ct.ig')+'</a></div></div>'}
+function viewDev(){
+ return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('dv.title')+'</h2>'+
+ '<div class="card"><h3>'+t('dv.ws')+'</h3><p class="lead" style="margin-top:6px">'+t('dv.wst')+'</p>'+ul([1,2,3,4].map(i=>t('dv.ws'+i)))+'</div>'+
+ '<div class="card"><h3>'+t('dv.wb')+'</h3><p class="lead" style="margin-top:6px">'+t('dv.wbt')+'</p>'+ul([1,2,3,4,5].map(i=>t('dv.wb'+i)))+'</div></div>';
+}
+
+/* ===== estado, armazenamento no aparelho, fila de envio e ações ===== */
+let S;
+const get=p=>p.split('.').reduce((o,k)=>o==null?o:o[k],S);
+const set=(p,v)=>{const a=p.split('.'),l=a.pop();a.reduce((o,k)=>o[k],S)[l]=v};
+const KEY='mic.v1';
+const newDx=()=>({id:'',data:'',ativo:false,ack:false,mic:[],liq:[],fim:{q:'',g:'',m:''}});
+const blankOb=()=>({code:'',dob:'',sx:'',papel:'',sit:'',termo:false,assent:false,cas:false,mn:false,md:false,nd:2,err:'',busy:false});
+const draftBlank=()=>({s:'',f:[],por:'c',rem:'',who:'',al:''});
+const now=()=>{const d=new Date();return p2(d.getHours())+':'+p2(d.getMinutes())};
+const uid=()=>(Date.now().toString(36)+Math.random().toString(36).slice(2,9));
+let canStore=true;
+function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):null}catch(e){canStore=false;return null}}
+function save(){
+ if(!canStore)return;
+ try{localStorage.setItem(KEY,JSON.stringify({code:S.code,token:S.token,papel:S.papel,cfg:S.cfg,nights:S.nights,weeks:S.weeks,notes:S.notes,outbox:S.outbox,dx:S.dx,screen:S.p.screen,share:S.p.share,hqs:S.p.hqs,inst:S.p.inst,cq:S.p.cq,cqs:S.p.cqs,ws:S.ws}))}catch(e){canStore=false}
+}
+function init(){
+ const L=load()||{};
+ S={code:L.code||'',token:L.token||'',papel:L.papel||'',cfg:L.cfg||null,nights:L.nights||{},weeks:L.weeks||{},notes:L.notes||[],outbox:L.outbox||[],
+  dx:Object.assign(newDx(),L.dx||{}),nt:'',p:{screen:L.token?(L.screen||'menu'):'onb',share:!!L.share,hqs:L.hqs||'',inst:L.inst||'',cq:L.cq,cqs:L.cqs||''},ob:blankOb(),draft:draftBlank(),
+  draft2:{h:'12:00',v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''},draft3:{h:'12:00',v:0,t:'Água',vv:''},
+  st:{dt:I(TODAY),ok:false,bad:false},ntq:[],ag:{q:false,dt:'',bad:false},imp:{n:0,d:0,i:0},iq:{nw:'',dw:''},hq:{hp:'',hm:[],hn:'',hd:'',hi:'',hu:''},ckmsg:'',impok:false,ws:L.ws||{dias:3,av:0,sem:0,urg:0,troca:0,regra:5,evac:6,bris:4,fecal:0},cal:{y:TODAY.getFullYear(),m:TODAY.getMonth()},busy:false,authBad:false};
+ if(S.cfg)applyCfg(S.cfg,true);
+}
+function applyCfg(c,quiet){
+ S.cfg=c;S.p.code=S.code;S.p.cas=c.guarda;S.p.adol=c.adolescente;S.p.mods=c.modulos;
+ if(c.adolescente&&S.papel==='adol')S.p.share=c.compartilha;
+ if(!quiet)fixScreen();
+}
+/* para onde o app deve ir conforme a configuração do paciente */
+function fixScreen(){
+ const c=S.cfg;if(!c){S.p.screen='onb';return}
+ const sc=S.p.screen;
+ if((c.fase==='trat'&&c.status!=='ativo')||c.status==='encerrado'){S.p.screen='wait';return}
+ if(needStart()){if(!['start','info','help'].includes(sc))S.p.screen='start';return}
+ if(pauseInfo()){if(!['pause','info','help'].includes(sc))S.p.screen='pause';return}
+ if(sc==='start'||sc==='pause')S.p.screen='menu';
+ if(sc==='wait'||sc==='onb'||sc==='load')S.p.screen=(c.fase==='inv'&&c.dx)?'dx':'menu';
+ if(c.fase==='inv'&&c.dx&&(sc==='menu'))S.p.screen='dx';
+ if(c.fase==='trat'&&(sc==='dx')&&!S.dx.ativo)S.p.screen='menu';
+ if(!S.p.inst&&instNeeded()&&['wait','onb','load'].includes(sc)&&['menu','dx'].includes(S.p.screen))S.p.screen='inst';
+}
+/* ---------- rede ---------- */
+async function api(req){
+ if(!API_URL||API_URL.indexOf('COLE')>=0)return{ok:false,err:'config'};
+ const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),30000);
+ try{
+  const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(req),redirect:'follow',signal:ctl.signal});
+  return await r.json();
+ }catch(e){return{ok:false,err:'rede'}}finally{clearTimeout(tm)}
+}
+function queue(a,d){S.outbox.push({eid:uid(),a:a,d:d});save();flush()}
+let flushing=false;
+async function flush(){
+ if(flushing||!S.token||!S.outbox.length||S.authBad)return;
+ if(navigator.onLine===false)return;
+ flushing=true;
+ try{
+  for(let guard=0;guard<20&&S.outbox.length;guard++){
+   const batch=S.outbox.slice(0,40);
+   const r=await api({a:'sync',c:S.code,t:S.token,e:batch});
+   if(r.ok){
+    const gone=new Set((r.done||[]).concat(r.bad||[]));
+    S.outbox=S.outbox.filter(e=>!gone.has(e.eid));
+    if(r.config)applyCfg(r.config);
+    save();render();
+   }else{if(r.err==='auth'){S.authBad=true;save();render()}break}
+  }
+ }finally{flushing=false}
+}
+async function refresh(){
+ if(!S.token)return;
+ const r=await api({a:'config',c:S.code,t:S.token});
+ if(r.ok){applyCfg(r.config);cqCheck();save()}else if(r.err==='auth'){S.authBad=true}
+ render();flush();
+}
+/* ---------- visual ---------- */
+function render(){
+ const ae=document.activeElement,fk=ae&&ae.dataset&&ae.dataset.i?{k:ae.dataset.i,s:ae.selectionStart}:null;
+ document.getElementById('app').innerHTML=viewPais();
+ if(fk){const el=document.querySelector('[data-i="'+fk.k+'"]');if(el){el.focus();try{el.setSelectionRange(fk.s,fk.s)}catch(e){}}}
+}
+const toTop=()=>window.scrollTo(0,0);
+function openNight(k){
+ const n=S.nights[k];
+ S.draft=n?{s:n.s,f:n.f.filter(x=>x!=='med'),por:n.por,al:n.al||'',rem:n.f.includes('med')?'nao':(n.rem||'sim'),who:n.who||(n.h==='P'?'pai':(S.papel==='pai'?'pai':'mae'))}:Object.assign(draftBlank(),{who:S.papel==='pai'?'pai':(S.papel==='mae'?'mae':'')});
+ if(S.p.adol)S.draft.who='adol';
+ S.p.sheet={v:'night',k,step:1};
+}
+function cqAch(){
+ const a=[],ks=Object.keys(S.nights).sort(),dry=k=>S.nights[k]&&S.nights[k].s==='seca';
+ if(hasMod('n')){
+  if(ks.some(dry))a.push('n1');
+  let run=0,best=0,prev=null;ks.forEach(k=>{if(dry(k)){run=(prev&&dry(prev)&&diff(P(k),P(prev))===1)?run+1:1;best=Math.max(best,run)}else run=0;prev=k});
+  if(best>=7)a.push('n7');if(best>=14)a.push('n14');
+  const w=ks.filter(k=>{const d=diff(TODAY,P(k));return d>=0&&d<28});
+  if(w.length>=14){const f=w.filter(dry).length/w.length;if(f>=.5)a.push('p50');if(f>=.8)a.push('p80')}
+  const w2=ks.filter(k=>{const d=diff(TODAY,P(k));return d>=0&&d<21});
+  if(S.cfg&&S.cfg.inicio&&diff(TODAY,P(S.cfg.inicio))>=21&&w2.length>=14&&w2.filter(dry).length/w2.length<=.1)a.push('apoio');
+ }
+ if(hasMod('d')){const wk=Object.keys(S.weeks).sort(),z=k=>S.weeks[k]&&S.weeks[k].esc===0;
+  if(wk.some(z))a.push('d1');
+  if(wk.some((k,i)=>i>0&&z(k)&&z(wk[i-1])&&diff(P(k),P(wk[i-1]))===7))a.push('d2')}
+ return a;
+}
+function cqCheck(){
+ if(!S.token)return;const a=cqAch();
+ if(S.p.cq===undefined){S.p.cq=a.slice();return}
+ const nw=a.filter(k=>!S.p.cq.includes(k));if(!nw.length)return;
+ [['n1','n7','n14','p50','p80'],['d1','d2'],['apoio']].forEach(g=>{const hit=g.filter(k=>nw.includes(k));if(!hit.length)return;
+  g.forEach(k=>{if(a.includes(k)&&!S.p.cq.includes(k))S.p.cq.push(k)});
+  const best=hit[hit.length-1];queue('conq',{k:best});S.p.cqs=best});
+ save();
+}
+const A={
+ go(d){let v=d.v;if(needStart()&&!['start','info','help'].includes(v))v='start';else if(pauseInfo()&&!['pause','info','help'].includes(v))v='pause';if(v==='menu'&&S.cfg&&S.cfg.fase==='inv'&&S.cfg.dx)v='dx';S.p.screen=v;S.p.sheet=null;save();toTop()},
+ lang(d){setLang(d.v);render()},
+ agenda(d){if(!S.cfg||!S.cfg.ret)return 'norender';S.cfg.ag=d.v==='1'?I(TODAY):'';queue('ag',{v:d.v==='1'?1:0});save()},
+ rr(d){if(!S.cfg||!S.cfg.ret)return 'norender';const m=d.v||'';S.cfg.rr={m:m,d:m?I(TODAY):''};if(m==='agendei')S.cfg.ag=I(TODAY);S.ckmsg=m&&m!=='parou'?m:'';queue('rr',{m:m});save()},
+ ckok(){S.ckmsg='';},
+ agq(){S.ag.q=true;S.ag.bad=false},
+ agsave(){const dt=S.ag.dt;if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)||diff(P(dt),TODAY)<-1||diff(P(dt),TODAY)>150){S.ag.bad=true;return}
+  S.ag.bad=false;S.ag.q=false;S.ag.dt='';S.cfg.agd=dt;S.cfg.ag=I(TODAY);S.cfg.rr={m:'agendei',d:I(TODAY)};S.ckmsg='';queue('rr',{m:'agendei',dt:dt});save();fixScreen()},
+ startgo(){const dt=S.st.dt;if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)||diff(TODAY,P(dt))<0||diff(TODAY,P(dt))>14){S.st.bad=true;return}
+  S.st.bad=false;S.cfg.inicio=dt;if(!(S.cfg.tol>0)){S.cfg.ret=I(add(P(dt),30));S.cfg.tol=7;S.cfg.agd='';S.cfg.ag='';S.cfg.rr={m:'',d:''}}
+  queue('ini',{dt:dt,ok:true});S.p.screen='menu';save();toTop()},
+ impq(d){S.iq[d.k]=String(S.iq[d.k])===d.v?'':d.v},
+ hqset(d){const q=S.hq;if(d.k==='hm'){const i=q.hm.indexOf(d.v);if(i>=0)q.hm.splice(i,1);else q.hm.push(d.v)}else q[d.k]=q[d.k]===d.v?'':d.v},
+ instpl(d){S.instpl=d.v},
+ instnow(){const e=window._ip;if(!e)return 'norender';e.prompt();try{e.userChoice.then(r=>{if(r&&r.outcome==='accepted'){S.p.inst='ok';save()}window._ip=null;render()})}catch(x){}return 'norender'},
+ instdone(){S.p.inst='ok';S.p.screen='menu';fixScreen();save();toTop()},
+ instlater(){S.p.inst=I(TODAY);S.p.screen='menu';fixScreen();save();toTop()},
+ hqskip(){S.p.hqs=I(TODAY);S.p.screen='menu';save();toTop()},
+ hqsend(){const q=S.hq,o={};if(q.hp)o.hp=q.hp;if(q.hp==='s'&&q.hm.length)o.hm=q.hm.slice();if(q.hn!=='')o.hn=Number(q.hn);if(q.hd!=='')o.hd=Number(q.hd);if(q.hi)o.hi=q.hi;if(q.hu)o.hu=q.hu;if(!Object.keys(o).length)return 'norender';S.cfg.hq=1;queue('hist',o);S.p.screen='menu';save();toTop()},
+ impset(d){S.imp[d.k]=Number(d.v)},
+ impsend(){const ks=['n','d','i'].filter(k=>hasMod(k));if(!ks.every(k=>S.imp[k]>0))return 'norender';const o={};ks.forEach(k=>o[k]=S.imp[k]);if(S.iq.nw!=='')o.nw=Number(S.iq.nw);if(S.iq.dw!=='')o.dw=Number(S.iq.dw);S.iq={nw:'',dw:''};S.cfg.imp=I(TODAY);S.impok=true;S.imp={n:0,d:0,i:0};queue('imp',o);save()},
+ usdone(){if(!S.cfg||!S.cfg.us)return 'norender';S.cfg.us.f=I(TODAY);queue('us',{});save()},
+ ob(d){S.ob[d.k]=d.k==='nd'?Number(d.v):d.v;S.ob.err=''},
+ async obgo(){
+  const o=S.ob;if(!obValid()||o.busy)return 'norender';
+  o.busy=true;o.err='';render();
+  const mods=o.sit==='investigacao'?[o.mn?'n':null,o.md?'d':null].filter(Boolean).join(','):'';
+  const r=await api({a:'register',c:norm(o.code),dob:o.dob,papel:o.papel,sx:o.sx,fase:o.sit==='investigacao'?'inv':'trat',nd:o.nd,mods,cas:o.cas?1:0,termo:{v:TERMO_V,ok:true}});
+  o.busy=false;
+  if(!r.ok){
+   o.err=(['dados','bloqueado','termo','codigo','rede','config','ocupado'].includes(r.err)?t('err.'+r.err):t('err.x'));
+   render();return 'norender';
+  }
+  S.code=norm(o.code);S.token=r.token;S.papel=o.papel;S.authBad=false;S.p.screen='load';S.ob=blankOb();
+  applyCfg(r.config);save();toTop();
+ },
+ refresh(){S.busy=true;render();refresh().then(()=>{S.busy=false;render()});return 'norender'},
+ dxstart(){
+  const d=S.dx;
+  if(d.ativo||[0,6].includes(TODAY.getDay())||d.ack){if(!d.ativo){d.id='d'+uid();d.data=I(TODAY);d.ativo=true}S.p.screen='diary';save();toTop()}
+  else S.p.sheet={v:'rule'}},
+ ruleok(){const d=S.dx;S.p.sheet=null;d.id='d'+uid();d.data=I(TODAY);d.ativo=true;S.p.screen='diary';save();toTop()},
+ dxfromtrat(){S.p.screen='dx';save();toTop()},
+ sheet(d){S.p.sheet=d.v?{v:d.v}:null;if(d.v==='mic')S.draft2={h:now(),v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''};if(d.v==='liq')S.draft3={h:now(),v:0,t:'Água',vv:''};if(d.v==='fim')S.dx.fim={q:'',g:'',m:''}},
+ night(d){openNight(d.v)},
+ dr(d){S.draft[d.k]=d.v},
+ drf(d){const f=S.draft.f,i=f.indexOf(d.v);i<0?f.push(d.v):f.splice(i,1)},
+ drp(d){S.draft.por=d.v},
+ nstep(d){S.p.sheet.step=Number(d.v)},
+ savenight(){
+  const k=S.p.sheet.k,dr=S.draft,casa=dr.who==='pai'?'P':'M';
+  const f=dr.f.filter(x=>x!=='med').concat(dr.rem==='nao'?['med']:[]);
+  S.nights[k]={h:casa,s:dr.s,f,por:dr.por,al:dr.al||'',rem:dr.rem,who:dr.who};
+  queue('night',{data:k,casa,s:dr.s,por:dr.por,rem:dr.rem,al:dr.al||'',flags:f,quem:dr.who||S.papel});
+  S.p.sheet=null;cqCheck();save()},
+ cm(d){let{y,m}=S.cal;m+=Number(d.v);if(m<0){m=11;y--}if(m>11){m=0;y++}S.cal={y,m}},
+ d2(d){S.draft2[d.k]=(d.k==='pt'&&S.draft2.pt===d.v)?'':d.v;if(d.k==='p'&&d.v==='nenhuma')S.draft2.pt=''},
+ d3(d){S.draft3.v=Number(d.v);S.draft3.vv=''},
+ d3t(d){S.draft3.t=d.v},
+ savemic(){const m=S.draft2,dx=S.dx,ml=m.nm?0:Math.round(Number(m.v)||0);
+  dx.mic.push([m.h,ml,m.u,m.p,m.o||'']);
+  queue('mic',{diario:dx.id,data:dx.data,hora:m.h,ml,urg:m.u,perda:m.p,pt:m.p==='nenhuma'?'':m.pt,obs:m.o||''});S.p.sheet=null;save()},
+ saveliq(){const v=Math.round(Number(S.draft3.vv)||S.draft3.v);if(!v)return 'norender';const dx=S.dx;
+  dx.liq.push([S.draft3.h,v,S.draft3.t]);
+  queue('liq',{diario:dx.id,data:dx.data,hora:S.draft3.h||'',ml:v,tipo:S.draft3.t});S.p.sheet=null;save()},
+ fim(d){S.dx.fim.q=d.v},
+ fimok(){const dx=S.dx,f=dx.fim,tipo=S.cfg&&S.cfg.dx?S.cfg.dx.tipo:'inicial';
+  queue('fim',{diario:dx.id,data:dx.data,tipo,sr:f.q==='sim'?'sim':'nao',g:f.g,m:f.m});
+  Object.assign(S.dx,newDx());S.p.sheet=null;S.p.screen=(S.cfg&&S.cfg.fase==='trat')?'menu':'dx';save();toTop()},
+ cqok(){S.p.cqs='';save()},
+ wb(d){S.ws.bris=Number(d.v)},
+ savewk(){const w=S.ws,k=I(add(monday(TODAY),-7));
+  S.weeks[k]={dias:w.dias,esc:w.av+w.sem,av:w.av,sem:w.sem,urg:w.urg,troca:w.troca,regra:w.regra,evac:w.evac,bris:w.bris,fecal:w.fecal};
+  queue('week',{semana:k,dias:w.dias,esc:w.av+w.sem,av:w.av,sem:w.sem,urg:w.urg,troca:w.troca,regra:w.regra,evac:w.evac,bris:w.bris,fecal:w.fecal});
+  S.p.screen='menu';cqCheck();save();toTop()},
+ ntq(d){const i=S.ntq.indexOf(d.v);if(i>=0)S.ntq.splice(i,1);else S.ntq.push(d.v)},
+ fbsend(){const x=(S.fb||'').trim();if(!x)return 'norender';const tx='PROBLEMAS OU DÚVIDAS EM RELAÇÃO AO APP\n\nCódigo: '+S.code+'\nApp v'+APP_V+'\nAparelho: '+(navigator.userAgent||'').replace(/^Mozilla\/5\.0 /,'').slice(0,70)+'\n\n'+x.slice(0,700);window.open('https://wa.me/5521984814150?text='+encodeURIComponent(tx),'_blank');S.fb=''},
+ addnote(){const f=(S.nt||'').trim(),qs=S.ntq.map(k=>M['no.c.'+k][0]).join('; ');const tx=(qs+(qs&&f?'. ':'')+f).slice(0,500);if(!tx)return 'norender';S.notes.unshift([FY(TODAY),tx]);queue('note',{data:I(TODAY),texto:tx});S.nt='';S.ntq=[]},
+ st(d){const v=Math.max(Number(d.min),Math.min(Number(d.max),Number(get(d.p))+Number(d.d)));set(d.p,v);document.querySelectorAll('output[data-bind="'+d.p+'"]').forEach(o=>o.textContent=v);save();return 'norender'},
+ sheetbg(d,e){if(e.target.classList.contains('sheetbg')){S.p.sheet=null}else return 'norender'},
+ sairok(){try{localStorage.removeItem(KEY)}catch(e){}init();S.p.screen='onb';render();toTop()}
+};
+document.addEventListener('click',e=>{
+ const el=e.target.closest('[data-a]');if(!el||el.disabled)return;
+ const fn=A[el.dataset.a];if(!fn)return;
+ if(el.classList.contains('sheetbg')&&e.target!==el)return;
+ const r=fn(el.dataset,e);
+ if(r&&typeof r.then==='function'){r.then(x=>{if(x!=='norender')render()});return}
+ if(r==='norender')return;
+ render();
+});
+function onField(e){
+ const el=e.target;
+ if(el.dataset.i){set(el.dataset.i,el.value);if(el.dataset.i==='ob.code'||el.dataset.i==='ob.dob'){S.ob.err=''}
+  const u=el.dataset.u;
+  if(u==='ob'){const g=document.getElementById('ob-go');if(g)g.disabled=!obValid()||S.ob.busy;const n=document.getElementById('ob-norm');if(n)n.innerHTML=obNormHtml()}
+  save();
+ }
+ if(el.dataset.c&&e.type==='change'){
+  set(el.dataset.c,el.checked);
+  if(el.dataset.c==='p.share')queue('share',{v:el.checked});
+  save();render();
+ }
+}
+document.addEventListener('input',onField);
+document.addEventListener('change',onField);
+window.addEventListener('online',()=>flush());
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){TODAY=mkToday();refresh()}});
+setInterval(()=>{if(S&&S.outbox.length)flush()},60000);
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window._ip=e;if(S&&S.p.screen==='inst')render()});
+window.addEventListener('appinstalled',()=>{if(S){S.p.inst='ok';save()}});
+setLang(detectLang(),true);
+init();render();
+if(S.token)refresh();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+
+</script></body></html>
