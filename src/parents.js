@@ -61,13 +61,14 @@ function viewDx(){
  h+='<div class="note">'+t('dx.n1')+'</div><div class="note">'+t('dx.n2')+'</div></div>';
  return h;
 }
+const dxNight=()=>((S.cfg&&S.cfg.dx&&S.cfg.dx.tipo)||'inicial')==='inicial'&&hasMod('n');
 function viewDiary(){
  const d=S.dx,mic=d.mic.slice().sort((a,b)=>a[0]<b[0]?-1:1),tot=mic.reduce((s,x)=>s+(x[1]||0),0),liq=d.liq.reduce((s,x)=>s+x[1],0);
  return '<div class="body"><button class="back" data-a="go" data-v="dx">'+t('back')+'</button><div><h2>'+t('dy.title',dxFeitos()+1,(S.cfg&&S.cfg.dx&&S.cfg.dx.n)||1)+'</h2><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div>'+
  '<div class="note">'+t('dy.rem')+'</div><button class="btn block" data-a="sheet" data-v="mic">'+t('dy.addmic')+'</button><button class="btn block ghost" data-a="sheet" data-v="liq">'+t('dy.addliq')+'</button>'+
  '<div class="card"><div class="row"><h3>'+t('dy.today')+'</h3><span class="sp"></span><span class="hint">'+mic.length+' '+t(mic.length===1?'dy.m1':'dy.mn')+' · '+tot+' mL · '+t('dy.liq')+' '+liq+' mL</span></div>'+
  (mic.length?'<div class="tw"><table class="t" style="margin-top:6px"><tr><th>'+t('dy.hour')+'</th><th>mL</th><th>'+t('dy.urg')+'</th><th>'+t('dy.loss')+'</th><th>'+t('dy.obs')+'</th></tr>'+mic.map(x=>'<tr><td>'+x[0]+'</td><td>'+(x[1]||t('dy.nm'))+'</td><td>'+VL(x[2])+'</td><td>'+VL(x[3])+'</td><td>'+esc(x[4]||'')+'</td></tr>').join('')+'</table></div>':'<p class="hint" style="margin-top:8px">'+t('dy.none')+'</p>')+'</div>'+
- (d.liq.length?'<div class="card"><h3>'+t('dy.liqt')+'</h3><div class="tw"><table class="t" style="margin-top:6px"><tr><th>'+t('dy.hour')+'</th><th>'+t('dy.what')+'</th><th>mL</th></tr>'+d.liq.map(x=>'<tr><td>'+(x[0]||'—')+'</td><td>'+esc(VL(x[2]||''))+'</td><td>'+x[1]+'</td></tr>').join('')+'</table></div></div>':'')+'<button class="btn block gold" data-a="sheet" data-v="fim"'+(mic.length?'':' disabled')+'>'+t('dy.end')+'</button></div>';
+ (d.liq.length?'<div class="card"><h3>'+t('dy.liqt')+'</h3><div class="tw"><table class="t" style="margin-top:6px"><tr><th>'+t('dy.hour')+'</th><th>'+t('dy.what')+'</th><th>mL</th></tr>'+d.liq.map(x=>'<tr><td>'+(x[0]||'—')+'</td><td>'+esc(VL(x[2]||''))+'</td><td>'+x[1]+'</td></tr>').join('')+'</table></div></div>':'')+(dxNight()?'<div class="card"><h3>🌙 '+t('dy.night')+'</h3><p class="hint" style="margin:4px 0 8px">'+t('sh.fimnote')+'</p><div class="field"><label class="lbl" for="fg2">'+t('sh.fg')+'</label><input id="fg2" type="number" inputmode="numeric" class="in" data-i="dx.fim.g" value="'+esc(d.fim.g)+'"></div><div class="field"><label class="lbl" for="fm2">'+t('sh.fm')+'</label><input id="fm2" type="number" inputmode="numeric" class="in" data-i="dx.fim.m" value="'+esc(d.fim.m)+'"></div></div>':'')+'<button class="btn block gold" data-a="sheet" data-v="fim"'+(mic.length?'':' disabled')+'>'+t('dy.end')+'</button></div>';
 }
 /* ----- tratamento ----- */
 const hasNight=k=>!!(S.nights[k]||(S.cfg&&S.cfg.nights&&S.cfg.nights[k]));
@@ -134,6 +135,70 @@ function viewHist(){
   (hasMod('i')?blk(t('hq.s5'),['n','a','s'].map(v=>ch('hi',v,t('hq.i.'+v),q.hi===v)).join('')):'')+
   '<div class="row" style="margin-top:20px"><button class="btn" data-a="hqsend">'+t('hq.send')+'</button><button class="btn ghost" data-a="hqskip">'+t('hq.later')+'</button></div></div>';
 }
+
+/* ---------- histórico mensal (meses anteriores) ---------- */
+const mkey=d=>I(d).slice(0,7);
+function monthsList(){
+ const c=S.cfg;if(!c||!c.inicio||!isTrat())return [];
+ const cur=new Date(TODAY.getFullYear(),TODAY.getMonth(),1,12),lim=new Date(cur.getFullYear(),cur.getMonth()-12,1,12),st=P(c.inicio);
+ let a=new Date(st.getFullYear(),st.getMonth(),1,12);if(a<lim)a=lim;
+ const out=[];for(let d=a;d<cur;d=new Date(d.getFullYear(),d.getMonth()+1,1,12))out.push(mkey(d));return out.reverse();
+}
+/* situação do mês: calendário (conta as noites molhadas), relato dos pais ou nada */
+function monthInfo(m){
+ const y=+m.slice(0,4),mo=+m.slice(5,7),dm=new Date(y,mo,0).getDate();let loc=0,w=0,srv=0;
+ for(let i=1;i<=dm;i++){const k=m+'-'+p2(i),n=S.nights[k];if(n){loc++;if(n.s==='umida'||n.s==='pouco')w++}else if(S.cfg.nights&&S.cfg.nights[k])srv++}
+ if(loc>=dm*0.5)return{src:'cal',n:w};
+ if(loc+srv>=dm*0.5)return{src:'cal',n:null};
+ const r=S.cfg.meses&&S.cfg.meses[m];if(r)return{src:'rep',r:r};
+ return{src:'',n:null};
+}
+const monthsMissing=()=>monthsList().filter(m=>!monthInfo(m).src);
+function msCard(){
+ const k=monthsMissing().length;if(!k||pauseInfo()||needStart())return '';
+ return '<div class="card" style="border-color:var(--gold)"><span class="lbl">'+t('ms.t')+'</span><p class="hint" style="margin:4px 0 10px">'+t('ms.card',k)+'</p><button class="btn sm" data-a="go" data-v="meses">'+t('ms.open')+'</button></div>';
+}
+function msBuild(m){
+ const q=S.mq[m];if(!q)return null;const o={mes:m};
+ if(hasMod('n')){if(q.na)o.na=1;else if(q.n!==''&&q.n!=null){const n=Math.round(Number(q.n));if(!isNaN(n)&&n>=0&&n<=31)o.n=n}}
+ if(hasMod('d')){if(q.d!==''&&q.d!=null)o.d=Number(q.d);if(q.u!==''&&q.u!=null)o.u=Number(q.u)}
+ if(hasMod('i')&&q.i)o.i=q.i;
+ return Object.keys(o).length>1?o:null;
+}
+const msPending=()=>monthsList().filter(m=>(!monthInfo(m).src||(S.mq[m]&&S.mq[m].ed))&&msBuild(m));
+function viewMeses(){
+ const L=monthsList(),mq=m=>S.mq[m]||(S.mq[m]={n:'',d:'',u:'',i:'',na:false,ed:false}),mn=m=>MN[+m.slice(5,7)-1]+' '+m.slice(0,4);
+ const sel=(m,k,opts)=>'<select class="in" style="padding:6px;font-size:14px" data-i="mq.'+m+'.'+k+'" data-u="ms"><option value="">—</option>'+opts.map(o=>'<option value="'+o[0]+'"'+(String(mq(m)[k])===String(o[0])?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>';
+ const open=L.filter(m=>!monthInfo(m).src||mq(m).ed),done=L.filter(m=>!open.includes(m));
+ const doneRow=m=>{const inf=monthInfo(m);let tx;if(inf.src==='cal')tx=inf.n==null?t('ms.cal'):t('ms.calN',inf.n);
+  else{const r=inf.r,a=[];if(hasMod('n'))a.push(r.na?t('ms.rna'):t('ms.rn',r.n));if(hasMod('d')&&r.d!=='')a.push(t('hq.d'+r.d));if(hasMod('i')&&r.i)a.push(t('hq.i.'+r.i));tx=a.join(' · ')}
+  return '<tr><td style="text-transform:capitalize"><b>'+mn(m)+'</b></td><td class="hint" colspan="2">✓ '+tx+(inf.src==='rep'?' <button class="chip" data-a="msed" data-m="'+m+'">'+t('ms.edit')+'</button>':'')+'</td></tr>'};
+ const row=m=>{const q=mq(m);
+  return '<tr><td style="text-transform:capitalize;vertical-align:middle"><b>'+mn(m)+'</b></td>'+
+   (hasMod('n')?'<td><input type="number" inputmode="numeric" min="0" max="31" style="width:72px" aria-label="'+t('ms.n')+'" data-i="mq.'+m+'.n" data-u="ms" value="'+(q.na?'':q.n)+'"'+(q.na?' disabled':'')+'></td><td><button type="button" class="chip" data-a="msna" data-m="'+m+'" aria-pressed="'+q.na+'">'+t('ms.na')+'</button></td>':'<td colspan="2"></td>')+'</tr>'+
+   (hasMod('d')||hasMod('i')?'<tr><td></td><td colspan="2" style="padding-bottom:14px"><div style="display:grid;gap:6px">'+
+    (hasMod('d')?'<label class="hint">'+t('ms.d')+sel(m,'d',[0,1,2,3,4].map(v=>[v,t('hq.d'+v)]))+'</label><label class="hint">'+t('ms.u')+sel(m,'u',[0,1,2,3].map(v=>[v,t('ms.u'+v)]))+'</label>':'')+
+    (hasMod('i')?'<label class="hint">'+t('ms.i')+sel(m,'i',['n','a','s'].map(v=>[v,t('hq.i.'+v)]))+'</label>':'')+'</div></td></tr>':'')};
+ const any=msPending().length>0;
+ return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><div><h2>'+t('ms.t')+'</h2><p class="lead">'+t('ms.p')+'</p></div>'+
+  (!L.length?'<p class="hint">'+t('ms.none')+'</p>':
+  (!open.length?'<div class="note">'+t('ms.done')+'</div>':'')+
+  '<div class="card" style="padding:8px 12px"><table style="width:100%;border-collapse:collapse"><thead><tr style="text-align:left"><th class="hint">'+t('ms.col1')+'</th><th class="hint">'+(hasMod('n')?t('ms.col2'):'')+'</th><th></th></tr></thead><tbody>'+open.map(row).join('')+done.map(doneRow).join('')+'</tbody></table></div>'+
+  (open.length?'<button class="btn block" id="ms-go" data-a="msall"'+(any?'':' disabled')+'>'+t('ms.saveall')+'</button>':''))+'</div>';
+}
+/* ---------- DVSS: questionário antes da consulta ---------- */
+function dvCard(){
+ const c=S.cfg;if(!c||!c.ret||!isTrat()||!c.inicio||pauseInfo()||needStart()||!(hasMod('d')||hasMod('i')))return '';
+ if(S.dvok)return '<div class="note">'+t('dv.thx')+'</div>';
+ const to=diff(P(c.ret),TODAY);if(to>10)return '';
+ if(c.dv&&diff(TODAY,P(c.dv))<=25)return '';
+ return '<div class="card" style="border-color:var(--gold)"><span class="lbl">'+t('dv.t')+'</span><p class="hint" style="margin:4px 0 10px">'+t('dv.card')+'</p><button class="btn sm" data-a="go" data-v="dvss">'+t('dv.go')+'</button></div>';
+}
+function viewDvss(){
+ const a=S.dv.it,done=a.every(x=>x!=null);
+ const q=(n)=>'<div class="card flat"><p style="margin:0 0 8px"><b>'+n+'.</b> '+t('dv.q'+n)+'</p><div class="chips">'+(n===10?[[0,'dv.no'],[3,'dv.yes']]:[[0,'dv.s0'],[1,'dv.s1'],[2,'dv.s2'],[3,'dv.s3']]).map(x=>'<button type="button" class="chip" data-a="dvset" data-k="'+(n-1)+'" data-v="'+x[0]+'" aria-pressed="'+(a[n-1]===x[0])+'">'+t(x[1])+'</button>').join('')+'</div></div>';
+ return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><div><h2>'+t('dv.t')+'</h2><p class="lead">'+t('dv.lead')+'</p></div>'+[1,2,3,4,5,6,7,8,9,10].map(q).join('')+'<button class="btn block" data-a="dvsend"'+(done?'':' disabled')+'>'+t('dv.send')+'</button></div>';
+}
 function impCard(){
  const c=S.cfg;if(!c||!c.ret||!isTrat()||!c.inicio||pauseInfo())return '';
  const to=diff(P(c.ret),TODAY);if(to>7)return '';
@@ -180,10 +245,11 @@ function viewMenu(){
  if(hasMod('d')||hasMod('i'))items+=mi('go','week','📋',t('mn.week'),t('mn.weekd',F(add(monday(TODAY),-7)),F(add(monday(TODAY),-1))),okW?sem('g',t('mn.sent'),'✓'):sem('r',t('mn.pend'),'!'));
  const dxc=S.cfg&&S.cfg.fase==='trat'&&S.cfg.dx&&dxFeitos()<S.cfg.dx.n?S.cfg.dx:null;
  if(dxc){const r=dxc.n-dxFeitos();items+=mi('dxfromtrat','','💧',t('mn.dia'),t(r>1?'mn.dian':'mn.dia1',r)+(dxc.prazo?t('mn.until',FY(P(dxc.prazo))):''),sem('y',t('mn.asked'),'…'))}
+ if(monthsList().length)items+=mi('go','meses','🗓️',t('ms.mn'),t('ms.mnd'));
  items+=mi('go','notes','✍️',t('mn.notes'),t('mn.notesd'))+mi('go','info','ℹ️',t('mn.info'),t('mn.infod'))+mi('go','dev','⏰',t('mn.dev'),t('mn.devd'))+mi('go','help','❓',t('mn.help'),t('mn.helpd'));
  const fresh=S.cfg&&S.cfg.fase==='trat'&&S.cfg.inicio&&diff(TODAY,P(S.cfg.inicio))<=2&&diff(TODAY,P(S.cfg.inicio))>=0;
  return '<div class="body"><div class="row"><div><h1>'+t('hello')+'</h1><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div><span class="sp"></span>'+(S.p.adol?'':'<span class="sem n" title="'+t('mn.stars')+'"><i style="background:var(--gold)">★</i>'+stars+'</span>')+'</div>'+
- (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+retChip()+(()=>{const k=checkCard();return cqCard()+k+hqCard()+impCard()+lateBox()+(k.includes('data-ck')?'':retCard())})()+instCard()+
+ (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+retChip()+(()=>{const k=checkCard();return cqCard()+k+hqCard()+dvCard()+impCard()+msCard()+lateBox()+(k.includes('data-ck')?'':retCard())})()+instCard()+
  (S.p.adol?'<div class="card flat"><label class="chk"><input type="checkbox" data-c="p.share"'+(S.p.share?' checked':'')+'><span><b>'+t('mn.share')+'</b></span></label><p class="hint" style="margin-top:6px">'+t(S.p.share?'mn.shareon':'mn.shareoff')+t('mn.shareend')+'</p></div>':'')+
  '<div class="menu">'+items+'</div>'+(S.p.cas?'<div class="note">'+t('mn.cas')+'</div>':'')+'</div>';
 }
@@ -231,7 +297,6 @@ function viewWeek(){
 const ws_b=v=>(S.ws.bris===v);
 function viewNotes(){
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('no.title')+'</h2><div class="card flat"><span class="lbl">'+t('no.q')+'</span><div class="chips" style="margin:6px 0 12px">'+NOTEQ.map(k=>'<button type="button" class="chip" data-a="ntq" data-v="'+k+'" aria-pressed="'+S.ntq.includes(k)+'">'+t('no.c.'+k)+'</button>').join('')+'</div><label class="lbl" for="nt">'+t('no.opt')+'</label><textarea id="nt" class="in" rows="3" data-i="nt" placeholder="'+esc(t('no.ph'))+'">'+esc(S.nt)+'</textarea><p class="hint" style="margin-top:4px">'+t('no.names')+'</p><button class="btn block" style="margin-top:10px" data-a="addnote">'+t('no.save')+'</button></div>'+
- '<div class="card flat" style="margin-top:14px"><span class="lbl">'+t('fb.t')+'</span><p class="hint" style="margin:4px 0 8px">'+t('fb.h')+'</p><textarea id="fb" class="in" rows="3" data-i="fb" placeholder="'+esc(t('fb.ph'))+'">'+esc(S.fb||'')+'</textarea><button class="btn block ghost" style="margin-top:10px" data-a="fbsend">'+t('fb.go')+'</button></div>'+
  S.notes.map(n=>'<div class="card flat"><div class="hint">'+n[0]+'</div><div>'+esc(n[1])+'</div></div>').join('')+'</div>';
 }
 function viewInfo(){
@@ -254,14 +319,14 @@ function sheetsP(){
  else if(sh.v==='sair')c='<h2>'+t('sh.out')+'</h2><p>'+t('sh.outt')+(S.outbox.length?t('sh.outl',S.outbox.length):'')+t('sh.outr')+'</p><button class="btn block" data-a="sairok">'+t('sh.outb')+'</button>'+cancel;
  else if(sh.v==='fim'){const f=S.dx.fim;
   c='<h2>'+t('sh.fim')+'</h2><div><span class="lbl">'+t('sh.fimq')+'</span><div class="chips">'+[['nao','sh.fimn'],['sim','sh.fims']].map(x=>chipB('fim','k',x[0],t(x[1]),f.q===x[0])).join('')+'</div></div>'+
-  (S.dx.tipo==='inicial'&&hasMod('n')?'<div class="note">'+t('sh.fimnote')+'</div><div class="field"><label class="lbl" for="fg">'+t('sh.fg')+'</label><input id="fg" type="number" inputmode="numeric" class="in" data-i="dx.fim.g" value="'+esc(f.g)+'"></div><div class="field"><label class="lbl" for="fm">'+t('sh.fm')+'</label><input id="fm" type="number" inputmode="numeric" class="in" data-i="dx.fim.m" value="'+esc(f.m)+'"></div>':(hasMod('n')?'<div class="note">'+t('sh.fimfu')+'</div>':''))+
+  (dxNight()?'<div class="note">'+t('sh.fimnote')+'</div><div class="field"><label class="lbl" for="fg">'+t('sh.fg')+'</label><input id="fg" type="number" inputmode="numeric" class="in" data-i="dx.fim.g" value="'+esc(f.g)+'"></div><div class="field"><label class="lbl" for="fm">'+t('sh.fm')+'</label><input id="fm" type="number" inputmode="numeric" class="in" data-i="dx.fim.m" value="'+esc(f.m)+'"></div>':(hasMod('n')?'<div class="note">'+t('sh.fimfu')+'</div>':''))+
   '<button class="btn block" data-a="fimok"'+(f.q?'':' disabled')+'>'+t('sh.fimok')+'</button><button class="btn block ghost" data-a="sheet" data-v="">'+t('goback')+'</button>'}
  return '<div class="sheetbg" data-a="sheetbg"><div class="sheet" role="dialog" aria-modal="true">'+c+'</div></div>';
 }
 function viewPais(){
  let b;const sc=S.p.screen,enc=S.cfg&&S.cfg.status==='encerrado';
  if(sc==='onb')b=viewOnb();else if(sc==='wait')b='<div class="body"><h1>'+t(enc?'wait.enc':'wait.rec')+'</h1><p class="lead">'+t(enc?'wait.enct':'wait.rect')+'</p><button class="btn block" data-a="refresh">'+(S.busy?t('wait.busy'):t('wait.btn'))+'</button></div>';
- else if(sc==='dx')b=viewDx();else if(sc==='start')b=viewStart();else if(sc==='hist')b=viewHist();else if(sc==='pause')b=viewPause();else if(sc==='diary')b=viewDiary();else if(sc==='menu')b=viewMenu();else if(sc==='cal')b=viewCal();else if(sc==='week')b=viewWeek();else if(sc==='notes')b=viewNotes();else if(sc==='info')b=viewInfo();else if(sc==='help')b=viewHelpP();else if(sc==='load')b='<div class="body"><p class="lead">'+t('loading')+'</p></div>';else if(sc==='dev')b=viewDev();else if(sc==='inst')b=viewInst();
+ else if(sc==='dx')b=viewDx();else if(sc==='start')b=viewStart();else if(sc==='hist')b=viewHist();else if(sc==='pause')b=viewPause();else if(sc==='diary')b=viewDiary();else if(sc==='menu')b=viewMenu();else if(sc==='cal')b=viewCal();else if(sc==='meses')b=viewMeses();else if(sc==='dvss')b=viewDvss();else if(sc==='week')b=viewWeek();else if(sc==='notes')b=viewNotes();else if(sc==='info')b=viewInfo();else if(sc==='help')b=viewHelpP();else if(sc==='load')b='<div class="body"><p class="lead">'+t('loading')+'</p></div>';else if(sc==='dev')b=viewDev();else if(sc==='inst')b=viewInst();
  return '<div class="phone">'+hdrP()+b+footP()+sheetsP()+'</div>';
 }
 
@@ -289,7 +354,7 @@ function viewHelpP(){
  '<div class="card"><h3>'+t('hp.why')+'</h3><p class="lead" style="margin-top:6px">'+t('hp.whyt')+'</p></div>'+
  '<div class="card"><h3>'+t('hp.steps')+'</h3>'+ul([1,2,3,4].map(i=>t('hp.s'+i)))+'</div>'+
  (instNeeded()?'<div class="card"><h3>'+t('in.t')+'</h3><button class="btn block ghost" style="margin-top:10px" data-a="go" data-v="inst">'+t('in.how')+'</button></div>':'')+'<div class="card"><h3>'+t('hp.dev')+'</h3><p class="lead" style="margin-top:6px">'+t('hp.devt',esc(S.code||''))+'</p><button class="btn block ghost" style="margin-top:10px" data-a="sheet" data-v="sair">'+t('sh.outb')+'</button></div>'+
- '<div class="card"><h3>'+t('hp.faq')+'</h3>'+ul([1,2,3,4,5,6].map(i=>t('hp.f'+i)))+'</div>'+contactCard()+'</div>';
+ '<div class="card"><h3>'+t('hp.faq')+'</h3>'+ul([1,2,3,4,5,6].map(i=>t('hp.f'+i)))+'</div>'+'<div class="card flat" ><span class="lbl">'+t('fb.t')+'</span><p class="hint" style="margin:4px 0 8px">'+t('fb.h')+'</p><textarea id="fb" class="in" rows="3" data-i="fb" placeholder="'+esc(t('fb.ph'))+'">'+esc(S.fb||'')+'</textarea><button class="btn block ghost" style="margin-top:10px" data-a="fbsend">'+t('fb.go')+'</button></div>'+contactCard()+'</div>';
 }
 function contactCard(){return '<div class="card"><h3>'+t('ct.t')+'</h3><div class="row wrap" style="margin-top:10px">'+waBtn()+agBtn()+'<a class="btn sm ghost" href="'+IG_URL+'" target="_blank" rel="noopener">'+t('ct.ig')+'</a></div></div>'}
 function viewDev(){

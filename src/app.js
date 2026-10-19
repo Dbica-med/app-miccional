@@ -19,7 +19,7 @@ function init(){
  S={code:L.code||'',token:L.token||'',papel:L.papel||'',cfg:L.cfg||null,nights:L.nights||{},weeks:L.weeks||{},notes:L.notes||[],outbox:L.outbox||[],
   dx:Object.assign(newDx(),L.dx||{}),nt:'',p:{screen:L.token?(L.screen||'menu'):'onb',share:!!L.share,hqs:L.hqs||'',inst:L.inst||'',cq:L.cq,cqs:L.cqs||''},ob:blankOb(),draft:draftBlank(),
   draft2:{h:'12:00',v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''},draft3:{h:'12:00',v:0,t:'Água',vv:''},
-  st:{dt:I(TODAY),ok:false,bad:false},ntq:[],ag:{q:false,dt:'',bad:false},imp:{n:0,d:0,i:0},iq:{nw:'',dw:''},hq:{hp:'',hm:[],hn:'',hd:'',hi:'',hu:''},ckmsg:'',impok:false,ws:L.ws||{dias:3,av:0,sem:0,urg:0,troca:0,regra:5,evac:6,bris:4,fecal:0},cal:{y:TODAY.getFullYear(),m:TODAY.getMonth()},busy:false,authBad:false};
+  st:{dt:I(TODAY),ok:false,bad:false},ntq:[],ag:{q:false,dt:'',bad:false},mq:{},dv:{it:Array(10).fill(null)},dvok:false,imp:{n:0,d:0,i:0},iq:{nw:'',dw:''},hq:{hp:'',hm:[],hn:'',hd:'',hi:'',hu:''},ckmsg:'',impok:false,ws:L.ws||{dias:3,av:0,sem:0,urg:0,troca:0,regra:5,evac:6,bris:4,fecal:0},cal:{y:TODAY.getFullYear(),m:TODAY.getMonth()},busy:false,authBad:false};
  if(S.cfg)applyCfg(S.cfg,true);
 }
 function applyCfg(c,quiet){
@@ -131,6 +131,13 @@ const A={
  instdone(){S.p.inst='ok';S.p.screen='menu';fixScreen();save();toTop()},
  instlater(){S.p.inst=I(TODAY);S.p.screen='menu';fixScreen();save();toTop()},
  hqskip(){S.p.hqs=I(TODAY);S.p.screen='menu';save();toTop()},
+ msset(d){const q=S.mq[d.m];q[d.k]=String(q[d.k])===d.v?'':(d.k==='i'?d.v:Number(d.v))},
+ msna(d){const q=S.mq[d.m];q.na=!q.na;if(q.na)q.n=''},
+ msed(d){const q=S.mq[d.m]||(S.mq[d.m]={n:'',d:'',u:'',i:'',na:false,ed:false}),r=(S.cfg.meses||{})[d.m]||{};Object.assign(q,{n:r.n===''||r.n==null?'':r.n,d:r.d===''||r.d==null?'':r.d,u:r.u===''||r.u==null?'':r.u,i:r.i||'',na:!!r.na,ed:true})},
+ msall(){const L=msPending();if(!L.length)return 'norender';S.cfg.meses=S.cfg.meses||{};
+  L.forEach(m=>{const o=msBuild(m);S.cfg.meses[m]={n:o.n==null?'':o.n,d:o.d==null?'':o.d,u:o.u==null?'':o.u,i:o.i||'',na:o.na?1:0};delete S.mq[m];queue('mes',o)});S.msok=true;save()},
+ dvset(d){S.dv.it[+d.k]=Number(d.v)},
+ dvsend(){if(!S.dv.it.every(x=>x!=null))return 'norender';queue('dvss',{it:S.dv.it.slice()});S.cfg.dv=I(TODAY);S.dv.it=Array(10).fill(null);S.dvok=true;S.p.screen='menu';save();toTop()},
  hqsend(){const q=S.hq,o={};if(q.hp)o.hp=q.hp;if(q.hp==='s'&&q.hm.length)o.hm=q.hm.slice();if(q.hn!=='')o.hn=Number(q.hn);if(q.hd!=='')o.hd=Number(q.hd);if(q.hi)o.hi=q.hi;if(q.hu)o.hu=q.hu;if(!Object.keys(o).length)return 'norender';S.cfg.hq=1;queue('hist',o);S.p.screen='menu';save();toTop()},
  impset(d){S.imp[d.k]=Number(d.v)},
  impsend(){const ks=['n','d','i'].filter(k=>hasMod(k));if(!ks.every(k=>S.imp[k]>0))return 'norender';const o={};ks.forEach(k=>o[k]=S.imp[k]);if(S.iq.nw!=='')o.nw=Number(S.iq.nw);if(S.iq.dw!=='')o.dw=Number(S.iq.dw);S.iq={nw:'',dw:''};S.cfg.imp=I(TODAY);S.impok=true;S.imp={n:0,d:0,i:0};queue('imp',o);save()},
@@ -208,6 +215,7 @@ function onField(e){
  const el=e.target;
  if(el.dataset.i){set(el.dataset.i,el.value);if(el.dataset.i==='ob.code'||el.dataset.i==='ob.dob'){S.ob.err=''}
   const u=el.dataset.u;
+  if(u==='ms'){const g=document.getElementById('ms-go');if(g)g.disabled=!msPending().length}
   if(u==='ob'){const g=document.getElementById('ob-go');if(g)g.disabled=!obValid()||S.ob.busy;const n=document.getElementById('ob-norm');if(n)n.innerHTML=obNormHtml()}
   save();
  }
