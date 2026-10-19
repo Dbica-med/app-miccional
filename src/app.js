@@ -5,7 +5,7 @@ const set=(p,v)=>{const a=p.split('.'),l=a.pop();a.reduce((o,k)=>o[k],S)[l]=v};
 const KEY='mic.v1';
 const newDx=()=>({id:'',data:'',ativo:false,ack:false,mic:[],liq:[],fim:{q:'',g:'',m:''}});
 const blankOb=()=>({code:'',dob:'',sx:'',papel:'',sit:'',termo:false,assent:false,cas:false,mn:false,md:false,nd:2,err:'',busy:false});
-const draftBlank=()=>({s:'',f:[],por:'c',rem:'',who:'',al:''});
+const draftBlank=()=>({s:'',f:[],por:'c',rem:'',who:'',al:'',x:''});
 const now=()=>{const d=new Date();return p2(d.getHours())+':'+p2(d.getMinutes())};
 const uid=()=>(Date.now().toString(36)+Math.random().toString(36).slice(2,9));
 let canStore=true;
@@ -174,6 +174,7 @@ const A={
   const f=dr.f.filter(x=>x!=='med').concat(dr.rem==='nao'?['med']:[]);
   S.nights[k]={h:casa,s:dr.s,f,por:dr.por,al:dr.al||'',rem:dr.rem,who:dr.who};
   queue('night',{data:k,casa,s:dr.s,por:dr.por,rem:dr.rem,al:dr.al||'',flags:f,quem:dr.who||S.papel});
+  const nx=String(dr.x||'').trim().slice(0,500);if(nx)queue('note',{data:k,texto:nx});
   S.p.sheet=null;cqCheck();save()},
  cm(d){let{y,m}=S.cal;m+=Number(d.v);if(m<0){m=11;y--}if(m>11){m=0;y++}S.cal={y,m}},
  d2(d){S.draft2[d.k]=(d.k==='pt'&&S.draft2.pt===d.v)?'':d.v;if(d.k==='p'&&d.v==='nenhuma')S.draft2.pt=''},

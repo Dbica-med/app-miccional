@@ -245,11 +245,14 @@ function viewMenu(){
  if(hasMod('d')||hasMod('i'))items+=mi('go','week','📋',t('mn.week'),t('mn.weekd',F(add(monday(TODAY),-7)),F(add(monday(TODAY),-1))),okW?sem('g',t('mn.sent'),'✓'):sem('r',t('mn.pend'),'!'));
  const dxc=S.cfg&&S.cfg.fase==='trat'&&S.cfg.dx&&dxFeitos()<S.cfg.dx.n?S.cfg.dx:null;
  if(dxc){const r=dxc.n-dxFeitos();items+=mi('dxfromtrat','','💧',t('mn.dia'),t(r>1?'mn.dian':'mn.dia1',r)+(dxc.prazo?t('mn.until',FY(P(dxc.prazo))):''),sem('y',t('mn.asked'),'…'))}
- if(monthsList().length)items+=mi('go','meses','🗓️',t('ms.mn'),t('ms.mnd'));
- items+=mi('go','notes','✍️',t('mn.notes'),t('mn.notesd'))+mi('go','info','ℹ️',t('mn.info'),t('mn.infod'))+mi('go','dev','⏰',t('mn.dev'),t('mn.devd'))+mi('go','help','❓',t('mn.help'),t('mn.helpd'));
+ const mL=monthsList();
+ let msItem='';if(mL.length){const k=monthsMissing().length;msItem=mi('go','meses','🗓️',t('ms.mn'),k?t('ms.mnd'):t('ms.done'),k?sem('r',t('ms.badge',k),'!'):sem('g',t('mn.uptodate'),'✓'))}
+ items=items.replace('<button class="mi" data-a="go" data-v="week">',msItem+'<button class="mi" data-a="go" data-v="week">');
+ if(msItem&&!items.includes('data-v="meses"'))items+=msItem;
+ items+=mi('go','info','ℹ️',t('mn.info'),t('mn.infod'))+mi('go','help','❓',t('mn.help'),t('mn.helpd'));
  const fresh=S.cfg&&S.cfg.fase==='trat'&&S.cfg.inicio&&diff(TODAY,P(S.cfg.inicio))<=2&&diff(TODAY,P(S.cfg.inicio))>=0;
  return '<div class="body"><div class="row"><div><h1>'+t('hello')+'</h1><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div><span class="sp"></span>'+(S.p.adol?'':'<span class="sem n" title="'+t('mn.stars')+'"><i style="background:var(--gold)">★</i>'+stars+'</span>')+'</div>'+
- (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+retChip()+(()=>{const k=checkCard();return cqCard()+k+hqCard()+dvCard()+impCard()+msCard()+lateBox()+(k.includes('data-ck')?'':retCard())})()+instCard()+
+ (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+retChip()+(()=>{const k=checkCard();return cqCard()+k+(k.includes('data-ck')?'':retCard())+hqCard()+dvCard()+impCard()})()+instCard()+
  (S.p.adol?'<div class="card flat"><label class="chk"><input type="checkbox" data-c="p.share"'+(S.p.share?' checked':'')+'><span><b>'+t('mn.share')+'</b></span></label><p class="hint" style="margin-top:6px">'+t(S.p.share?'mn.shareon':'mn.shareoff')+t('mn.shareend')+'</p></div>':'')+
  '<div class="menu">'+items+'</div>'+(S.p.cas?'<div class="note">'+t('mn.cas')+'</div>':'')+'</div>';
 }
@@ -278,7 +281,8 @@ function sheetNight(){
  const par=(adol?'':'<div><span class="lbl">'+t('nt.resp')+'</span><div class="chips">'+[['mae','ob.mae'],['pai','ob.pai'],['outro','ob.outro']].map(x=>chip('dr','who',x[0],t(x[1]),dr.who===x[0])).join('')+'</div></div>')+
   '<div><span class="lbl">'+t('nt.med')+'</span><div class="chips">'+[['sim','nt.yes'],['nao','nt.no'],['na','nt.na']].map(x=>chip('dr','rem',x[0],t(x[1]),dr.rem===x[0])).join('')+'</div></div>'+
   (alarmOn(k)?'<div><span class="lbl">'+t('nt.alarm')+'</span><div class="chips">'+[['t','nt.a1'],['n','nt.a2'],['z','nt.z'],['x','nt.a3']].map(x=>chip('dr','al',x[0],t(x[1]),dr.al===x[0])).join('')+'</div></div>':'')+
-  '<div><span class="lbl">'+t('nt.diff')+'<span class="hint">'+t('nt.opt')+'</span></span><div class="chips">'+RAZ.map(r=>'<button type="button" class="chip" data-a="drf" data-v="'+r+'" aria-pressed="'+dr.f.includes(r)+'">'+t('raz.'+r)+'</button>').join('')+'</div></div>';
+  '<div><span class="lbl">'+t('nt.diff')+'<span class="hint">'+t('nt.opt')+'</span></span><div class="chips">'+RAZ.map(r=>'<button type="button" class="chip" data-a="drf" data-v="'+r+'" aria-pressed="'+dr.f.includes(r)+'">'+t('raz.'+r)+'</button>').join('')+'</div></div>'+
+  '<div><label class="lbl" for="nx">'+t('no.opt')+'</label><textarea id="nx" class="in" rows="2" data-i="draft.x" placeholder="'+esc(t('no.ph'))+'">'+esc(dr.x||'')+'</textarea><p class="hint" style="margin-top:4px">'+t('no.names')+'</p></div>';
  const cancel='<button class="btn block ghost" data-a="sheet" data-v="">'+t('cancel')+'</button>';
  if(adol)return title+child+par+'<button class="btn block" data-a="savenight"'+(dr.s&&dr.rem?'':' disabled')+'>'+t('save')+'</button>'+cancel;
  if(step===1)return title+'<span class="hint">'+t('nt.step1')+'</span>'+child+'<button class="btn block" data-a="nstep" data-v="2"'+(dr.s?'':' disabled')+'>'+t('nt.cont')+'</button>'+cancel;
@@ -306,7 +310,7 @@ function viewInfo(){
  '<div class="card"><h3>'+t('in.liq')+'</h3><p class="lead" style="margin-top:6px">'+t('in.liqh')+'</p><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">'+
  [[1,95],[2,80],[3,50],[4,22],[5,3]].map(x=>'<div class="wk" style="grid-template-columns:110px 1fr 74px"><span>'+t('in.l'+x[0])+'</span><i style="width:'+x[1]+'%;background:var(--c-noite)"></i><span>'+t('in.l'+x[0]+'v')+'</span></div>').join('')+'</div></div>'+
  '<div class="card"><h3>'+t('in.hyd')+'</h3><div class="tw"><table class="t" style="margin-top:8px"><tr><th>'+t('in.age')+'</th><th>'+t('in.total')+'</th><th>'+t('in.cups')+'</th></tr>'+[1,2,3].map(i=>'<tr><td>'+t('in.a'+i)+'</td><td>'+t('in.a'+i+'t')+'</td><td>'+t('in.cups'+i)+'</td></tr>').join('')+'</table></div><p class="hint" style="margin-top:8px">'+t('in.href')+'</p></div>'+
- '<div class="card"><h3>'+t('in.hab')+'</h3>'+ul([1,2,3,4].map(i=>t('in.h'+i)))+'</div>'+contactCard()+'</div>';
+ '<div class="card"><h3>'+t('in.hab')+'</h3>'+ul([1,2,3,4].map(i=>t('in.h'+i)))+'</div>'+devCards()+contactCard()+'</div>';
 }
 /* ----- sheets (janelas inferiores) ----- */
 function sheetsP(){
@@ -357,6 +361,10 @@ function viewHelpP(){
  '<div class="card"><h3>'+t('hp.faq')+'</h3>'+ul([1,2,3,4,5,6].map(i=>t('hp.f'+i)))+'</div>'+'<div class="card flat" ><span class="lbl">'+t('fb.t')+'</span><p class="hint" style="margin:4px 0 8px">'+t('fb.h')+'</p><textarea id="fb" class="in" rows="3" data-i="fb" placeholder="'+esc(t('fb.ph'))+'">'+esc(S.fb||'')+'</textarea><button class="btn block ghost" style="margin-top:10px" data-a="fbsend">'+t('fb.go')+'</button></div>'+contactCard()+'</div>';
 }
 function contactCard(){return '<div class="card"><h3>'+t('ct.t')+'</h3><div class="row wrap" style="margin-top:10px">'+waBtn()+agBtn()+'<a class="btn sm ghost" href="'+IG_URL+'" target="_blank" rel="noopener">'+t('ct.ig')+'</a></div></div>'}
+function devCards(){
+ return '<div class="card"><h3>⏰ '+t('mn.dev')+'</h3><h3 style="margin-top:10px">'+t('dv.ws')+'</h3><p class="lead" style="margin-top:6px">'+t('dv.wst')+'</p>'+ul([1,2,3,4].map(i=>t('dv.ws'+i)))+
+ '<h3 style="margin-top:14px">'+t('dv.wb')+'</h3><p class="lead" style="margin-top:6px">'+t('dv.wbt')+'</p>'+ul([1,2,3,4,5].map(i=>t('dv.wb'+i)))+'</div>';
+}
 function viewDev(){
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('dv.title')+'</h2>'+
  '<div class="card"><h3>'+t('dv.ws')+'</h3><p class="lead" style="margin-top:6px">'+t('dv.wst')+'</p>'+ul([1,2,3,4].map(i=>t('dv.ws'+i)))+'</div>'+

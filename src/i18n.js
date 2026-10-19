@@ -387,7 +387,7 @@ const M={
 'ms.cal':['calendário preenchido','calendar filled','calendrier rempli'],
 'ms.calN':['{0} noites com xixi na cama (do calendário)','{0} wet nights (from the calendar)','{0} nuits mouillées (calendrier)'],
 'ms.rn':['{0} noites com xixi na cama','{0} wet nights','{0} nuits mouillées'],'ms.rna':['não anotado','not noted','non noté'],
-'ms.edit':['Alterar','Change','Modifier'],'ms.col1':['Mês','Month','Mois'],'ms.col2':['Noites com xixi na cama','Wet nights','Nuits mouillées'],'ms.saveall':['Salvar tudo','Save all','Tout enregistrer'],'ms.save':['Salvar este mês','Save this month','Enregistrer ce mois'],
+'ms.edit':['Alterar','Change','Modifier'],'ms.badge':['Faltam {0}','{0} missing','Il manque {0}'],'ms.col1':['Mês','Month','Mois'],'ms.col2':['Noites com xixi na cama','Wet nights','Nuits mouillées'],'ms.saveall':['Salvar tudo','Save all','Tout enregistrer'],'ms.save':['Salvar este mês','Save this month','Enregistrer ce mois'],
 'ms.none':['Nenhum mês anterior para completar ainda.','No previous month to complete yet.','Aucun mois précédent à compléter.'],
 'ms.done':['Todos os meses estão completos. Obrigado!','All months are complete. Thank you!','Tous les mois sont complets. Merci !'],
 'dv.t':['Questionário antes da consulta','Questionnaire before the visit','Questionnaire avant la consultation'],
