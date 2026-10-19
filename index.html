@@ -191,12 +191,21 @@ input[type=date]::-webkit-date-and-time-value{text-align:left;min-height:1.2em}
 
 a.btn{text-decoration:none}
 
+h3.ct{display:flex;align-items:center;gap:8px;padding-bottom:6px;border-bottom:2px solid var(--gold);margin-bottom:4px}
+h3.ct span{font-size:1.15em;line-height:1}
+.day .st{font-weight:700;font-size:11px;margin-right:2px}
+.day .st.ok{color:var(--good)} .day .st.wn{color:#c98a00} .day .st.bad{color:var(--crit)}
+.dots::after{content:'';display:inline-block;width:1.2em;text-align:left;animation:dots 1.2s steps(4,end) infinite}
+@keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+.ld{position:fixed;top:0;left:0;right:0;height:3px;z-index:99;background:linear-gradient(90deg,transparent,var(--gold),transparent);background-size:40% 100%;background-repeat:no-repeat;animation:ld 1s linear infinite}
+@keyframes ld{from{background-position:-40% 0}to{background-position:140% 0}}
+
 </style></head><body>
 <main id="app"></main>
 <script>
 /* Preencha API_URL com o endereço do programa do Google (termina em /exec) */
 const API_URL='https://script.google.com/macros/s/AKfycbxOjWwSj60sG7hnjUilc_hHmllMNoVv36OOzKeRVvDBodoyF36NVerPX-jxHn_pS4eX/exec';
-const APP_V='2.0';
+const APP_V='2.1';
 const TERMO_V='2026-10-v2';
 
 'use strict';
@@ -489,7 +498,7 @@ const M={
 'cal.med':['🔵 Remédio fora do horário ou não dado','🔵 Medication late or not given','🔵 Médicament en retard ou non donné'],'cal.diff':['🔺 Algo diferente na noite','🔺 Something different that night','🔺 Quelque chose de différent cette nuit'],
 /* noite */
 'nt.title':['Noite de {0} {1}','Night of {0} {1}','Nuit du {0} {1}'],'nt.other':['✔ Já preenchida pela outra casa.','✔ Already filled in by the other home.','✔ Déjà remplie par l’autre domicile.'],
-'nt.child':['<b>🧒 Esta parte é da criança!</b> Ela mesma escolhe o desenho. Os adultos só ajudam a segurar o celular.','<b>🧒 This part is for the child!</b> The child picks the picture. Adults only help hold the phone.','<b>🧒 Cette partie est pour l’enfant !</b> C’est lui qui choisit le dessin. Les adultes aident seulement à tenir le téléphone.'],
+'nt.child':['<b>🧒 Esta parte é da criança!</b> Ela mesma escolhe o desenho; os pais acompanham e participam.','<b>🧒 This part is for the child!</b> The child picks the picture; parents follow along and take part.','<b>🧒 Cette partie est pour l’enfant !</b> Il/elle choisit le dessin ; les parents l’accompagnent et participent.'],
 'nt.how':['Como foi a noite?','How was the night?','Comment s’est passée la nuit ?'],'nt.who':['Quem escolheu o desenho?','Who picked the picture?','Qui a choisi le dessin ?'],'nt.kid':['Criança','Child','Enfant'],'nt.guard':['Responsável','Guardian','Responsable'],
 'nt.resp':['Quem está respondendo agora?','Who is answering now?','Qui répond maintenant ?'],
 'nt.med':['O remédio foi dado no horário?','Was the medication given on time?','Le médicament a-t-il été donné à l’heure ?'],'nt.yes':['Sim','Yes','Oui'],'nt.no':['Não, atrasou ou não foi dado','No, it was late or not given','Non, en retard ou non donné'],'nt.na':['Não toma remédio','Takes no medication','Ne prend pas de médicament'],
@@ -513,7 +522,7 @@ const M={
 'no.names':['Não escreva nomes de pessoas.','Do not write people’s names.','N’écrivez pas de noms de personnes.'],'no.save':['Salvar anotação','Save note','Enregistrer la note'],
 /* orientações */
 'in.title':['Orientações','Guidance','Conseils'],'in.note':['Texto de exemplo para revisão do Dr. Domingos. As orientações completas continuam sendo enviadas em PDF pelo consultório.','Sample text for Dr. Domingos to review. The full guidance is still sent as a PDF by the office.','Texte d’exemple à relire par le Dr Domingos. Les conseils complets continuent d’être envoyés en PDF par le cabinet.'],
-'in.how':['Como fazer o diário miccional','How to do the voiding diary','Comment faire le journal mictionnel'],
+'in.dhow':['Orientação para realizar os diários miccionais (quando solicitados)','Guidance for the voiding diaries (when requested)','Conseils pour les journaux mictionnels (si demandés)'],
 'in.1':['Escolha um sábado, domingo ou feriado, em casa, sem atividades externas.','Choose a Saturday, Sunday or holiday, at home, with no outside activities.','Choisissez un samedi, un dimanche ou un jour férié, à la maison, sans activités extérieures.'],
 'in.2':['<b>Neste dia, não peça nem lembre a criança de fazer xixi.</b> Ela vai sozinha, quando sentir vontade. Você só anota.','<b>On this day, do not ask or remind the child to pee.</b> The child goes alone, when they feel the need. You only write it down.','<b>Ce jour-là, ne demandez pas à l’enfant d’aller faire pipi et ne le lui rappelez pas.</b> Il y va seul, quand il en ressent le besoin. Vous notez simplement.'],
 'in.3':['Mantenha a ingestão de líquidos habitual: <b>nem menos, nem mais</b> que o normal.','Keep fluid intake usual: <b>neither less nor more</b> than normal.','Gardez une consommation de liquides habituelle : <b>ni moins, ni plus</b> que d’habitude.'],
@@ -526,7 +535,7 @@ const M={
 'in.liq':['Líquidos ao longo do dia','Fluids through the day','Liquides au cours de la journée'],'in.liqh':['A distribuição importa tanto quanto a quantidade.','The distribution matters as much as the amount.','La répartition compte autant que la quantité.'],
 'in.l1':['Ao acordar','On waking','Au réveil'],'in.l1v':['2 a 3 copos','2 to 3 glasses','2 à 3 verres'],'in.l2':['Manhã','Morning','Matin'],'in.l2v':['Bastante','Plenty','Beaucoup'],'in.l3':['Tarde','Afternoon','Après-midi'],'in.l3v':['Moderado','Moderate','Modéré'],'in.l4':['Jantar','Dinner','Dîner'],'in.l4v':['Pouco','Little','Peu'],'in.l5':['2 horas antes de dormir','2 hours before bed','2 heures avant le coucher'],'in.l5v':['Nenhum','None','Aucun'],
 'in.hyd':['Quanto beber por dia','How much to drink per day','Combien boire par jour'],'in.age':['Idade','Age','Âge'],'in.total':['Total','Total','Total'],'in.cups':['Em copos de 200 mL','In 200 mL glasses','En verres de 200 mL'],
-'in.a1':['4 a 8 anos','4 to 8 years','4 à 8 ans'],'in.a1t':['cerca de 1,7 L','about 1.7 L','environ 1,7 L'],'in.a2':['9 a 13 anos','9 to 13 years','9 à 13 ans'],'in.a2t':['2,1 a 2,4 L','2.1 to 2.4 L','2,1 à 2,4 L'],'in.a3':['14 a 18 anos','14 to 18 years','14 à 18 ans'],'in.a3t':['2,5 a 3,3 L','2.5 to 3.3 L','2,5 à 3,3 L'],
+'hy.a1':['4 a 8 anos','4 to 8 years','4 à 8 ans'],'in.a1t':['cerca de 1,7 L','about 1.7 L','environ 1,7 L'],'hy.a2':['9 a 13 anos','9 to 13 years','9 à 13 ans'],'in.a2t':['2,1 a 2,4 L','2.1 to 2.4 L','2,1 à 2,4 L'],'hy.a3':['14 a 18 anos','14 to 18 years','14 à 18 ans'],'in.a3t':['2,5 a 3,3 L','2.5 to 3.3 L','2,5 à 3,3 L'],
 'in.cups1':['8 a 9','8 to 9','8 à 9'],'in.cups2':['10 a 12','10 to 12','10 à 12'],'in.cups3':['12 a 16','12 to 16','12 à 16'],
 'in.href':['Referência de hidratação infantil da Sociedade Brasileira de Pediatria, conforme o Dr. Domingos.','Child hydration reference from the Brazilian Society of Pediatrics, as used by Dr. Domingos.','Référence d’hydratation de l’enfant de la Société brésilienne de pédiatrie, selon le Dr Domingos.'],
 'in.hab':['Hábitos','Habits','Habitudes'],'in.h1':['Urinar em horários regulares, cerca de 8 vezes por dia (fora do dia do diário).','Pee at regular times, about 8 times a day (except on diary day).','Uriner à heures régulières, environ 8 fois par jour (hors jour du journal).'],
@@ -576,7 +585,7 @@ const M={
 'hp.dev':['Este aparelho','This device','Cet appareil'],'hp.devt':['Código: <b>{0}</b>. Se o aparelho for trocado ou emprestado, você pode sair daqui.','Code: <b>{0}</b>. If the device is replaced or lent, you can sign out here.','Code : <b>{0}</b>. Si l’appareil est changé ou prêté, vous pouvez vous déconnecter ici.'],
 'hp.faq':['Dúvidas comuns','Common questions','Questions fréquentes'],
 'hp.f1':['<b>Esqueci de registrar um dia.</b> Toque no dia no calendário e registre depois.','<b>I forgot to record a day.</b> Tap the day in the calendar and record it later.','<b>J’ai oublié d’enregistrer un jour.</b> Touchez le jour dans le calendrier et enregistrez-le plus tard.'],
-'hp.f2':['<b>Trocei de celular.</b> Entre de novo com o código da criança e a data de nascimento. Seu histórico volta.','<b>I changed phones.</b> Sign in again with the child’s code and date of birth. Your history comes back.','<b>J’ai changé de téléphone.</b> Reconnectez-vous avec le code de l’enfant et sa date de naissance. Votre historique revient.'],
+'hp.f2':['<b>Troquei de celular.</b> Entre de novo com o código da criança e a data de nascimento. Seu histórico volta.','<b>I changed phones.</b> Sign in again with the child’s code and date of birth. Your history comes back.','<b>J’ai changé de téléphone.</b> Reconnectez-vous avec le code de l’enfant et sa date de naissance. Votre historique revient.'],
 'hp.f3':['<b>Guarda compartilhada.</b> Cada responsável usa o próprio celular, com o mesmo código. Cada um vê só “✔ preenchido” na casa do outro.','<b>Shared custody.</b> Each guardian uses their own phone, with the same code. Each sees only “✔ done” for the other home.','<b>Garde partagée.</b> Chaque responsable utilise son propre téléphone, avec le même code. Chacun voit seulement « ✔ rempli » pour l’autre domicile.'],
 'hp.f4':['<b>Quem vê os registros?</b> Somente o Dr. Domingos. Nada é enviado a outras pessoas.','<b>Who sees the records?</b> Only Dr. Domingos. Nothing is sent to anyone else.','<b>Qui voit les enregistrements ?</b> Uniquement le Dr Domingos. Rien n’est envoyé à d’autres personnes.'],
 'hp.f5':['<b>Sem internet.</b> O registro fica guardado e é enviado quando a conexão voltar.','<b>No internet.</b> The record is saved and sent when the connection returns.','<b>Pas d’internet.</b> L’enregistrement est conservé et envoyé au retour de la connexion.'],
@@ -628,6 +637,19 @@ const M={
 'dv.q10':['Aconteceu algo estressante nos últimos meses (mudança, perda, separação, escola)?','Has anything stressful happened in recent months (move, loss, separation, school)?','Un événement stressant est-il survenu ces derniers mois (déménagement, deuil, séparation, école) ?'],
 'dv.no':['Não','No','Non'],'dv.yes':['Sim','Yes','Oui'],
 'dv.send':['Enviar respostas','Send answers','Envoyer les réponses'],'dv.thx':['Obrigado! O Dr. Domingos verá as respostas na consulta.','Thank you! Dr. Domingos will see the answers at the visit.','Merci ! Le Dr Domingos verra les réponses à la consultation.'],
+'in.cal':['Orientação para preencher o calendário do xixi','Guidance for filling in the pee calendar','Conseils pour remplir le calendrier'],
+'in.c1':['<b>Todos os dias</b>, de manhã, registre a noite que passou. Dias seguidos preenchidos dão ao Dr. Domingos a melhor visão do tratamento.','<b>Every day</b>, in the morning, record the night that passed. Consecutive days give Dr. Domingos the best view of the treatment.','<b>Chaque jour</b>, le matin, notez la nuit passée. Des jours consécutifs donnent au Dr Domingos la meilleure vision du traitement.'],
+'in.c2':['<b>Parte da criança:</b> ela mesma escolhe o desenho de como foi a noite. É fundamental que participe no dia a dia: isso a envolve no tratamento.','<b>Child’s part:</b> the child picks the picture for how the night went. Taking part every day matters: it involves the child in the treatment.','<b>Partie de l’enfant :</b> il/elle choisit le dessin de la nuit. Participer chaque jour est essentiel : cela l’implique dans le traitement.'],
+'in.c3':['<b>Parte dos pais:</b> informar se o remédio foi dado no horário, quem está respondendo e se aconteceu algo diferente na noite.','<b>Parents’ part:</b> say whether the medication was given on time, who is answering and whether anything was different that night.','<b>Partie des parents :</b> indiquer si le médicament a été donné à l’heure, qui répond et si quelque chose de différent s’est passé.'],
+'in.c4':['<b>Adolescentes</b> preenchem tudo por conta própria.','<b>Teenagers</b> fill in everything themselves.','<b>Les adolescents</b> remplissent tout eux-mêmes.'],
+'in.c5':['No calendário, ✔ verde = criança e pais preencheram; ❗ amarelo = falta uma das partes; ❗ vermelho = noite sem registro.','In the calendar, green ✔ = child and parents filled in; yellow ❗ = one part is missing; red ❗ = night not recorded.','Dans le calendrier, ✔ vert = enfant et parents ont rempli ; ❗ jaune = une partie manque ; ❗ rouge = nuit non notée.'],
+'in.h5':['Lembrar a criança de urinar em horários regulares. Os pais podem pedir, ou ela pode usar um relógio ou dispositivo com alarme.','Remind the child to pee at regular times. Parents can ask, or the child can use a watch or alarm device.','Rappeler à l’enfant d’uriner à heures régulières. Les parents peuvent le demander, ou un montre/alarme peut aider.'],
+'in.h6':['Não dormir tarde e não acordar tarde.','Do not go to bed late or wake up late.','Ne pas se coucher tard ni se lever tard.'],
+'in.h7':['Não acordar a criança à noite para fazer xixi.','Do not wake the child at night to pee.','Ne pas réveiller l’enfant la nuit pour uriner.'],
+'in.wet':['Wet-Stop · alarme da noite','Wet-Stop · night alarm','Wet-Stop · alarme de nuit'],'in.wobl':['WobL · relógio do xixi legal (de dia)','WobL · day watch','WobL · montre de jour'],
+'cal.st':['✔ verde: criança e pais preencheram · ❗ amarelo: falta uma parte · ❗ vermelho: noite sem registro','✔ green: child and parents done · ❗ yellow: one part missing · ❗ red: night not recorded','✔ vert : enfant et parents ont rempli · ❗ jaune : une partie manque · ❗ rouge : nuit non notée'],
+'nt.kidonly':['Salvar só a parte da criança','Save only the child’s part','Enregistrer seulement la partie de l’enfant'],
+'f.sending':['Enviando','Sending','Envoi'],
 'lang':['Idioma','Language','Langue']
 };
 
@@ -649,7 +671,7 @@ function hdrP(){
 }
 function footP(){
  const n=S.outbox.length;
- const st=S.token?(n?'<span class="sem y"><i aria-hidden="true">…</i>'+t(n>1?'f.sendn':'f.send1',n)+'</span>':'<span class="sem g"><i aria-hidden="true">✓</i>'+t('f.sent')+'</span>'):'';
+ const st=S.token?(n?'<span class="sem y"><i aria-hidden="true">…</i>'+(flushing?t('f.sending')+'<span class="dots"></span>':t(n>1?'f.sendn':'f.send1',n))+'</span>':'<span class="sem g"><i aria-hidden="true">✓</i>'+t('f.sent')+'</span>'):'';
  return '<div class="foot">'+(st?'<div style="margin-bottom:8px">'+st+'</div>':'')+(S.authBad?'<div class="note" style="margin-bottom:8px">'+t('f.auth')+'</div>':'')+t('f.brand')+' · <a href="'+IG_URL+'" target="_blank" rel="noopener">@drdomingosbica</a><br><span style="opacity:.8">'+t('f.ver')+' '+APP_V+'</span></div>'}
 function stepper(path,min,max){return '<div class="stepper"><button type="button" data-a="st" data-p="'+path+'" data-d="-1" data-min="'+min+'" data-max="'+max+'" aria-label="'+t('less')+'">−</button><output data-bind="'+path+'">'+get(path)+'</output><button type="button" data-a="st" data-p="'+path+'" data-d="1" data-min="'+min+'" data-max="'+max+'" aria-label="'+t('more')+'">+</button></div>'}
 function nextSat(){let d=TODAY;while(d.getDay()!==6)d=add(d,1);return d}
@@ -707,7 +729,7 @@ function viewDiary(){
 const hasNight=k=>!!(S.nights[k]||(S.cfg&&S.cfg.nights&&S.cfg.nights[k]));
 const alarmOn=k=>!!(S.cfg&&S.cfg.alarme&&S.cfg.alarme<=k);
 const calStart=()=>S.cfg&&S.cfg.inicio?P(S.cfg.inicio):add(TODAY,-75);
-function nightsMissing(){let m=0;for(let i=1;i<=7;i++)if(!hasNight(I(add(TODAY,-i))))m++;return m}
+function nightsMissing(){const y=add(TODAY,-1),ms=new Date(y.getFullYear(),y.getMonth(),1,12),st=calStart(),a=ms>st?ms:st;let m=0;for(let d=a;d<=y;d=add(d,1))if(!hasNight(I(d)))m++;return m}
 
 const isTrat=()=>!!(S.cfg&&S.cfg.fase==='trat'&&S.cfg.status==='ativo');
 const needStart=()=>isTrat()&&!S.cfg.inicio;
@@ -874,7 +896,7 @@ function viewMenu(){
  const wk=I(add(monday(TODAY),-7)),okW=!!(S.weeks[wk]||(S.cfg&&S.cfg.weeks.includes(wk)));
  const stars=Object.values(S.nights).filter(n=>n.por==='c').length;
  const mi=(a,v,ic,ti,de,badge)=>'<button class="mi" data-a="'+a+'" data-v="'+v+'"><span class="ic">'+ic+'</span><span style="flex:1"><div class="t">'+ti+'</div><div class="d">'+de+'</div></span>'+(badge||'')+'</button>';
- let items=mi('go','cal','🌙',t('mn.cal'),(okN?t('mn.calok'):t('mn.calno'))+(miss&&okN?t('mn.miss',miss):''),okN?sem('g',t('mn.uptodate'),'✓'):sem('r',miss>1?t('mn.missn',miss):t('mn.miss1'),'!'));
+ let items=mi('go','cal','🌙',t('mn.cal'),(okN?t('mn.calok'):t('mn.calno')),!miss?sem('g',t('mn.uptodate'),'✓'):sem('r',miss>1?t('mn.missn',miss):t('mn.miss1'),'!'));
  if(hasMod('d')||hasMod('i'))items+=mi('go','week','📋',t('mn.week'),t('mn.weekd',F(add(monday(TODAY),-7)),F(add(monday(TODAY),-1))),okW?sem('g',t('mn.sent'),'✓'):sem('r',t('mn.pend'),'!'));
  const dxc=S.cfg&&S.cfg.fase==='trat'&&S.cfg.dx&&dxFeitos()<S.cfg.dx.n?S.cfg.dx:null;
  if(dxc){const r=dxc.n-dxFeitos();items+=mi('dxfromtrat','','💧',t('mn.dia'),t(r>1?'mn.dian':'mn.dia1',r)+(dxc.prazo?t('mn.until',FY(P(dxc.prazo))):''),sem('y',t('mn.asked'),'…'))}
@@ -896,13 +918,14 @@ function viewCal(){
   let sym='',fl='';
   if(!n&&sv){sym=sv.s?'<span style="font-size:17px;line-height:1">'+SYM[sv.s][0]+'</span>':'<span style="font-size:15px;color:var(--good)" title="'+t('cal.filled')+'">✔</span>'}
   else if(n){sym='<span style="font-size:17px;line-height:1">'+SYM[n.s][0]+'</span>';
-   {fl=(n.f.includes('med')?'🔵':'')+(n.f.some(f=>f!=='med')?'🔺':'')}}
+   {const part=!S.p.adol&&!n.rem;fl='<span class="st '+(part?'wn':'ok')+'">'+(part?'!':'✔')+'</span>'+(n.f.includes('med')?'🔵':'')+(n.f.some(f=>f!=='med')?'🔺':'')}}
+  if(!n&&!sv&&past)fl='<span class="st bad">!</span>';
   cells+='<button type="button" class="day'+(past?' hit':' off')+(isT?' today':'')+(past&&!n&&!sv?' miss':'')+'"'+(past?' data-a="night" data-v="'+k+'"':' disabled')+' aria-label="'+DS[d.getDay()]+' '+dd+'"><span style="font-size:10px">'+DS[d.getDay()]+'</span><b>'+dd+'</b><span>'+sym+'</span><span class="fl">'+fl+'</span></button>'}
  const prev=new Date(y,m,1,12)>new Date(start.getFullYear(),start.getMonth(),1,12),next=!(y===TODAY.getFullYear()&&m>=TODAY.getMonth());
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><div class="row"><button class="chip" data-a="cm" data-v="-1"'+(prev?'':' disabled')+' aria-label="'+t('cal.prev')+'">‹</button><h2 class="sp" style="text-align:center;text-transform:capitalize">'+MN[m]+' '+y+'</h2><button class="chip" data-a="cm" data-v="1"'+(next?'':' disabled')+' aria-label="'+t('cal.next')+'">›</button></div>'+
  '<div class="cal">'+DS.map(x=>'<div class="h">'+x+'</div>').join('')+cells+'</div>'+
  '<div class="card" style="border-color:var(--gold);margin-top:12px"><span class="lbl">🧒 '+t('cal.kid')+'</span><p class="hint" style="margin:2px 0 8px">'+t('cal.kidp')+'</p><div class="legend">'+Object.values(SYM).map(x=>'<span>'+x[0]+' '+t(x[1])+'</span>').join('')+'</div></div>'+
- '<div class="card flat" style="margin-top:16px;border-top:3px solid var(--line)"><span class="lbl">👨‍👩‍👧 '+t('cal.par')+'</span><div class="legend" style="margin-top:6px"><span>'+t('cal.med')+'</span><span>'+t('cal.diff')+'</span></div></div>'+
+ '<p class="hint" style="margin:10px 2px">'+t('cal.st')+'</p><div class="card flat" style="margin-top:16px;border-top:3px solid var(--line)"><span class="lbl">👨‍👩‍👧 '+t('cal.par')+'</span><div class="legend" style="margin-top:6px"><span>'+t('cal.med')+'</span><span>'+t('cal.diff')+'</span></div></div>'+
  '<div class="card flat"><h3>'+t('cal.tips')+'</h3>'+ul([1,2,3,4].map(i=>t('cal.t'+i)))+'</div></div>';
 }
 function sheetNight(){
@@ -918,7 +941,7 @@ function sheetNight(){
   '<div><label class="lbl" for="nx">'+t('no.opt')+'</label><textarea id="nx" class="in" rows="2" data-i="draft.x" placeholder="'+esc(t('no.ph'))+'">'+esc(dr.x||'')+'</textarea><p class="hint" style="margin-top:4px">'+t('no.names')+'</p></div>';
  const cancel='<button class="btn block ghost" data-a="sheet" data-v="">'+t('cancel')+'</button>';
  if(adol)return title+child+par+'<button class="btn block" data-a="savenight"'+(dr.s&&dr.rem?'':' disabled')+'>'+t('save')+'</button>'+cancel;
- if(step===1)return title+'<span class="hint">'+t('nt.step1')+'</span>'+child+'<button class="btn block" data-a="nstep" data-v="2"'+(dr.s?'':' disabled')+'>'+t('nt.cont')+'</button>'+cancel;
+ if(step===1)return title+'<span class="hint">'+t('nt.step1')+'</span>'+child+'<button class="btn block" data-a="nstep" data-v="2"'+(dr.s?'':' disabled')+'>'+t('nt.cont')+'</button><button class="btn block ghost" data-a="savekid"'+(dr.s?'':' disabled')+'>'+t('nt.kidonly')+'</button>'+cancel;
  return title+'<span class="hint">'+t('nt.step2')+'</span><p class="lead">'+t('nt.draw')+'<b style="font-size:1.1em">'+SYM[dr.s][0]+'</b> '+t(SYM[dr.s][1])+'</p>'+par+'<button class="btn block" data-a="savenight"'+(dr.rem&&dr.who?'':' disabled')+'>'+t('save')+'</button><button class="btn block ghost" data-a="nstep" data-v="1">'+t('nt.back')+'</button>';
 }
 function viewWeek(){
@@ -936,16 +959,17 @@ function viewNotes(){
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('no.title')+'</h2><div class="card flat"><span class="lbl">'+t('no.q')+'</span><div class="chips" style="margin:6px 0 12px">'+NOTEQ.map(k=>'<button type="button" class="chip" data-a="ntq" data-v="'+k+'" aria-pressed="'+S.ntq.includes(k)+'">'+t('no.c.'+k)+'</button>').join('')+'</div><label class="lbl" for="nt">'+t('no.opt')+'</label><textarea id="nt" class="in" rows="3" data-i="nt" placeholder="'+esc(t('no.ph'))+'">'+esc(S.nt)+'</textarea><p class="hint" style="margin-top:4px">'+t('no.names')+'</p><button class="btn block" style="margin-top:10px" data-a="addnote">'+t('no.save')+'</button></div>'+
  S.notes.map(n=>'<div class="card flat"><div class="hint">'+n[0]+'</div><div>'+esc(n[1])+'</div></div>').join('')+'</div>';
 }
+const ct=(ic,tt)=>'<h3 class="ct"><span aria-hidden="true">'+ic+'</span>'+tt+'</h3>';
 function viewInfo(){
- return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('in.title')+'</h2><div class="note">'+t('in.note')+'</div>'+
- (isTrat()?'<div class="card"><h3>'+t('st.ch')+'</h3><p style="margin:6px 0">'+t('st.cp')+'</p></div>':'')+'<div class="card"><h3>'+t('in.how')+'</h3>'+ul([1,2,3,4,5,6].map(i=>t('in.'+i)))+'</div>'+
- '<div class="card"><h3>'+t('in.other')+'</h3>'+ul([t('in.o1'),t('in.o2')])+'</div>'+
- '<div class="card"><h3>'+t('in.liq')+'</h3><p class="lead" style="margin-top:6px">'+t('in.liqh')+'</p><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">'+
+ return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('in.title')+'</h2>'+
+ (isTrat()?'<div class="card">'+ct('📅',t('st.ch'))+'<p style="margin:6px 0">'+t('st.cp')+'</p></div>':'')+
+ '<div class="card">'+ct('🌙',t('in.cal'))+ul([1,2,3,4,5].map(i=>t('in.c'+i)))+'</div>'+
+ '<div class="card">'+ct('📝',t('in.dhow'))+ul([1,2,3,4,5,6].map(i=>t('in.'+i)))+'</div>'+
+ '<div class="card">'+ct('💧',t('in.liq'))+'<p class="lead" style="margin-top:6px">'+t('in.liqh')+'</p><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">'+
  [[1,95],[2,80],[3,50],[4,22],[5,3]].map(x=>'<div class="wk" style="grid-template-columns:110px 1fr 74px"><span>'+t('in.l'+x[0])+'</span><i style="width:'+x[1]+'%;background:var(--c-noite)"></i><span>'+t('in.l'+x[0]+'v')+'</span></div>').join('')+'</div></div>'+
- '<div class="card"><h3>'+t('in.hyd')+'</h3><div class="tw"><table class="t" style="margin-top:8px"><tr><th>'+t('in.age')+'</th><th>'+t('in.total')+'</th><th>'+t('in.cups')+'</th></tr>'+[1,2,3].map(i=>'<tr><td>'+t('in.a'+i)+'</td><td>'+t('in.a'+i+'t')+'</td><td>'+t('in.cups'+i)+'</td></tr>').join('')+'</table></div><p class="hint" style="margin-top:8px">'+t('in.href')+'</p></div>'+
- '<div class="card"><h3>'+t('in.hab')+'</h3>'+ul([1,2,3,4].map(i=>t('in.h'+i)))+'</div>'+devCards()+contactCard()+'</div>';
+ '<div class="card">'+ct('🥤',t('in.hyd'))+'<div class="tw"><table class="t" style="margin-top:8px"><tr><th>'+t('in.age')+'</th><th>'+t('in.total')+'</th><th>'+t('in.cups')+'</th></tr>'+[1,2,3].map(i=>'<tr><td>'+t('hy.a'+i)+'</td><td>'+t('hy.a'+i+'t')+'</td><td>'+t('in.cups'+i)+'</td></tr>').join('')+'</table></div><p class="hint" style="margin-top:8px">'+t('in.href')+'</p></div>'+
+ '<div class="card">'+ct('🌿',t('in.hab'))+ul([1,2,3,4,5,6,7].map(i=>t('in.h'+i)))+'</div>'+devCards()+contactCard()+'</div>';
 }
-/* ----- sheets (janelas inferiores) ----- */
 function sheetsP(){
  const sh=S.p.sheet;if(!sh)return'';let c='';
  const cancel='<button class="btn block ghost" data-a="sheet" data-v="">'+t('cancel')+'</button>';
@@ -988,15 +1012,15 @@ function viewInst(){
 }
 function viewHelpP(){
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('hp.title')+'</h2>'+
- '<div class="card"><h3>'+t('hp.why')+'</h3><p class="lead" style="margin-top:6px">'+t('hp.whyt')+'</p></div>'+
- '<div class="card"><h3>'+t('hp.steps')+'</h3>'+ul([1,2,3,4].map(i=>t('hp.s'+i)))+'</div>'+
- (instNeeded()?'<div class="card"><h3>'+t('in.t')+'</h3><button class="btn block ghost" style="margin-top:10px" data-a="go" data-v="inst">'+t('in.how')+'</button></div>':'')+'<div class="card"><h3>'+t('hp.dev')+'</h3><p class="lead" style="margin-top:6px">'+t('hp.devt',esc(S.code||''))+'</p><button class="btn block ghost" style="margin-top:10px" data-a="sheet" data-v="sair">'+t('sh.outb')+'</button></div>'+
- '<div class="card"><h3>'+t('hp.faq')+'</h3>'+ul([1,2,3,4,5,6].map(i=>t('hp.f'+i)))+'</div>'+'<div class="card flat" ><span class="lbl">'+t('fb.t')+'</span><p class="hint" style="margin:4px 0 8px">'+t('fb.h')+'</p><textarea id="fb" class="in" rows="3" data-i="fb" placeholder="'+esc(t('fb.ph'))+'">'+esc(S.fb||'')+'</textarea><button class="btn block ghost" style="margin-top:10px" data-a="fbsend">'+t('fb.go')+'</button></div>'+contactCard()+'</div>';
+ '<div class="card">'+ct('💡',t('hp.why'))+'<p class="lead" style="margin-top:6px">'+t('hp.whyt')+'</p></div>'+
+ '<div class="card">'+ct('👣',t('hp.steps'))+''+ul([1,2,3,4].map(i=>t('hp.s'+i)))+'</div>'+
+ (instNeeded()?'<div class="card"><h3>'+t('in.t')+'</h3><button class="btn block ghost" style="margin-top:10px" data-a="go" data-v="inst">'+t('in.how')+'</button></div>':'')+'<div class="card">'+ct('📱',t('hp.dev'))+'<p class="lead" style="margin-top:6px">'+t('hp.devt',esc(S.code||''))+'</p><button class="btn block ghost" style="margin-top:10px" data-a="sheet" data-v="sair">'+t('sh.outb')+'</button></div>'+
+ '<div class="card">'+ct('❓',t('hp.faq'))+''+ul([1,2,3,4,5,6].map(i=>t('hp.f'+i)))+'</div>'+'<div class="card flat" ><span class="lbl">'+t('fb.t')+'</span><p class="hint" style="margin:4px 0 8px">'+t('fb.h')+'</p><textarea id="fb" class="in" rows="3" data-i="fb" placeholder="'+esc(t('fb.ph'))+'">'+esc(S.fb||'')+'</textarea><button class="btn block ghost" style="margin-top:10px" data-a="fbsend">'+t('fb.go')+'</button></div>'+contactCard()+'</div>';
 }
-function contactCard(){return '<div class="card"><h3>'+t('ct.t')+'</h3><div class="row wrap" style="margin-top:10px">'+waBtn()+agBtn()+'<a class="btn sm ghost" href="'+IG_URL+'" target="_blank" rel="noopener">'+t('ct.ig')+'</a></div></div>'}
+function contactCard(){return '<div class="card">'+ct('💬',t('ct.t'))+'<div class="row wrap" style="margin-top:10px">'+waBtn()+agBtn()+'<a class="btn sm ghost" href="'+IG_URL+'" target="_blank" rel="noopener">'+t('ct.ig')+'</a></div></div>'}
 function devCards(){
- return '<div class="card"><h3>⏰ '+t('mn.dev')+'</h3><h3 style="margin-top:10px">'+t('dv.ws')+'</h3><p class="lead" style="margin-top:6px">'+t('dv.wst')+'</p>'+ul([1,2,3,4].map(i=>t('dv.ws'+i)))+
- '<h3 style="margin-top:14px">'+t('dv.wb')+'</h3><p class="lead" style="margin-top:6px">'+t('dv.wbt')+'</p>'+ul([1,2,3,4,5].map(i=>t('dv.wb'+i)))+'</div>';
+ return '<div class="card">'+ct('⏰',t('in.wet'))+'<p class="lead" style="margin-top:6px">'+t('dv.wst')+'</p>'+ul([1,2,3,4].map(i=>t('dv.ws'+i)))+'</div>'+
+ '<div class="card">'+ct('⌚',t('in.wobl'))+'<p class="lead" style="margin-top:6px">'+t('dv.wbt')+'</p>'+ul([1,2,3,4,5].map(i=>t('dv.wb'+i)))+'</div>';
 }
 function viewDev(){
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('dv.title')+'</h2>'+
@@ -1060,7 +1084,7 @@ let flushing=false;
 async function flush(){
  if(flushing||!S.token||!S.outbox.length||S.authBad)return;
  if(navigator.onLine===false)return;
- flushing=true;
+ flushing=true;render();
  try{
   for(let guard=0;guard<20&&S.outbox.length;guard++){
    const batch=S.outbox.slice(0,40);
@@ -1083,15 +1107,15 @@ async function refresh(){
 /* ---------- visual ---------- */
 function render(){
  const ae=document.activeElement,fk=ae&&ae.dataset&&ae.dataset.i?{k:ae.dataset.i,s:ae.selectionStart}:null;
- document.getElementById('app').innerHTML=viewPais();
+ document.getElementById('app').innerHTML=viewPais()+(flushing||S.busy?'<div class="ld" aria-hidden="true"></div>':'');
  if(fk){const el=document.querySelector('[data-i="'+fk.k+'"]');if(el){el.focus();try{el.setSelectionRange(fk.s,fk.s)}catch(e){}}}
 }
 const toTop=()=>window.scrollTo(0,0);
 function openNight(k){
  const n=S.nights[k];
- S.draft=n?{s:n.s,f:n.f.filter(x=>x!=='med'),por:n.por,al:n.al||'',rem:n.f.includes('med')?'nao':(n.rem||'sim'),who:n.who||(n.h==='P'?'pai':(S.papel==='pai'?'pai':'mae'))}:Object.assign(draftBlank(),{who:S.papel==='pai'?'pai':(S.papel==='mae'?'mae':'')});
+ S.draft=n?{s:n.s,f:n.f.filter(x=>x!=='med'),por:n.por,al:n.al||'',rem:n.f.includes('med')?'nao':(n.rem||(S.p.adol?'sim':'')),who:n.who||(n.h==='P'?'pai':(S.papel==='pai'?'pai':'mae'))}:Object.assign(draftBlank(),{who:S.papel==='pai'?'pai':(S.papel==='mae'?'mae':'')});
  if(S.p.adol)S.draft.who='adol';
- S.p.sheet={v:'night',k,step:1};
+ S.p.sheet={v:'night',k,step:(n&&!n.rem&&!S.p.adol)?2:1};
 }
 function cqAch(){
  const a=[],ks=Object.keys(S.nights).sort(),dry=k=>S.nights[k]&&S.nights[k].s==='seca';
@@ -1175,6 +1199,7 @@ const A={
  drf(d){const f=S.draft.f,i=f.indexOf(d.v);i<0?f.push(d.v):f.splice(i,1)},
  drp(d){S.draft.por=d.v},
  nstep(d){S.p.sheet.step=Number(d.v)},
+ savekid(){const k=S.p.sheet.k,dr=S.draft;if(!dr.s)return 'norender';const casa=S.papel==='pai'?'P':'M';S.nights[k]={h:casa,s:dr.s,f:[],por:dr.por,al:'',rem:'',who:''};queue('night',{data:k,casa,s:dr.s,por:dr.por,rem:'',al:'',flags:[],quem:S.papel});S.p.sheet=null;cqCheck();save()},
  savenight(){
   const k=S.p.sheet.k,dr=S.draft,casa=dr.who==='pai'?'P':'M';
   const f=dr.f.filter(x=>x!=='med').concat(dr.rem==='nao'?['med']:[]);
