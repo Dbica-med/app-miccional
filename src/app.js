@@ -54,7 +54,7 @@ let flushing=false;
 async function flush(){
  if(flushing||!S.token||!S.outbox.length||S.authBad)return;
  if(navigator.onLine===false)return;
- flushing=true;
+ flushing=true;render();
  try{
   for(let guard=0;guard<20&&S.outbox.length;guard++){
    const batch=S.outbox.slice(0,40);
@@ -77,15 +77,15 @@ async function refresh(){
 /* ---------- visual ---------- */
 function render(){
  const ae=document.activeElement,fk=ae&&ae.dataset&&ae.dataset.i?{k:ae.dataset.i,s:ae.selectionStart}:null;
- document.getElementById('app').innerHTML=viewPais();
+ document.getElementById('app').innerHTML=viewPais()+(flushing||S.busy?'<div class="ld" aria-hidden="true"></div>':'');
  if(fk){const el=document.querySelector('[data-i="'+fk.k+'"]');if(el){el.focus();try{el.setSelectionRange(fk.s,fk.s)}catch(e){}}}
 }
 const toTop=()=>window.scrollTo(0,0);
 function openNight(k){
  const n=S.nights[k];
- S.draft=n?{s:n.s,f:n.f.filter(x=>x!=='med'),por:n.por,al:n.al||'',rem:n.f.includes('med')?'nao':(n.rem||'sim'),who:n.who||(n.h==='P'?'pai':(S.papel==='pai'?'pai':'mae'))}:Object.assign(draftBlank(),{who:S.papel==='pai'?'pai':(S.papel==='mae'?'mae':'')});
+ S.draft=n?{s:n.s,f:n.f.filter(x=>x!=='med'),por:n.por,al:n.al||'',rem:n.f.includes('med')?'nao':(n.rem||(S.p.adol?'sim':'')),who:n.who||(n.h==='P'?'pai':(S.papel==='pai'?'pai':'mae'))}:Object.assign(draftBlank(),{who:S.papel==='pai'?'pai':(S.papel==='mae'?'mae':'')});
  if(S.p.adol)S.draft.who='adol';
- S.p.sheet={v:'night',k,step:1};
+ S.p.sheet={v:'night',k,step:(n&&!n.rem&&!S.p.adol)?2:1};
 }
 function cqAch(){
  const a=[],ks=Object.keys(S.nights).sort(),dry=k=>S.nights[k]&&S.nights[k].s==='seca';
@@ -169,6 +169,7 @@ const A={
  drf(d){const f=S.draft.f,i=f.indexOf(d.v);i<0?f.push(d.v):f.splice(i,1)},
  drp(d){S.draft.por=d.v},
  nstep(d){S.p.sheet.step=Number(d.v)},
+ savekid(){const k=S.p.sheet.k,dr=S.draft;if(!dr.s)return 'norender';const casa=S.papel==='pai'?'P':'M';S.nights[k]={h:casa,s:dr.s,f:[],por:dr.por,al:'',rem:'',who:''};queue('night',{data:k,casa,s:dr.s,por:dr.por,rem:'',al:'',flags:[],quem:S.papel});S.p.sheet=null;cqCheck();save()},
  savenight(){
   const k=S.p.sheet.k,dr=S.draft,casa=dr.who==='pai'?'P':'M';
   const f=dr.f.filter(x=>x!=='med').concat(dr.rem==='nao'?['med']:[]);

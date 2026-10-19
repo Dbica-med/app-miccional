@@ -16,7 +16,7 @@ function hdrP(){
 }
 function footP(){
  const n=S.outbox.length;
- const st=S.token?(n?'<span class="sem y"><i aria-hidden="true">…</i>'+t(n>1?'f.sendn':'f.send1',n)+'</span>':'<span class="sem g"><i aria-hidden="true">✓</i>'+t('f.sent')+'</span>'):'';
+ const st=S.token?(n?'<span class="sem y"><i aria-hidden="true">…</i>'+(flushing?t('f.sending')+'<span class="dots"></span>':t(n>1?'f.sendn':'f.send1',n))+'</span>':'<span class="sem g"><i aria-hidden="true">✓</i>'+t('f.sent')+'</span>'):'';
  return '<div class="foot">'+(st?'<div style="margin-bottom:8px">'+st+'</div>':'')+(S.authBad?'<div class="note" style="margin-bottom:8px">'+t('f.auth')+'</div>':'')+t('f.brand')+' · <a href="'+IG_URL+'" target="_blank" rel="noopener">@drdomingosbica</a><br><span style="opacity:.8">'+t('f.ver')+' '+APP_V+'</span></div>'}
 function stepper(path,min,max){return '<div class="stepper"><button type="button" data-a="st" data-p="'+path+'" data-d="-1" data-min="'+min+'" data-max="'+max+'" aria-label="'+t('less')+'">−</button><output data-bind="'+path+'">'+get(path)+'</output><button type="button" data-a="st" data-p="'+path+'" data-d="1" data-min="'+min+'" data-max="'+max+'" aria-label="'+t('more')+'">+</button></div>'}
 function nextSat(){let d=TODAY;while(d.getDay()!==6)d=add(d,1);return d}
@@ -74,7 +74,7 @@ function viewDiary(){
 const hasNight=k=>!!(S.nights[k]||(S.cfg&&S.cfg.nights&&S.cfg.nights[k]));
 const alarmOn=k=>!!(S.cfg&&S.cfg.alarme&&S.cfg.alarme<=k);
 const calStart=()=>S.cfg&&S.cfg.inicio?P(S.cfg.inicio):add(TODAY,-75);
-function nightsMissing(){let m=0;for(let i=1;i<=7;i++)if(!hasNight(I(add(TODAY,-i))))m++;return m}
+function nightsMissing(){const y=add(TODAY,-1),ms=new Date(y.getFullYear(),y.getMonth(),1,12),st=calStart(),a=ms>st?ms:st;let m=0;for(let d=a;d<=y;d=add(d,1))if(!hasNight(I(d)))m++;return m}
 
 const isTrat=()=>!!(S.cfg&&S.cfg.fase==='trat'&&S.cfg.status==='ativo');
 const needStart=()=>isTrat()&&!S.cfg.inicio;
@@ -241,7 +241,7 @@ function viewMenu(){
  const wk=I(add(monday(TODAY),-7)),okW=!!(S.weeks[wk]||(S.cfg&&S.cfg.weeks.includes(wk)));
  const stars=Object.values(S.nights).filter(n=>n.por==='c').length;
  const mi=(a,v,ic,ti,de,badge)=>'<button class="mi" data-a="'+a+'" data-v="'+v+'"><span class="ic">'+ic+'</span><span style="flex:1"><div class="t">'+ti+'</div><div class="d">'+de+'</div></span>'+(badge||'')+'</button>';
- let items=mi('go','cal','🌙',t('mn.cal'),(okN?t('mn.calok'):t('mn.calno'))+(miss&&okN?t('mn.miss',miss):''),okN?sem('g',t('mn.uptodate'),'✓'):sem('r',miss>1?t('mn.missn',miss):t('mn.miss1'),'!'));
+ let items=mi('go','cal','🌙',t('mn.cal'),(okN?t('mn.calok'):t('mn.calno')),!miss?sem('g',t('mn.uptodate'),'✓'):sem('r',miss>1?t('mn.missn',miss):t('mn.miss1'),'!'));
  if(hasMod('d')||hasMod('i'))items+=mi('go','week','📋',t('mn.week'),t('mn.weekd',F(add(monday(TODAY),-7)),F(add(monday(TODAY),-1))),okW?sem('g',t('mn.sent'),'✓'):sem('r',t('mn.pend'),'!'));
  const dxc=S.cfg&&S.cfg.fase==='trat'&&S.cfg.dx&&dxFeitos()<S.cfg.dx.n?S.cfg.dx:null;
  if(dxc){const r=dxc.n-dxFeitos();items+=mi('dxfromtrat','','💧',t('mn.dia'),t(r>1?'mn.dian':'mn.dia1',r)+(dxc.prazo?t('mn.until',FY(P(dxc.prazo))):''),sem('y',t('mn.asked'),'…'))}
@@ -263,13 +263,14 @@ function viewCal(){
   let sym='',fl='';
   if(!n&&sv){sym=sv.s?'<span style="font-size:17px;line-height:1">'+SYM[sv.s][0]+'</span>':'<span style="font-size:15px;color:var(--good)" title="'+t('cal.filled')+'">✔</span>'}
   else if(n){sym='<span style="font-size:17px;line-height:1">'+SYM[n.s][0]+'</span>';
-   {fl=(n.f.includes('med')?'🔵':'')+(n.f.some(f=>f!=='med')?'🔺':'')}}
+   {const part=!S.p.adol&&!n.rem;fl='<span class="st '+(part?'wn':'ok')+'">'+(part?'!':'✔')+'</span>'+(n.f.includes('med')?'🔵':'')+(n.f.some(f=>f!=='med')?'🔺':'')}}
+  if(!n&&!sv&&past)fl='<span class="st bad">!</span>';
   cells+='<button type="button" class="day'+(past?' hit':' off')+(isT?' today':'')+(past&&!n&&!sv?' miss':'')+'"'+(past?' data-a="night" data-v="'+k+'"':' disabled')+' aria-label="'+DS[d.getDay()]+' '+dd+'"><span style="font-size:10px">'+DS[d.getDay()]+'</span><b>'+dd+'</b><span>'+sym+'</span><span class="fl">'+fl+'</span></button>'}
  const prev=new Date(y,m,1,12)>new Date(start.getFullYear(),start.getMonth(),1,12),next=!(y===TODAY.getFullYear()&&m>=TODAY.getMonth());
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><div class="row"><button class="chip" data-a="cm" data-v="-1"'+(prev?'':' disabled')+' aria-label="'+t('cal.prev')+'">‹</button><h2 class="sp" style="text-align:center;text-transform:capitalize">'+MN[m]+' '+y+'</h2><button class="chip" data-a="cm" data-v="1"'+(next?'':' disabled')+' aria-label="'+t('cal.next')+'">›</button></div>'+
  '<div class="cal">'+DS.map(x=>'<div class="h">'+x+'</div>').join('')+cells+'</div>'+
  '<div class="card" style="border-color:var(--gold);margin-top:12px"><span class="lbl">🧒 '+t('cal.kid')+'</span><p class="hint" style="margin:2px 0 8px">'+t('cal.kidp')+'</p><div class="legend">'+Object.values(SYM).map(x=>'<span>'+x[0]+' '+t(x[1])+'</span>').join('')+'</div></div>'+
- '<div class="card flat" style="margin-top:16px;border-top:3px solid var(--line)"><span class="lbl">👨‍👩‍👧 '+t('cal.par')+'</span><div class="legend" style="margin-top:6px"><span>'+t('cal.med')+'</span><span>'+t('cal.diff')+'</span></div></div>'+
+ '<p class="hint" style="margin:10px 2px">'+t('cal.st')+'</p><div class="card flat" style="margin-top:16px;border-top:3px solid var(--line)"><span class="lbl">👨‍👩‍👧 '+t('cal.par')+'</span><div class="legend" style="margin-top:6px"><span>'+t('cal.med')+'</span><span>'+t('cal.diff')+'</span></div></div>'+
  '<div class="card flat"><h3>'+t('cal.tips')+'</h3>'+ul([1,2,3,4].map(i=>t('cal.t'+i)))+'</div></div>';
 }
 function sheetNight(){
@@ -285,7 +286,7 @@ function sheetNight(){
   '<div><label class="lbl" for="nx">'+t('no.opt')+'</label><textarea id="nx" class="in" rows="2" data-i="draft.x" placeholder="'+esc(t('no.ph'))+'">'+esc(dr.x||'')+'</textarea><p class="hint" style="margin-top:4px">'+t('no.names')+'</p></div>';
  const cancel='<button class="btn block ghost" data-a="sheet" data-v="">'+t('cancel')+'</button>';
  if(adol)return title+child+par+'<button class="btn block" data-a="savenight"'+(dr.s&&dr.rem?'':' disabled')+'>'+t('save')+'</button>'+cancel;
- if(step===1)return title+'<span class="hint">'+t('nt.step1')+'</span>'+child+'<button class="btn block" data-a="nstep" data-v="2"'+(dr.s?'':' disabled')+'>'+t('nt.cont')+'</button>'+cancel;
+ if(step===1)return title+'<span class="hint">'+t('nt.step1')+'</span>'+child+'<button class="btn block" data-a="nstep" data-v="2"'+(dr.s?'':' disabled')+'>'+t('nt.cont')+'</button><button class="btn block ghost" data-a="savekid"'+(dr.s?'':' disabled')+'>'+t('nt.kidonly')+'</button>'+cancel;
  return title+'<span class="hint">'+t('nt.step2')+'</span><p class="lead">'+t('nt.draw')+'<b style="font-size:1.1em">'+SYM[dr.s][0]+'</b> '+t(SYM[dr.s][1])+'</p>'+par+'<button class="btn block" data-a="savenight"'+(dr.rem&&dr.who?'':' disabled')+'>'+t('save')+'</button><button class="btn block ghost" data-a="nstep" data-v="1">'+t('nt.back')+'</button>';
 }
 function viewWeek(){
@@ -303,16 +304,17 @@ function viewNotes(){
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('no.title')+'</h2><div class="card flat"><span class="lbl">'+t('no.q')+'</span><div class="chips" style="margin:6px 0 12px">'+NOTEQ.map(k=>'<button type="button" class="chip" data-a="ntq" data-v="'+k+'" aria-pressed="'+S.ntq.includes(k)+'">'+t('no.c.'+k)+'</button>').join('')+'</div><label class="lbl" for="nt">'+t('no.opt')+'</label><textarea id="nt" class="in" rows="3" data-i="nt" placeholder="'+esc(t('no.ph'))+'">'+esc(S.nt)+'</textarea><p class="hint" style="margin-top:4px">'+t('no.names')+'</p><button class="btn block" style="margin-top:10px" data-a="addnote">'+t('no.save')+'</button></div>'+
  S.notes.map(n=>'<div class="card flat"><div class="hint">'+n[0]+'</div><div>'+esc(n[1])+'</div></div>').join('')+'</div>';
 }
+const ct=(ic,tt)=>'<h3 class="ct"><span aria-hidden="true">'+ic+'</span>'+tt+'</h3>';
 function viewInfo(){
- return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('in.title')+'</h2><div class="note">'+t('in.note')+'</div>'+
- (isTrat()?'<div class="card"><h3>'+t('st.ch')+'</h3><p style="margin:6px 0">'+t('st.cp')+'</p></div>':'')+'<div class="card"><h3>'+t('in.how')+'</h3>'+ul([1,2,3,4,5,6].map(i=>t('in.'+i)))+'</div>'+
- '<div class="card"><h3>'+t('in.other')+'</h3>'+ul([t('in.o1'),t('in.o2')])+'</div>'+
- '<div class="card"><h3>'+t('in.liq')+'</h3><p class="lead" style="margin-top:6px">'+t('in.liqh')+'</p><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">'+
+ return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('in.title')+'</h2>'+
+ (isTrat()?'<div class="card">'+ct('📅',t('st.ch'))+'<p style="margin:6px 0">'+t('st.cp')+'</p></div>':'')+
+ '<div class="card">'+ct('🌙',t('in.cal'))+ul([1,2,3,4,5].map(i=>t('in.c'+i)))+'</div>'+
+ '<div class="card">'+ct('📝',t('in.dhow'))+ul([1,2,3,4,5,6].map(i=>t('in.'+i)))+'</div>'+
+ '<div class="card">'+ct('💧',t('in.liq'))+'<p class="lead" style="margin-top:6px">'+t('in.liqh')+'</p><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">'+
  [[1,95],[2,80],[3,50],[4,22],[5,3]].map(x=>'<div class="wk" style="grid-template-columns:110px 1fr 74px"><span>'+t('in.l'+x[0])+'</span><i style="width:'+x[1]+'%;background:var(--c-noite)"></i><span>'+t('in.l'+x[0]+'v')+'</span></div>').join('')+'</div></div>'+
- '<div class="card"><h3>'+t('in.hyd')+'</h3><div class="tw"><table class="t" style="margin-top:8px"><tr><th>'+t('in.age')+'</th><th>'+t('in.total')+'</th><th>'+t('in.cups')+'</th></tr>'+[1,2,3].map(i=>'<tr><td>'+t('in.a'+i)+'</td><td>'+t('in.a'+i+'t')+'</td><td>'+t('in.cups'+i)+'</td></tr>').join('')+'</table></div><p class="hint" style="margin-top:8px">'+t('in.href')+'</p></div>'+
- '<div class="card"><h3>'+t('in.hab')+'</h3>'+ul([1,2,3,4].map(i=>t('in.h'+i)))+'</div>'+devCards()+contactCard()+'</div>';
+ '<div class="card">'+ct('🥤',t('in.hyd'))+'<div class="tw"><table class="t" style="margin-top:8px"><tr><th>'+t('in.age')+'</th><th>'+t('in.total')+'</th><th>'+t('in.cups')+'</th></tr>'+[1,2,3].map(i=>'<tr><td>'+t('hy.a'+i)+'</td><td>'+t('hy.a'+i+'t')+'</td><td>'+t('in.cups'+i)+'</td></tr>').join('')+'</table></div><p class="hint" style="margin-top:8px">'+t('in.href')+'</p></div>'+
+ '<div class="card">'+ct('🌿',t('in.hab'))+ul([1,2,3,4,5,6,7].map(i=>t('in.h'+i)))+'</div>'+devCards()+contactCard()+'</div>';
 }
-/* ----- sheets (janelas inferiores) ----- */
 function sheetsP(){
  const sh=S.p.sheet;if(!sh)return'';let c='';
  const cancel='<button class="btn block ghost" data-a="sheet" data-v="">'+t('cancel')+'</button>';
@@ -355,15 +357,15 @@ function viewInst(){
 }
 function viewHelpP(){
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('hp.title')+'</h2>'+
- '<div class="card"><h3>'+t('hp.why')+'</h3><p class="lead" style="margin-top:6px">'+t('hp.whyt')+'</p></div>'+
- '<div class="card"><h3>'+t('hp.steps')+'</h3>'+ul([1,2,3,4].map(i=>t('hp.s'+i)))+'</div>'+
- (instNeeded()?'<div class="card"><h3>'+t('in.t')+'</h3><button class="btn block ghost" style="margin-top:10px" data-a="go" data-v="inst">'+t('in.how')+'</button></div>':'')+'<div class="card"><h3>'+t('hp.dev')+'</h3><p class="lead" style="margin-top:6px">'+t('hp.devt',esc(S.code||''))+'</p><button class="btn block ghost" style="margin-top:10px" data-a="sheet" data-v="sair">'+t('sh.outb')+'</button></div>'+
- '<div class="card"><h3>'+t('hp.faq')+'</h3>'+ul([1,2,3,4,5,6].map(i=>t('hp.f'+i)))+'</div>'+'<div class="card flat" ><span class="lbl">'+t('fb.t')+'</span><p class="hint" style="margin:4px 0 8px">'+t('fb.h')+'</p><textarea id="fb" class="in" rows="3" data-i="fb" placeholder="'+esc(t('fb.ph'))+'">'+esc(S.fb||'')+'</textarea><button class="btn block ghost" style="margin-top:10px" data-a="fbsend">'+t('fb.go')+'</button></div>'+contactCard()+'</div>';
+ '<div class="card">'+ct('💡',t('hp.why'))+'<p class="lead" style="margin-top:6px">'+t('hp.whyt')+'</p></div>'+
+ '<div class="card">'+ct('👣',t('hp.steps'))+''+ul([1,2,3,4].map(i=>t('hp.s'+i)))+'</div>'+
+ (instNeeded()?'<div class="card"><h3>'+t('in.t')+'</h3><button class="btn block ghost" style="margin-top:10px" data-a="go" data-v="inst">'+t('in.how')+'</button></div>':'')+'<div class="card">'+ct('📱',t('hp.dev'))+'<p class="lead" style="margin-top:6px">'+t('hp.devt',esc(S.code||''))+'</p><button class="btn block ghost" style="margin-top:10px" data-a="sheet" data-v="sair">'+t('sh.outb')+'</button></div>'+
+ '<div class="card">'+ct('❓',t('hp.faq'))+''+ul([1,2,3,4,5,6].map(i=>t('hp.f'+i)))+'</div>'+'<div class="card flat" ><span class="lbl">'+t('fb.t')+'</span><p class="hint" style="margin:4px 0 8px">'+t('fb.h')+'</p><textarea id="fb" class="in" rows="3" data-i="fb" placeholder="'+esc(t('fb.ph'))+'">'+esc(S.fb||'')+'</textarea><button class="btn block ghost" style="margin-top:10px" data-a="fbsend">'+t('fb.go')+'</button></div>'+contactCard()+'</div>';
 }
-function contactCard(){return '<div class="card"><h3>'+t('ct.t')+'</h3><div class="row wrap" style="margin-top:10px">'+waBtn()+agBtn()+'<a class="btn sm ghost" href="'+IG_URL+'" target="_blank" rel="noopener">'+t('ct.ig')+'</a></div></div>'}
+function contactCard(){return '<div class="card">'+ct('💬',t('ct.t'))+'<div class="row wrap" style="margin-top:10px">'+waBtn()+agBtn()+'<a class="btn sm ghost" href="'+IG_URL+'" target="_blank" rel="noopener">'+t('ct.ig')+'</a></div></div>'}
 function devCards(){
- return '<div class="card"><h3>⏰ '+t('mn.dev')+'</h3><h3 style="margin-top:10px">'+t('dv.ws')+'</h3><p class="lead" style="margin-top:6px">'+t('dv.wst')+'</p>'+ul([1,2,3,4].map(i=>t('dv.ws'+i)))+
- '<h3 style="margin-top:14px">'+t('dv.wb')+'</h3><p class="lead" style="margin-top:6px">'+t('dv.wbt')+'</p>'+ul([1,2,3,4,5].map(i=>t('dv.wb'+i)))+'</div>';
+ return '<div class="card">'+ct('⏰',t('in.wet'))+'<p class="lead" style="margin-top:6px">'+t('dv.wst')+'</p>'+ul([1,2,3,4].map(i=>t('dv.ws'+i)))+'</div>'+
+ '<div class="card">'+ct('⌚',t('in.wobl'))+'<p class="lead" style="margin-top:6px">'+t('dv.wbt')+'</p>'+ul([1,2,3,4,5].map(i=>t('dv.wb'+i)))+'</div>';
 }
 function viewDev(){
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('dv.title')+'</h2>'+
