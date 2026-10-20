@@ -192,6 +192,7 @@ details.acc[open]>summary::after{transform:rotate(90deg)}
 
 details.acc>.accb{padding:6px 16px 14px}
 
-.clinks{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 18px;padding:14px 8px 4px}
-.clinks a{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--c-noite);text-decoration:none;padding:6px 4px}
-.clinks a span{font-size:16px}
+.clinks{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px 18px 6px}
+.clinks a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:84px;padding:12px 6px;text-align:center;font-size:13px;font-weight:600;line-height:1.25;color:var(--c-noite);text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.clinks a span{font-size:24px;line-height:1}
+.clinks a:active{background:var(--sel)}

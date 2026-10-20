@@ -48,14 +48,14 @@ function viewDx(){
  const d=Object.assign({},S.cfg&&S.cfg.dx||{n:0,tipo:'inicial',prazo:''}),n=d.n,fe=dxFeitos(),done=n>0&&fe>=n,us=(S.cfg&&S.cfg.us)||{p:false,f:''};
  const seg=d.tipo==='seguimento',nightDx=!seg&&hasMod('n'),inTr=!!(S.cfg&&S.cfg.fase==='trat'&&S.cfg.inicio);
  let h='<div class="body">'+(inTr?'<button class="back" data-a="go" data-v="menu">'+t('back')+'</button><div><h2>'+t('mn.dia')+'</h2></div>':'<div><h1>'+t('hello')+'</h1><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div>')+
- '<div class="card"><span class="sem y"><i aria-hidden="true">🔎</i>'+(seg||inTr?t('dx.title2'):t('dx.phase'))+'</span><p class="lead" style="margin-top:10px">'+t(inTr&&!n?'dx.none':'dx.intro')+'</p></div>';
+ '<div class="card"><span class="sem y"><i aria-hidden="true">🔎</i>'+(seg||inTr?t('dx.title2'):t('dx.phase'))+'</span>'+(done?'':'<p class="lead" style="margin-top:10px">'+t(inTr&&!n?'dx.none':'dx.intro')+'</p>')+'</div>';
  if(inTr&&!n)return h+'</div>';
  h+='<div class="card"><h3>1 · '+t('dx.diaries')+'</h3><p class="lead" style="margin-top:6px">'+t(n===1?'dx.asked1':'dx.askedn',n)+'</p>'+(nightDx?'<p class="hint" style="margin-top:4px">'+t('dx.fr1')+'</p>':'')+
  '<div class="row wrap" style="gap:8px;margin-top:10px">'+Array.from({length:n},(_,i)=>sem(i<fe?'g':(i===fe&&S.dx.ativo?'y':'n'),t('dx.diary',i+1),i<fe?'✓':(i===fe&&S.dx.ativo?'…':'·'))).join('')+'</div>'+
  (done?'<p style="margin-top:12px">'+t('dx.done')+'</p>':'<p class="lead" style="margin-top:12px">'+t('dx.next',F(nextSat()))+'</p><button type="button" class="btn block" style="margin-top:12px" data-a="dxstart">'+(S.dx.ativo?(S.dx.retro?t('dx.contp'):t('dx.cont')):t('dx.start'))+'</button>'+(S.dx.ativo?'':'<button type="button" class="btn block ghost" style="margin-top:8px" data-a="sheet" data-v="paper">'+t('dx.paper')+'</button>'))+'</div>';
  if(us.p)h+='<div class="card"><h3>2 · '+t('dx.us')+'</h3>'+(us.f?'<p class="lead" style="margin-top:6px">'+t('dx.usdone',FY(P(us.f)))+'</p>':'<p class="lead" style="margin-top:6px">'+t('dx.usask')+'</p><button type="button" class="btn block ghost" style="margin-top:10px" data-a="usdone">'+t('dx.usbtn')+'</button>')+'</div>';
  {const k=checkCard();h+=k+(k.includes('data-v="agendei"')?'':retCard())}
- h+='<div class="card flat"><h3>'+t('dx.how')+'</h3><ol style="margin:8px 0 0;padding-left:20px;color:var(--ink2);font-size:14px;display:flex;flex-direction:column;gap:6px">'+['dx.h1','dx.h2','dx.h3','dx.h4','dx.h5','dx.h6'].map(k=>'<li>'+t(k)+'</li>').join('')+'<li>'+t(nightDx?'dx.h7a':'dx.h7b')+'</li></ol></div>';
+ if(!done)h+='<div class="card flat"><h3>'+t('dx.how')+'</h3><ol style="margin:8px 0 0;padding-left:20px;color:var(--ink2);font-size:14px;display:flex;flex-direction:column;gap:6px">'+['dx.h1','dx.h2','dx.h3','dx.h4','dx.h5','dx.h6'].map(k=>'<li>'+t(k)+'</li>').join('')+'<li>'+t(nightDx?'dx.h7a':'dx.h7b')+'</li></ol></div>';
  if(inTr)return h+'<div class="note">'+t('dx.n1')+'</div><div class="note">'+t('dx.n2')+'</div></div>';
  h+='<div class="menu">'+lockedItem('🌙',t('mn.cal'))+((hasMod('d')||hasMod('i'))?lockedItem('📋',t('mn.week')):'')+lockedItem('⏰',t('mn.dev'))+
   lockedItem('ℹ️',t('mn.info'))+
