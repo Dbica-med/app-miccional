@@ -175,7 +175,7 @@ function viewMeses(){
   return '<tr><td style="text-transform:capitalize"><b>'+mn(m)+'</b></td><td class="hint" colspan="2">✓ '+tx+(inf.src==='rep'?' <button class="chip" data-a="msed" data-m="'+m+'">'+t('ms.edit')+'</button>':'')+'</td></tr>'};
  const row=m=>{const q=mq(m);
   return '<tr><td style="text-transform:capitalize;vertical-align:middle"><b>'+mn(m)+'</b></td>'+
-   (hasMod('n')?'<td><input type="number" inputmode="numeric" min="0" max="31" style="width:72px" aria-label="'+t('ms.n')+'" data-i="mq.'+m+'.n" data-u="ms" value="'+(q.na?'':q.n)+'"'+(q.na?' disabled':'')+'></td><td><button type="button" class="chip" data-a="msna" data-m="'+m+'" aria-pressed="'+q.na+'">'+t('ms.na')+'</button></td>':'<td colspan="2"></td>')+'</tr>'+
+   (hasMod('n')?'<td><input type="number" inputmode="numeric" min="0" max="31" style="width:72px" aria-label="'+t('ms.n')+'" data-i="mq.'+m+'.n" data-u="ms" value="'+(q.na?'':q.n)+'"'+(q.na?' disabled':'')+'></td><td><button type="button" class="chip tiny" data-a="msna" data-m="'+m+'" aria-pressed="'+q.na+'">'+t('ms.na')+'</button></td>':'<td colspan="2"></td>')+'</tr>'+
    (hasMod('d')||hasMod('i')?'<tr><td></td><td colspan="2" style="padding-bottom:14px"><div style="display:grid;gap:6px">'+
     (hasMod('d')?'<label class="hint">'+t('ms.d')+sel(m,'d',[0,1,2,3,4].map(v=>[v,t('hq.d'+v)]))+'</label><label class="hint">'+t('ms.u')+sel(m,'u',[0,1,2,3].map(v=>[v,t('ms.u'+v)]))+'</label>':'')+
     (hasMod('i')?'<label class="hint">'+t('ms.i')+sel(m,'i',['n','a','s'].map(v=>[v,t('hq.i.'+v)]))+'</label>':'')+'</div></td></tr>':'')};
@@ -251,7 +251,7 @@ function viewMenu(){
  if(msItem&&!items.includes('data-v="meses"'))items+=msItem;
  items+=mi('go','info','ℹ️',t('mn.info'),t('mn.infod'))+mi('go','help','❓',t('mn.help'),t('mn.helpd'));
  const fresh=S.cfg&&S.cfg.fase==='trat'&&S.cfg.inicio&&diff(TODAY,P(S.cfg.inicio))<=2&&diff(TODAY,P(S.cfg.inicio))>=0;
- return '<div class="body"><div class="row"><div><h1>'+t('hello')+'</h1><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div><span class="sp"></span>'+(S.p.adol?'':'<span class="sem n" title="'+t('mn.stars')+'"><i style="background:var(--gold)">★</i>'+stars+'</span>')+'</div>'+
+ return '<div class="body"><div class="row"><div><h1>'+t('hello')+'</h1><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div><span class="sp"></span>'+(S.p.adol?'':'<span class="sem n" title="'+t('mn.stars')+'"><i style="background:var(--gold)">★</i>'+stars+' <small>'+t('mn.starsl')+'</small></span>')+'</div>'+
  (fresh?'<div class="note" style="border-color:var(--gold)">'+t('mn.started')+'</div>':'')+retChip()+(()=>{const k=checkCard();return cqCard()+k+(k.includes('data-ck')?'':retCard())+hqCard()+dvCard()+impCard()})()+instCard()+
  (S.p.adol?'<div class="card flat"><label class="chk"><input type="checkbox" data-c="p.share"'+(S.p.share?' checked':'')+'><span><b>'+t('mn.share')+'</b></span></label><p class="hint" style="margin-top:6px">'+t(S.p.share?'mn.shareon':'mn.shareoff')+t('mn.shareend')+'</p></div>':'')+
  '<div class="menu">'+items+'</div>'+(S.p.cas?'<div class="note">'+t('mn.cas')+'</div>':'')+'</div>';
@@ -304,16 +304,20 @@ function viewNotes(){
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('no.title')+'</h2><div class="card flat"><span class="lbl">'+t('no.q')+'</span><div class="chips" style="margin:6px 0 12px">'+NOTEQ.map(k=>'<button type="button" class="chip" data-a="ntq" data-v="'+k+'" aria-pressed="'+S.ntq.includes(k)+'">'+t('no.c.'+k)+'</button>').join('')+'</div><label class="lbl" for="nt">'+t('no.opt')+'</label><textarea id="nt" class="in" rows="3" data-i="nt" placeholder="'+esc(t('no.ph'))+'">'+esc(S.nt)+'</textarea><p class="hint" style="margin-top:4px">'+t('no.names')+'</p><button class="btn block" style="margin-top:10px" data-a="addnote">'+t('no.save')+'</button></div>'+
  S.notes.map(n=>'<div class="card flat"><div class="hint">'+n[0]+'</div><div>'+esc(n[1])+'</div></div>').join('')+'</div>';
 }
+const acc=(ic,tt,body,open)=>'<details class="card acc"'+(open?' open':'')+'><summary><span aria-hidden="true">'+ic+'</span><b>'+tt+'</b></summary><div class="accb">'+body+'</div></details>';
 const ct=(ic,tt)=>'<h3 class="ct"><span aria-hidden="true">'+ic+'</span>'+tt+'</h3>';
 function viewInfo(){
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('in.title')+'</h2>'+
- (isTrat()?'<div class="card">'+ct('📅',t('st.ch'))+'<p style="margin:6px 0">'+t('st.cp')+'</p></div>':'')+
- '<div class="card">'+ct('🌙',t('in.cal'))+ul([1,2,3,4,5].map(i=>t('in.c'+i)))+'</div>'+
- '<div class="card">'+ct('📝',t('in.dhow'))+ul([1,2,3,4,5,6].map(i=>t('in.'+i)))+'</div>'+
- '<div class="card">'+ct('💧',t('in.liq'))+'<p class="lead" style="margin-top:6px">'+t('in.liqh')+'</p><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">'+
- [[1,95],[2,80],[3,50],[4,22],[5,3]].map(x=>'<div class="wk" style="grid-template-columns:110px 1fr 74px"><span>'+t('in.l'+x[0])+'</span><i style="width:'+x[1]+'%;background:var(--c-noite)"></i><span>'+t('in.l'+x[0]+'v')+'</span></div>').join('')+'</div></div>'+
- '<div class="card">'+ct('🥤',t('in.hyd'))+'<div class="tw"><table class="t" style="margin-top:8px"><tr><th>'+t('in.age')+'</th><th>'+t('in.total')+'</th><th>'+t('in.cups')+'</th></tr>'+[1,2,3].map(i=>'<tr><td>'+t('hy.a'+i)+'</td><td>'+t('hy.a'+i+'t')+'</td><td>'+t('in.cups'+i)+'</td></tr>').join('')+'</table></div><p class="hint" style="margin-top:8px">'+t('in.href')+'</p></div>'+
- '<div class="card">'+ct('🌿',t('in.hab'))+ul([1,2,3,4,5,6,7].map(i=>t('in.h'+i)))+'</div>'+devCards()+contactCard()+'</div>';
+ (isTrat()?acc('📅',t('st.ch'),'<p style="margin:6px 0">'+t('st.cp')+'</p>',false):'')+
+ acc('🌙',t('in.cal'),ul([1,2,3,4,5,6].map(i=>t('in.c'+i))),true)+
+ acc('📝',t('in.dhow'),ul([1,2,3,4,5,6].map(i=>t('in.'+i))),false)+
+ acc('💧',t('in.liq'),'<p class="lead" style="margin-top:6px">'+t('in.liqh')+'</p><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">'+
+ [[1,95],[2,80],[3,50],[4,22],[5,3]].map(x=>'<div class="wk" style="grid-template-columns:110px 1fr 74px"><span>'+t('in.l'+x[0])+'</span><i style="width:'+x[1]+'%;background:var(--c-noite)"></i><span>'+t('in.l'+x[0]+'v')+'</span></div>').join('')+'</div>',false)+
+ acc('🥤',t('in.hyd'),'<div class="tw"><table class="t" style="margin-top:8px"><tr><th>'+t('in.age')+'</th><th>'+t('in.total')+'</th><th>'+t('in.cups')+'</th></tr>'+[1,2,3].map(i=>'<tr><td>'+t('hy.a'+i)+'</td><td>'+t('hy.a'+i+'t')+'</td><td>'+t('in.cups'+i)+'</td></tr>').join('')+'</table></div><p class="hint" style="margin-top:8px">'+t('in.href')+'</p>',false)+
+ acc('🌿',t('in.hab'),ul([1,2,3,4,5,6,7].map(i=>t('in.h'+i))),false)+
+ acc('⏰',t('in.wet'),'<p class="lead" style="margin-top:6px">'+t('dv.wst')+'</p>'+ul([1,2,3,4].map(i=>t('dv.ws'+i))),false)+
+ acc('⌚',t('in.wobl'),'<p class="lead" style="margin-top:6px">'+t('dv.wbt')+'</p>'+ul([1,2,3,4,5].map(i=>t('dv.wb'+i))),false)+
+ contactCard()+'</div>';
 }
 function sheetsP(){
  const sh=S.p.sheet;if(!sh)return'';let c='';
@@ -357,10 +361,13 @@ function viewInst(){
 }
 function viewHelpP(){
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><h2>'+t('hp.title')+'</h2>'+
- '<div class="card">'+ct('💡',t('hp.why'))+'<p class="lead" style="margin-top:6px">'+t('hp.whyt')+'</p></div>'+
- '<div class="card">'+ct('👣',t('hp.steps'))+''+ul([1,2,3,4].map(i=>t('hp.s'+i)))+'</div>'+
- (instNeeded()?'<div class="card"><h3>'+t('in.t')+'</h3><button class="btn block ghost" style="margin-top:10px" data-a="go" data-v="inst">'+t('in.how')+'</button></div>':'')+'<div class="card">'+ct('📱',t('hp.dev'))+'<p class="lead" style="margin-top:6px">'+t('hp.devt',esc(S.code||''))+'</p><button class="btn block ghost" style="margin-top:10px" data-a="sheet" data-v="sair">'+t('sh.outb')+'</button></div>'+
- '<div class="card">'+ct('❓',t('hp.faq'))+''+ul([1,2,3,4,5,6].map(i=>t('hp.f'+i)))+'</div>'+'<div class="card flat" ><span class="lbl">'+t('fb.t')+'</span><p class="hint" style="margin:4px 0 8px">'+t('fb.h')+'</p><textarea id="fb" class="in" rows="3" data-i="fb" placeholder="'+esc(t('fb.ph'))+'">'+esc(S.fb||'')+'</textarea><button class="btn block ghost" style="margin-top:10px" data-a="fbsend">'+t('fb.go')+'</button></div>'+contactCard()+'</div>';
+ acc('💡',t('hp.why'),'<p class="lead" style="margin-top:6px">'+t('hp.whyt')+'</p>',true)+
+ acc('👣',t('hp.steps'),ul([1,2,3,4].map(i=>t('hp.s'+i))),false)+
+ (instNeeded()?acc('📲',t('in.t'),'<button class="btn block ghost" style="margin-top:10px" data-a="go" data-v="inst">'+t('in.how')+'</button>',false):'')+
+ acc('📱',t('hp.dev'),'<p class="lead" style="margin-top:6px">'+t('hp.devt',esc(S.code||''))+'</p><button class="btn block ghost" style="margin-top:10px" data-a="sheet" data-v="sair">'+t('sh.outb')+'</button>',false)+
+ acc('❓',t('hp.faq'),ul([1,2,3,4,5,6].map(i=>t('hp.f'+i))),false)+
+ acc('🛠️',t('fb.t'),'<p class="hint" style="margin:4px 0 8px">'+t('fb.h')+'</p><textarea id="fb" class="in" rows="3" data-i="fb" placeholder="'+esc(t('fb.ph'))+'">'+esc(S.fb||'')+'</textarea><button class="btn block ghost" style="margin-top:10px" data-a="fbsend">'+t('fb.go')+'</button>',false)+
+ contactCard()+'</div>';
 }
 function contactCard(){return '<div class="card">'+ct('💬',t('ct.t'))+'<div class="row wrap" style="margin-top:10px">'+waBtn()+agBtn()+'<a class="btn sm ghost" href="'+IG_URL+'" target="_blank" rel="noopener">'+t('ct.ig')+'</a></div></div>'}
 function devCards(){

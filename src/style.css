@@ -180,3 +180,13 @@ h3.ct span{font-size:1.15em;line-height:1}
 @keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
 .ld{position:fixed;top:0;left:0;right:0;height:3px;z-index:99;background:linear-gradient(90deg,transparent,var(--gold),transparent);background-size:40% 100%;background-repeat:no-repeat;animation:ld 1s linear infinite}
 @keyframes ld{from{background-position:-40% 0}to{background-position:140% 0}}
+
+.chip.tiny{min-height:0;padding:5px 11px;font-size:12.5px;white-space:nowrap}
+details.acc{padding:0}
+details.acc>summary{list-style:none;display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;font-size:16px}
+details.acc>summary::-webkit-details-marker{display:none}
+details.acc>summary b{flex:1;font-family:var(--serif,inherit);font-weight:600}
+details.acc>summary::after{content:'›';font-size:22px;color:var(--muted);transition:transform .2s}
+details.acc[open]>summary::after{transform:rotate(90deg)}
+details.acc[open]>summary{border-bottom:2px solid var(--gold)}
+details.acc>.accb{padding:6px 16px 14px}
