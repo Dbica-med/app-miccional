@@ -17,7 +17,7 @@ function hdrP(){
 function footP(){
  const n=S.outbox.length;
  const st=S.token?(n?'<span class="sem y"><i aria-hidden="true">…</i>'+(flushing?t('f.sending')+'<span class="dots"></span>':t(n>1?'f.sendn':'f.send1',n))+'</span>':''):'';
- return (S.token?'<div class="body" style="padding-top:0;padding-bottom:0">'+contactCard()+'</div>':'')+'<div class="foot">'+(st?'<div style="margin-bottom:8px">'+st+'</div>':'')+(S.authBad?'<div class="note" style="margin-bottom:8px">'+t('f.auth')+'</div>':'')+t('f.brand')+' · <a href="'+IG_URL+'" target="_blank" rel="noopener">@drdomingosbica</a><br><span style="opacity:.8">'+t('f.ver')+' '+APP_V+'</span></div>'}
+ return (S.token?'<div class="body" style="padding-top:0;padding-bottom:0">'+contactCard()+'</div>':'')+'<div class="foot">'+(st?'<div style="margin-bottom:8px">'+st+'</div>':'')+(S.authBad?'<div class="note" style="margin-bottom:8px">'+t('f.auth')+'</div>':'')+t('f.brand')+'<br><span style="opacity:.8">'+t('f.ver')+' '+APP_V+'</span></div>'}
 function stepper(path,min,max){return '<div class="stepper"><button type="button" data-a="st" data-p="'+path+'" data-d="-1" data-min="'+min+'" data-max="'+max+'" aria-label="'+t('less')+'">−</button><output data-bind="'+path+'">'+get(path)+'</output><button type="button" data-a="st" data-p="'+path+'" data-d="1" data-min="'+min+'" data-max="'+max+'" aria-label="'+t('more')+'">+</button></div>'}
 function nextSat(){let d=TODAY;while(d.getDay()!==6)d=add(d,1);return d}
 const chipB=(a,k,v,txt,on)=>'<button type="button" class="chip" data-a="'+a+'" data-k="'+k+'" data-v="'+v+'" aria-pressed="'+on+'">'+txt+'</button>';
@@ -50,7 +50,7 @@ function viewDx(){
  let h='<div class="body">'+(inTr?'<button class="back" data-a="go" data-v="menu">'+t('back')+'</button><div><h2>'+t('mn.dia')+'</h2></div>':'<div><h1>'+t('hello')+'</h1><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div>')+
  '<div class="card"><span class="sem y"><i aria-hidden="true">🔎</i>'+(seg||inTr?t('dx.title2'):t('dx.phase'))+'</span><p class="lead" style="margin-top:10px">'+t(inTr&&!n?'dx.none':'dx.intro')+'</p></div>';
  if(inTr&&!n)return h+'</div>';
- h+='<div class="card"><h3>1 · '+t('dx.diaries')+'</h3><p class="lead" style="margin-top:6px">'+t(n===1?'dx.asked1':'dx.askedn',n)+(d.prazo?' '+t('dx.by',FY(P(d.prazo))):'')+'</p>'+(nightDx?'<p class="hint" style="margin-top:4px">'+t('dx.fr1')+'</p>':'')+
+ h+='<div class="card"><h3>1 · '+t('dx.diaries')+'</h3><p class="lead" style="margin-top:6px">'+t(n===1?'dx.asked1':'dx.askedn',n)+'</p>'+(nightDx?'<p class="hint" style="margin-top:4px">'+t('dx.fr1')+'</p>':'')+
  '<div class="row wrap" style="gap:8px;margin-top:10px">'+Array.from({length:n},(_,i)=>sem(i<fe?'g':(i===fe&&S.dx.ativo?'y':'n'),t('dx.diary',i+1),i<fe?'✓':(i===fe&&S.dx.ativo?'…':'·'))).join('')+'</div>'+
  (done?'<p style="margin-top:12px">'+t('dx.done')+'</p>':'<p class="lead" style="margin-top:12px">'+t('dx.next',F(nextSat()))+'</p><button type="button" class="btn block" style="margin-top:12px" data-a="dxstart">'+(S.dx.ativo?(S.dx.retro?t('dx.contp'):t('dx.cont')):t('dx.start'))+'</button>'+(S.dx.ativo?'':'<button type="button" class="btn block ghost" style="margin-top:8px" data-a="sheet" data-v="paper">'+t('dx.paper')+'</button>'))+'</div>';
  if(us.p)h+='<div class="card"><h3>2 · '+t('dx.us')+'</h3>'+(us.f?'<p class="lead" style="margin-top:6px">'+t('dx.usdone',FY(P(us.f)))+'</p>':'<p class="lead" style="margin-top:6px">'+t('dx.usask')+'</p><button type="button" class="btn block ghost" style="margin-top:10px" data-a="usdone">'+t('dx.usbtn')+'</button>')+'</div>';
@@ -247,7 +247,7 @@ function viewMenu(){
  let items=mi('go','cal','🌙',t('mn.cal'),(okN?t('mn.calok'):t('mn.calno')),!miss?sem('g',t('mn.uptodate'),'✓'):sem('r',miss>1?t('mn.missn',miss):t('mn.miss1'),'!'));
  if(hasMod('d')||hasMod('i'))items+=mi('go','week','📋',t('mn.week'),t('mn.weekd',F(add(monday(TODAY),-7)),F(add(monday(TODAY),-1))),okW?sem('g',t('mn.sent'),'✓'):sem('r',t('mn.pend'),'!'));
  const dxc=S.cfg&&S.cfg.fase==='trat'&&S.cfg.dx&&dxFeitos()<S.cfg.dx.n?S.cfg.dx:null;
- if(dxc){const r=dxc.n-dxFeitos();items+=mi('dxfromtrat','','💧',t('mn.dia'),t(r>1?'mn.dian':'mn.dia1',r)+(dxc.prazo?t('mn.until',FY(P(dxc.prazo))):''),sem('r',t('ms.badge',r),'!'))}
+ if(dxc){const r=dxc.n-dxFeitos();items+=mi('dxfromtrat','','💧',t('mn.dia'),t(r>1?'mn.dian':'mn.dia1',r),sem('r',t('ms.badge',r),'!'))}
  else items+=mi('dxfromtrat','','💧',t('mn.dia'),t('mn.dianone'),sem('g',t('mn.uptodate'),'✓'));
  const mL=monthsList();
  let msItem='';if(mL.length){const k=monthsMissing().length;msItem=mi('go','meses','🗓️',t('ms.mn'),k?t('ms.mnd'):t('ms.done'),k?sem('r',t('ms.badge',k),'!'):sem('g',t('mn.uptodate'),'✓'))}
@@ -374,7 +374,7 @@ function viewHelpP(){
  acc('🛠️',t('fb.t'),'<p class="hint" style="margin:4px 0 8px">'+t('fb.h')+'</p><textarea id="fb" class="in" rows="3" data-i="fb" placeholder="'+esc(t('fb.ph'))+'">'+esc(S.fb||'')+'</textarea><button class="btn block ghost" style="margin-top:10px" data-a="fbsend">'+t('fb.go')+'</button>',false)+
  '</div>';
 }
-function contactCard(){return '<div class="card">'+ct('💬',t('ct.t'))+'<div class="row wrap" style="margin-top:10px">'+waBtn()+agBtn()+'<a class="btn sm ghost" href="'+IG_URL+'" target="_blank" rel="noopener">'+t('ct.ig')+'</a></div></div>'}
+function contactCard(){return '<div class="clinks"><a href="'+WA_URL+'" target="_blank" rel="noopener"><span>💬</span>'+t('ct.wa')+'</a><a href="'+AGENDA_URL+'" target="_blank" rel="noopener"><span>📅</span>'+t('ct.ag')+'</a><a href="'+IG_URL+'" target="_blank" rel="noopener"><span>📷</span>Instagram</a></div>'}
 function devCards(){
  return '<div class="card">'+ct('⏰',t('in.wet'))+'<p class="lead" style="margin-top:6px">'+t('dv.wst')+'</p>'+ul([1,2,3,4].map(i=>t('dv.ws'+i)))+'</div>'+
  '<div class="card">'+ct('⌚',t('in.wobl'))+'<p class="lead" style="margin-top:6px">'+t('dv.wbt')+'</p>'+ul([1,2,3,4,5].map(i=>t('dv.wb'+i)))+'</div>';
