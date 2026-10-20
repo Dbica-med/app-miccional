@@ -36,8 +36,8 @@ function fixScreen(){
  if(pauseInfo()){if(!['pause','info','help'].includes(sc))S.p.screen='pause';return}
  if(sc==='start'||sc==='pause')S.p.screen='menu';
  if(sc==='wait'||sc==='onb'||sc==='load')S.p.screen=(c.fase==='inv'&&c.dx)?'dx':'menu';
- if(c.fase==='inv'&&c.dx&&(sc==='menu'))S.p.screen='dx';
- if(c.fase==='trat'&&(sc==='dx')&&!S.dx.ativo)S.p.screen='menu';
+ if((c.fase==='inv'||(c.fase==='trat'&&!c.inicio))&&c.dx&&dxPend()&&(sc==='menu'||sc==='start'))S.p.screen='dx';if(c.fase==='inv'&&c.dx&&(sc==='menu'))S.p.screen='dx';
+ if(c.fase==='trat'&&c.inicio&&(sc==='dx')&&!S.dx.ativo&&S.p.dxm!==1)S.p.screen='menu';
  if(!S.p.inst&&instNeeded()&&['wait','onb','load'].includes(sc)&&['menu','dx'].includes(S.p.screen))S.p.screen='inst';
 }
 /* ---------- rede ---------- */
@@ -113,7 +113,7 @@ function cqCheck(){
  save();
 }
 const A={
- go(d){let v=d.v;if(needStart()&&!['start','info','help'].includes(v))v='start';else if(pauseInfo()&&!['pause','info','help'].includes(v))v='pause';if(v==='menu'&&S.cfg&&S.cfg.fase==='inv'&&S.cfg.dx)v='dx';S.p.screen=v;S.p.sheet=null;save();toTop()},
+ go(d){let v=d.v;S.p.dxm=d.v==='dx'?1:0;if(needStart()&&!['start','info','help'].includes(v))v='start';else if(pauseInfo()&&!['pause','info','help'].includes(v))v='pause';if(v==='menu'&&S.cfg&&S.cfg.fase==='inv'&&S.cfg.dx)v='dx';S.p.screen=v;S.p.sheet=null;save();toTop()},
  lang(d){setLang(d.v);render()},
  agenda(d){if(!S.cfg||!S.cfg.ret)return 'norender';S.cfg.ag=d.v==='1'?I(TODAY):'';queue('ag',{v:d.v==='1'?1:0});save()},
  rr(d){if(!S.cfg||!S.cfg.ret)return 'norender';const m=d.v||'';S.cfg.rr={m:m,d:m?I(TODAY):''};if(m==='agendei')S.cfg.ag=I(TODAY);S.ckmsg=m&&m!=='parou'?m:'';queue('rr',{m:m});save()},
@@ -164,7 +164,7 @@ const A={
  paperok(){const dt=(S.dxp&&S.dxp.dt)||'',ok=/^\d{4}-\d{2}-\d{2}$/.test(dt)&&diff(TODAY,P(dt))>=1&&diff(TODAY,P(dt))<=60;if(!ok){S.dxp.bad=true;return}
   const d=S.dx;if(d.ativo)return 'norender';d.id='d'+uid();d.data=dt;d.ativo=true;d.retro=true;S.p.sheet=null;S.p.screen='diary';save();toTop()},
  ruleok(){const d=S.dx;S.p.sheet=null;d.id='d'+uid();d.data=I(TODAY);d.ativo=true;S.p.screen='diary';save();toTop()},
- dxfromtrat(){S.p.screen='dx';save();toTop()},
+ dxfromtrat(){S.p.screen='dx';S.p.dxm=1;save();toTop()},
  sheet(d){S.p.sheet=d.v?{v:d.v}:null;if(d.v==='mic')S.draft2={h:S.dx.retro?'':now(),v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''};if(d.v==='liq')S.draft3={h:S.dx.retro?'':now(),v:0,t:'Água',vv:''};if(d.v==='fim')S.dx.fim={q:'',g:'',m:''};if(d.v==='paper'){S.dxp={dt:'',bad:false}}},
  night(d){openNight(d.v)},
  dr(d){S.draft[d.k]=d.v},

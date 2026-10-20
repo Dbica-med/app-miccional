@@ -46,15 +46,17 @@ const dxFeitos=()=>((S.cfg&&S.cfg.dx?S.cfg.dx.feitos:0)+S.outbox.filter(e=>e.a==
 function lockedItem(ic,title){return '<div class="mi locked" aria-disabled="true"><span class="ic">'+ic+'</span><span style="flex:1"><div class="t">'+title+'</div><div class="d">'+t('dx.soon')+'</div></span><span class="lock" aria-hidden="true">🔒</span></div>'}
 function viewDx(){
  const d=Object.assign({},S.cfg&&S.cfg.dx||{n:0,tipo:'inicial',prazo:''}),n=d.n,fe=dxFeitos(),done=n>0&&fe>=n,us=(S.cfg&&S.cfg.us)||{p:false,f:''};
- const seg=d.tipo==='seguimento',nightDx=!seg&&hasMod('n');
- let h='<div class="body"><div><h1>'+t('hello')+'</h1><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div>'+
- '<div class="card"><span class="sem y"><i aria-hidden="true">🔎</i>'+(seg?t('dx.title2'):t('dx.phase'))+'</span><p class="lead" style="margin-top:10px">'+t('dx.intro')+'</p></div>';
+ const seg=d.tipo==='seguimento',nightDx=!seg&&hasMod('n'),inTr=!!(S.cfg&&S.cfg.fase==='trat'&&S.cfg.inicio);
+ let h='<div class="body">'+(inTr?'<button class="back" data-a="go" data-v="menu">'+t('back')+'</button><div><h2>'+t('mn.dia')+'</h2></div>':'<div><h1>'+t('hello')+'</h1><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div>')+
+ '<div class="card"><span class="sem y"><i aria-hidden="true">🔎</i>'+(seg||inTr?t('dx.title2'):t('dx.phase'))+'</span><p class="lead" style="margin-top:10px">'+t(inTr&&!n?'dx.none':'dx.intro')+'</p></div>';
+ if(inTr&&!n)return h+'</div>';
  h+='<div class="card"><h3>1 · '+t('dx.diaries')+'</h3><p class="lead" style="margin-top:6px">'+t(n===1?'dx.asked1':'dx.askedn',n)+(d.prazo?' '+t('dx.by',FY(P(d.prazo))):'')+'</p>'+(nightDx?'<p class="hint" style="margin-top:4px">'+t('dx.fr1')+'</p>':'')+
  '<div class="row wrap" style="gap:8px;margin-top:10px">'+Array.from({length:n},(_,i)=>sem(i<fe?'g':(i===fe&&S.dx.ativo?'y':'n'),t('dx.diary',i+1),i<fe?'✓':(i===fe&&S.dx.ativo?'…':'·'))).join('')+'</div>'+
  (done?'<p style="margin-top:12px">'+t('dx.done')+'</p>':'<p class="lead" style="margin-top:12px">'+t('dx.next',F(nextSat()))+'</p><button type="button" class="btn block" style="margin-top:12px" data-a="dxstart">'+(S.dx.ativo?(S.dx.retro?t('dx.contp'):t('dx.cont')):t('dx.start'))+'</button>'+(S.dx.ativo?'':'<button type="button" class="btn block ghost" style="margin-top:8px" data-a="sheet" data-v="paper">'+t('dx.paper')+'</button>'))+'</div>';
  if(us.p)h+='<div class="card"><h3>2 · '+t('dx.us')+'</h3>'+(us.f?'<p class="lead" style="margin-top:6px">'+t('dx.usdone',FY(P(us.f)))+'</p>':'<p class="lead" style="margin-top:6px">'+t('dx.usask')+'</p><button type="button" class="btn block ghost" style="margin-top:10px" data-a="usdone">'+t('dx.usbtn')+'</button>')+'</div>';
  {const k=checkCard();h+=k+(k.includes('data-v="agendei"')?'':retCard())}
  h+='<div class="card flat"><h3>'+t('dx.how')+'</h3><ol style="margin:8px 0 0;padding-left:20px;color:var(--ink2);font-size:14px;display:flex;flex-direction:column;gap:6px">'+['dx.h1','dx.h2','dx.h3','dx.h4','dx.h5','dx.h6'].map(k=>'<li>'+t(k)+'</li>').join('')+'<li>'+t(nightDx?'dx.h7a':'dx.h7b')+'</li></ol></div>';
+ if(inTr)return h+'<div class="note">'+t('dx.n1')+'</div><div class="note">'+t('dx.n2')+'</div></div>';
  h+='<div class="menu">'+lockedItem('🌙',t('mn.cal'))+((hasMod('d')||hasMod('i'))?lockedItem('📋',t('mn.week')):'')+lockedItem('⏰',t('mn.dev'))+
   '<button class="mi" data-a="go" data-v="info"><span class="ic">ℹ️</span><span style="flex:1"><div class="t">'+t('mn.info')+'</div><div class="d">'+t('mn.infod')+'</div></span></button>'+
   '<button class="mi" data-a="go" data-v="help"><span class="ic">❓</span><span style="flex:1"><div class="t">'+t('mn.help')+'</div><div class="d">'+t('mn.helpd')+'</div></span></button></div>';
@@ -77,7 +79,8 @@ const calStart=()=>S.cfg&&S.cfg.inicio?P(S.cfg.inicio):add(TODAY,-75);
 function nightsMissing(){const y=add(TODAY,-1),ms=new Date(y.getFullYear(),y.getMonth(),1,12),st=calStart(),a=ms>st?ms:st;let m=0;for(let d=a;d<=y;d=add(d,1))if(!hasNight(I(d)))m++;return m}
 
 const isTrat=()=>!!(S.cfg&&S.cfg.fase==='trat'&&S.cfg.status==='ativo');
-const needStart=()=>isTrat()&&!S.cfg.inicio;
+const dxPend=()=>!!(S.cfg&&S.cfg.dx&&dxFeitos()<S.cfg.dx.n);
+const needStart=()=>isTrat()&&!S.cfg.inicio&&!dxPend();
 function pauseInfo(){
  const c=S.cfg;if(!isTrat()||!c.inicio||!c.ret)return null;
  const tol=c.tol||14,late=diff(TODAY,P(c.ret));
@@ -244,7 +247,8 @@ function viewMenu(){
  let items=mi('go','cal','🌙',t('mn.cal'),(okN?t('mn.calok'):t('mn.calno')),!miss?sem('g',t('mn.uptodate'),'✓'):sem('r',miss>1?t('mn.missn',miss):t('mn.miss1'),'!'));
  if(hasMod('d')||hasMod('i'))items+=mi('go','week','📋',t('mn.week'),t('mn.weekd',F(add(monday(TODAY),-7)),F(add(monday(TODAY),-1))),okW?sem('g',t('mn.sent'),'✓'):sem('r',t('mn.pend'),'!'));
  const dxc=S.cfg&&S.cfg.fase==='trat'&&S.cfg.dx&&dxFeitos()<S.cfg.dx.n?S.cfg.dx:null;
- if(dxc){const r=dxc.n-dxFeitos();items+=mi('dxfromtrat','','💧',t('mn.dia'),t(r>1?'mn.dian':'mn.dia1',r)+(dxc.prazo?t('mn.until',FY(P(dxc.prazo))):''),sem('y',t('mn.asked'),'…'))}
+ if(dxc){const r=dxc.n-dxFeitos();items+=mi('dxfromtrat','','💧',t('mn.dia'),t(r>1?'mn.dian':'mn.dia1',r)+(dxc.prazo?t('mn.until',FY(P(dxc.prazo))):''),sem('r',t('ms.badge',r),'!'))}
+ else items+=mi('dxfromtrat','','💧',t('mn.dia'),t('mn.dianone'),sem('g',t('mn.uptodate'),'✓'));
  const mL=monthsList();
  let msItem='';if(mL.length){const k=monthsMissing().length;msItem=mi('go','meses','🗓️',t('ms.mn'),k?t('ms.mnd'):t('ms.done'),k?sem('r',t('ms.badge',k),'!'):sem('g',t('mn.uptodate'),'✓'))}
  items=items.replace('<button class="mi" data-a="go" data-v="week">',msItem+'<button class="mi" data-a="go" data-v="week">');
