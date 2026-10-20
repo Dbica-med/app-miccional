@@ -18,7 +18,7 @@ function init(){
  const L=load()||{};
  S={code:L.code||'',token:L.token||'',papel:L.papel||'',cfg:L.cfg||null,nights:L.nights||{},weeks:L.weeks||{},notes:L.notes||[],outbox:L.outbox||[],
   dx:Object.assign(newDx(),L.dx||{}),nt:'',p:{screen:L.token?(L.screen||'menu'):'onb',share:!!L.share,hqs:L.hqs||'',inst:L.inst||'',cq:L.cq,cqs:L.cqs||''},ob:blankOb(),draft:draftBlank(),
-  draft2:{h:'12:00',v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''},draft3:{h:'12:00',v:0,t:'Água',vv:''},
+  draft2:{h:'12:00',v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''},draft3:{h:'12:00',v:0,t:'Outro',vv:''},
   st:{dt:I(TODAY),ok:false,bad:false},ntq:[],ag:{q:false,dt:'',bad:false},mq:{},dv:{it:Array(10).fill(null)},dvok:false,imp:{n:0,d:0,i:0},iq:{nw:'',dw:''},hq:{hp:'',hm:[],hn:'',hd:'',hi:'',hu:''},ckmsg:'',impok:false,ws:L.ws||{dias:3,av:0,sem:0,urg:0,troca:0,regra:5,evac:6,bris:4,fecal:0},cal:{y:TODAY.getFullYear(),m:TODAY.getMonth()},busy:false,authBad:false};
  if(S.cfg)applyCfg(S.cfg,true);
 }
@@ -165,7 +165,7 @@ const A={
   const d=S.dx;if(d.ativo)return 'norender';d.id='d'+uid();d.data=dt;d.ativo=true;d.retro=true;S.p.sheet=null;S.p.screen='diary';save();toTop()},
  ruleok(){const d=S.dx;S.p.sheet=null;d.id='d'+uid();d.data=I(TODAY);d.ativo=true;S.p.screen='diary';save();toTop()},
  dxfromtrat(){S.p.screen='dx';S.p.dxm=1;save();toTop()},
- sheet(d){S.p.sheet=d.v?{v:d.v}:null;if(d.v==='mic')S.draft2={h:S.dx.retro?'':now(),v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''};if(d.v==='liq')S.draft3={h:S.dx.retro?'':now(),v:0,t:'Água',vv:''};if(d.v==='fim')S.dx.fim={q:'',g:'',m:''};if(d.v==='paper'){S.dxp={dt:'',bad:false}}},
+ sheet(d){S.p.sheet=d.v?{v:d.v}:null;if(d.v==='mic')S.draft2={h:S.dx.retro?'':now(),v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''};if(d.v==='liq')S.draft3={h:S.dx.retro?'':now(),v:0,t:'Outro',vv:''};if(d.v==='fim')S.dx.fim={q:'',g:'',m:''};if(d.v==='paper'){S.dxp={dt:'',bad:false}}},
  night(d){openNight(d.v)},
  dr(d){S.draft[d.k]=d.v},
  drf(d){const f=S.draft.f,i=f.indexOf(d.v);i<0?f.push(d.v):f.splice(i,1)},
@@ -183,7 +183,7 @@ const A={
  d2(d){S.draft2[d.k]=(d.k==='pt'&&S.draft2.pt===d.v)?'':d.v;if(d.k==='p'&&d.v==='nenhuma')S.draft2.pt=''},
  d3(d){S.draft3.v=Number(d.v);S.draft3.vv=''},
  d3t(d){S.draft3.t=d.v},
- savemic(){const m=S.draft2,dx=S.dx;if(!/^\d{2}:\d{2}$/.test(m.h||''))return 'norender';const ml=m.nm?0:Math.round(Number(m.v)||0);
+ savemic(){const m=S.draft2,dx=S.dx;if(!/^\d{2}:\d{2}$/.test(m.h||''))return 'norender';const ml=Math.round(Number(m.v)||0);if(ml<1||ml>1500){m.err=true;return}
   dx.mic.push([m.h,ml,m.u,m.p,m.o||'']);
   queue('mic',{diario:dx.id,data:dx.data,hora:m.h,ml,urg:m.u,perda:m.p,pt:m.p==='nenhuma'?'':m.pt,obs:m.o||''});S.p.sheet=null;save()},
  saveliq(){const v=Math.round(Number(S.draft3.vv)||S.draft3.v);if(!v)return 'norender';const dx=S.dx;

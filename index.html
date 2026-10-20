@@ -191,8 +191,8 @@ input[type=date]::-webkit-date-and-time-value{text-align:left;min-height:1.2em}
 
 a.btn{text-decoration:none}
 
-h3.ct{display:flex;align-items:center;gap:8px;padding-bottom:6px;border-bottom:2px solid var(--gold);margin-bottom:4px}
-h3.ct span{font-size:1.15em;line-height:1}
+h3.ct{display:flex;align-items:center;gap:10px;margin-bottom:4px;color:var(--c-noite);font-size:19px}
+h3.ct span{font-size:1.35em;line-height:1}
 .day .st{font-weight:700;font-size:11px;margin-right:2px}
 .day .st.ok{color:var(--good)} .day .st.wn{color:#c98a00} .day .st.bad{color:var(--crit)}
 .dots::after{content:'';display:inline-block;width:1.2em;text-align:left;animation:dots 1.2s steps(4,end) infinite}
@@ -204,10 +204,11 @@ h3.ct span{font-size:1.15em;line-height:1}
 details.acc{padding:0}
 details.acc>summary{list-style:none;display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;font-size:16px}
 details.acc>summary::-webkit-details-marker{display:none}
-details.acc>summary b{flex:1;font-family:var(--serif,inherit);font-weight:600}
+details.acc>summary b{flex:1;font-family:var(--serif,inherit);font-weight:600;font-size:18px;color:var(--c-noite)}
+details.acc>summary .ic,details.acc>summary>span:first-child{font-size:22px}
 details.acc>summary::after{content:'›';font-size:22px;color:var(--muted);transition:transform .2s}
 details.acc[open]>summary::after{transform:rotate(90deg)}
-details.acc[open]>summary{border-bottom:2px solid var(--gold)}
+
 details.acc>.accb{padding:6px 16px 14px}
 
 </style></head><body>
@@ -351,8 +352,8 @@ const M={
 /* diário do dia */
 'dy.title':['Diário {0} de {1}','Diary {0} of {1}','Journal {0} sur {1}'],
 'dy.night':['Noite do diário: fralda e primeiro xixi','Night of the diary: diaper and first pee','Nuit du journal : couche et première miction'],
-'dy.rem':['<b>Lembrete:</b> não peça nem lembre a criança de urinar. Anote só o que ela fizer por conta própria.','<b>Reminder:</b> do not ask or remind the child to pee. Only write down what the child does on their own.','<b>Rappel :</b> ne demandez pas à l’enfant d’uriner et ne le lui rappelez pas. Notez seulement ce qu’il fait de lui-même.'],
-'dy.addmic':['＋ Registrar micção agora','＋ Record urination now','＋ Enregistrer une miction'],'dy.addliq':['Registrei líquido','I recorded a drink','J’ai noté une boisson'],
+'dy.rem':['<b>Anote tudo.</b> Toda micção e todo líquido ingerido precisam ser registrados, com o volume. A criança <b>não deve urinar direto no vaso</b>: use um recipiente e meça depois em um copo ou medidor graduado. Fique atento à criança durante o dia para anotar urgência, escapes e manobras de contenção. Não peça nem lembre a criança de urinar. No fim, toque em <b>Encerrar o dia</b>.','<b>Record everything.</b> Every urination and every drink must be recorded with its volume. The child <b>must not urinate directly into the toilet</b>: use a container and measure afterwards in a graduated cup. Watch the child through the day to note urgency, leaks and holding maneuvers. Do not ask or remind the child to pee. At the end, tap <b>Finish the day</b>.','<b>Notez tout.</b> Chaque miction et chaque boisson doivent être notées avec leur volume. L’enfant <b>ne doit pas uriner directement dans les toilettes</b> : utilisez un récipient et mesurez ensuite avec un verre gradué. Observez l’enfant dans la journée pour noter urgence, fuites et manœuvres de retenue. Ne demandez pas à l’enfant d’uriner et ne le lui rappelez pas. À la fin, touchez <b>Terminer la journée</b>.'],
+'dy.addmic':['＋ Registrar micção agora','＋ Record urination now','＋ Enregistrer une miction'],'dy.addliq':['＋ Registrar ingestão de líquidos','＋ Record fluid intake','＋ Enregistrer une prise de liquide'],
 'dy.today':['Hoje','Today','Aujourd’hui'],'dy.m1':['micção','urination','miction'],'dy.mn':['micções','urinations','mictions'],'dy.liq':['líquidos','fluids','liquides'],
 'dy.hour':['Hora','Time','Heure'],'dy.urg':['Urgência','Urgency','Urgence'],'dy.loss':['Perda','Leak','Fuite'],'dy.obs':['Obs.','Notes','Remarques'],'dy.nm':['não medido','not measured','non mesuré'],
 'dy.none':['Nenhuma micção registrada ainda.','No urination recorded yet.','Aucune miction enregistrée pour l’instant.'],
@@ -557,13 +558,13 @@ const M={
 'sh.rulego':['Começar o diário','Start the diary','Commencer le journal'],'sh.ruleno':['Voltar e escolher outro dia','Go back and choose another day','Revenir et choisir un autre jour'],
 'sh.mic':['Registrar micção','Record urination','Enregistrer une miction'],'sh.time':['Hora','Time','Heure'],'sh.vol':['Volume (mL)','Volume (mL)','Volume (mL)'],'sh.ex':['Ex.: 150','E.g.: 150','Ex. : 150'],'sh.nm':['Não consegui medir','I could not measure','Je n’ai pas pu mesurer'],
 'sh.urg':['Urgência','Urgency','Urgence'],'sh.leak':['Perda de xixi','Pee leak','Fuite d’urine'],'sh.obs':['Observação (opcional)','Note (optional)','Remarque (facultatif)'],'sh.obsph':['Ex.: estava brincando','E.g.: was playing','Ex. : jouait'],
-'sh.liq':['Registrar líquido','Record a drink','Enregistrer une boisson'],'sh.timeo':['Hora (opcional)','Time (optional)','Heure (facultatif)'],'sh.drank':['O que bebeu','What was drunk','Ce qui a été bu'],'sh.qty':['Quantidade (mL)','Amount (mL)','Quantité (mL)'],'sh.qtyt':['Ou digite o volume (mL)','Or type the volume (mL)','Ou saisissez le volume (mL)'],
+'sh.liq':['Registrar ingestão de líquidos','Record fluid intake','Enregistrer une prise de liquide'],'sh.timeo':['Hora (opcional)','Time (optional)','Heure (facultatif)'],'sh.drank':['O que bebeu','What was drunk','Ce qui a été bu'],'sh.qty':['Quantidade (mL)','Amount (mL)','Quantité (mL)'],'sh.qtyt':['Ou digite o volume (mL)','Or type the volume (mL)','Ou saisissez le volume (mL)'],
 'sh.out':['Sair deste aparelho?','Sign out of this device?','Quitter cet appareil ?'],'sh.outt':['Os registros já enviados continuam com o Dr. Domingos.','Records already sent stay with Dr. Domingos.','Les enregistrements déjà envoyés restent chez le Dr Domingos.'],
 'sh.outl':[' <b>Há {0} registro(s) ainda não enviados, que serão perdidos.</b>',' <b>{0} record(s) not yet sent will be lost.</b>',' <b>{0} enregistrement(s) non encore envoyés seront perdus.</b>'],
 'sh.outr':[' Para entrar de novo, será preciso o código e a data de nascimento.',' To sign in again, you will need the code and the date of birth.',' Pour vous reconnecter, il faudra le code et la date de naissance.'],'sh.outb':['Sair deste aparelho','Sign out of this device','Quitter cet appareil'],
 'sh.fim':['Encerrar o dia','End the day','Terminer la journée'],'sh.fimq':['Alguma micção ficou sem registro hoje?','Was any urination left unrecorded today?','Une miction est-elle restée sans enregistrement aujourd’hui ?'],'sh.fimn':['Não, registrei todas','No, I recorded them all','Non, je les ai toutes enregistrées'],'sh.fims':['Sim, alguma ficou sem registro','Yes, some were not recorded','Oui, certaines n’ont pas été enregistrées'],
 'sh.fimnote':['<b>Esta noite:</b> coloque uma fralda e pese de manhã. Meça o primeiro xixi do dia seguinte.','<b>Tonight:</b> put on a diaper and weigh it in the morning. Measure the first pee of the next day.','<b>Cette nuit :</b> mettez une couche et pesez-la le matin. Mesurez la première miction du lendemain.'],
-'sh.fg':['Peso da fralda (g)','Diaper weight (g)','Poids de la couche (g)'],'sh.fm':['Primeiro xixi da manhã (mL)','First pee of the morning (mL)','Première miction du matin (mL)'],
+'sh.fg':['Urina na fralda (g): molhada menos seca','Urine in the diaper (g): wet minus dry','Urine dans la couche (g) : mouillée moins sèche'],'sh.fm':['Primeiro xixi da manhã (mL)','First pee of the morning (mL)','Première miction du matin (mL)'],
 'sh.fimfu':['Neste diário de acompanhamento, não é preciso pesar a fralda. O dia termina quando a criança for dormir.','In this follow-up diary there is no need to weigh the diaper. The day ends when the child goes to sleep.','Dans ce journal de suivi, inutile de peser la couche. La journée se termine au coucher de l’enfant.'],
 'sh.fimok':['Concluir diário','Finish diary','Terminer le journal'],
 /* como usar */
@@ -665,7 +666,7 @@ const M={
 'pp.t':['Diário de um dia anterior','Diary from a previous day','Journal d’un jour précédent'],'pp.p':['Escolha o dia em que o diário foi feito. Depois, lance cada micção das suas anotações, com o horário, o volume, a urgência e a perda, e os líquidos. No fim, informe a noite (fralda e 1º xixi).','Choose the day the diary was done. Then enter each urination from your notes, with time, volume, urgency and leakage, and the fluids. At the end, enter the night (diaper and first pee).','Choisissez le jour du journal. Puis saisissez chaque miction de vos notes, avec l’heure, le volume, l’urgence et la fuite, et les liquides. À la fin, indiquez la nuit (couche et 1re miction).'],
 'pp.d':['Dia do diário','Day of the diary','Jour du journal'],'pp.bad':['Escolha um dia entre ontem e 60 dias atrás.','Choose a day between yesterday and 60 days ago.','Choisissez un jour entre hier et il y a 60 jours.'],'pp.go':['Começar a lançar','Start entering','Commencer la saisie'],
 'dy.retro':['<b>Diário de um dia anterior.</b> Lance cada micção com o horário em que ocorreu. Os líquidos também.','<b>Previous-day diary.</b> Enter each urination with the time it happened. Fluids too.','<b>Journal d’un jour précédent.</b> Saisissez chaque miction avec l’heure à laquelle elle a eu lieu. Les liquides aussi.'],
-'lang':['Idioma','Language','Langue']
+'dy.nightx':['<b>Neste primeiro diário, para quem faz xixi na cama.</b> Precisamos medir a urina da noite, porque algumas crianças produzem muita urina à noite (poliúria noturna). Não deixe de preencher. Pese a fralda seca antes de dormir e, de manhã, pese a fralda molhada: a diferença é o xixi da noite (1 g = 1 mL). Depois, meça o primeiro xixi da manhã. Crianças maiores devem usar fralda de adulto ou de adolescente. Se a criança costuma encharcar e a fralda pode vazar, troque no meio da noite e pese cada fralda: some tudo e anote o total. Você pode encerrar a parte do dia e completar a noite na manhã seguinte.','<b>In this first diary, for children who wet the bed.</b> We need to measure the night urine, because some children produce a lot at night (nocturnal polyuria). Please do not skip it. Weigh the dry diaper before bed and the wet diaper in the morning: the difference is the night urine (1 g = 1 mL). Then measure the first pee of the morning. Older children should use an adult or teen diaper. If the child usually soaks it and it may leak, change it during the night and weigh each diaper: add them up and enter the total. You can finish the daytime part and complete the night the next morning.','<b>Dans ce premier journal, pour les enfants qui font pipi au lit.</b> Nous devons mesurer l’urine de la nuit, car certains enfants en produisent beaucoup (polyurie nocturne). Ne l’oubliez pas. Pesez la couche sèche avant de dormir et la couche mouillée le matin : la différence est l’urine de la nuit (1 g = 1 mL). Mesurez ensuite la première miction du matin. Les grands enfants doivent utiliser une couche adulte ou adolescent. Si la couche risque de déborder, changez-la dans la nuit et pesez chaque couche : additionnez et notez le total. Vous pouvez terminer la partie du jour et compléter la nuit le lendemain matin.'],'sh.volh':['Meça sempre o volume. Se precisar, escreva a observação (por exemplo: evacuou junto).','Always measure the volume. If needed, add a note (for example: had a bowel movement too).','Mesurez toujours le volume. Si besoin, ajoutez une remarque (par exemple : a aussi fait des selles).'],'sh.volerr':['Informe o volume em mL (entre 1 e 1500).','Enter the volume in mL (1 to 1500).','Indiquez le volume en mL (de 1 à 1500).'],'sh.liqh':['Anote todos os líquidos que a criança beber (água, leite, suco, vitamina, sopa etc.). Não é preciso dizer o que foi: só o volume.','Record every drink the child has (water, milk, juice, smoothie, soup, etc.). You do not need to say what it was, only the volume.','Notez tous les liquides bus par l’enfant (eau, lait, jus, smoothie, soupe, etc.). Inutile de préciser lesquels : seulement le volume.'],'lang':['Idioma','Language','Langue']
 };
 
 /* ===== app dos pais ===== */
@@ -686,8 +687,8 @@ function hdrP(){
 }
 function footP(){
  const n=S.outbox.length;
- const st=S.token?(n?'<span class="sem y"><i aria-hidden="true">…</i>'+(flushing?t('f.sending')+'<span class="dots"></span>':t(n>1?'f.sendn':'f.send1',n))+'</span>':'<span class="sem g"><i aria-hidden="true">✓</i>'+t('f.sent')+'</span>'):'';
- return '<div class="foot">'+(st?'<div style="margin-bottom:8px">'+st+'</div>':'')+(S.authBad?'<div class="note" style="margin-bottom:8px">'+t('f.auth')+'</div>':'')+t('f.brand')+' · <a href="'+IG_URL+'" target="_blank" rel="noopener">@drdomingosbica</a><br><span style="opacity:.8">'+t('f.ver')+' '+APP_V+'</span></div>'}
+ const st=S.token?(n?'<span class="sem y"><i aria-hidden="true">…</i>'+(flushing?t('f.sending')+'<span class="dots"></span>':t(n>1?'f.sendn':'f.send1',n))+'</span>':''):'';
+ return (S.token?'<div class="body" style="padding-top:0;padding-bottom:0">'+contactCard()+'</div>':'')+'<div class="foot">'+(st?'<div style="margin-bottom:8px">'+st+'</div>':'')+(S.authBad?'<div class="note" style="margin-bottom:8px">'+t('f.auth')+'</div>':'')+t('f.brand')+' · <a href="'+IG_URL+'" target="_blank" rel="noopener">@drdomingosbica</a><br><span style="opacity:.8">'+t('f.ver')+' '+APP_V+'</span></div>'}
 function stepper(path,min,max){return '<div class="stepper"><button type="button" data-a="st" data-p="'+path+'" data-d="-1" data-min="'+min+'" data-max="'+max+'" aria-label="'+t('less')+'">−</button><output data-bind="'+path+'">'+get(path)+'</output><button type="button" data-a="st" data-p="'+path+'" data-d="1" data-min="'+min+'" data-max="'+max+'" aria-label="'+t('more')+'">+</button></div>'}
 function nextSat(){let d=TODAY;while(d.getDay()!==6)d=add(d,1);return d}
 const chipB=(a,k,v,txt,on)=>'<button type="button" class="chip" data-a="'+a+'" data-k="'+k+'" data-v="'+v+'" aria-pressed="'+on+'">'+txt+'</button>';
@@ -728,7 +729,7 @@ function viewDx(){
  h+='<div class="card flat"><h3>'+t('dx.how')+'</h3><ol style="margin:8px 0 0;padding-left:20px;color:var(--ink2);font-size:14px;display:flex;flex-direction:column;gap:6px">'+['dx.h1','dx.h2','dx.h3','dx.h4','dx.h5','dx.h6'].map(k=>'<li>'+t(k)+'</li>').join('')+'<li>'+t(nightDx?'dx.h7a':'dx.h7b')+'</li></ol></div>';
  if(inTr)return h+'<div class="note">'+t('dx.n1')+'</div><div class="note">'+t('dx.n2')+'</div></div>';
  h+='<div class="menu">'+lockedItem('🌙',t('mn.cal'))+((hasMod('d')||hasMod('i'))?lockedItem('📋',t('mn.week')):'')+lockedItem('⏰',t('mn.dev'))+
-  '<button class="mi" data-a="go" data-v="info"><span class="ic">ℹ️</span><span style="flex:1"><div class="t">'+t('mn.info')+'</div><div class="d">'+t('mn.infod')+'</div></span></button>'+
+  lockedItem('ℹ️',t('mn.info'))+
   '<button class="mi" data-a="go" data-v="help"><span class="ic">❓</span><span style="flex:1"><div class="t">'+t('mn.help')+'</div><div class="d">'+t('mn.helpd')+'</div></span></button></div>';
  h+='<div class="note">'+t('dx.n1')+'</div><div class="note">'+t('dx.n2')+'</div></div>';
  return h;
@@ -737,10 +738,10 @@ const dxNight=()=>((S.cfg&&S.cfg.dx&&S.cfg.dx.tipo)||'inicial')==='inicial'&&has
 function viewDiary(){
  const d=S.dx,mic=d.mic.slice().sort((a,b)=>a[0]<b[0]?-1:1),tot=mic.reduce((s,x)=>s+(x[1]||0),0),liq=d.liq.reduce((s,x)=>s+x[1],0);
  return '<div class="body"><button class="back" data-a="go" data-v="dx">'+t('back')+'</button><div><h2>'+t('dy.title',dxFeitos()+1,(S.cfg&&S.cfg.dx&&S.cfg.dx.n)||1)+'</h2><p class="lead">'+DL[P(d.data).getDay()]+', '+FY(P(d.data))+'</p></div>'+
- (d.retro?'<div class="note" style="border-color:var(--gold)">'+t('dy.retro')+'</div>':'<div class="note">'+t('dy.rem')+'</div>')+'<button class="btn block" data-a="sheet" data-v="mic">'+t('dy.addmic')+'</button><button class="btn block ghost" data-a="sheet" data-v="liq">'+t('dy.addliq')+'</button>'+
+ (d.retro?'<div class="note" style="border-color:var(--gold)">'+t('dy.retro')+'</div>':'')+'<div class="note">'+t('dy.rem')+'</div>'+'<button class="btn block" data-a="sheet" data-v="mic">'+t('dy.addmic')+'</button><button class="btn block ghost" data-a="sheet" data-v="liq">'+t('dy.addliq')+'</button>'+
  '<div class="card"><div class="row"><h3>'+t('dy.today')+'</h3><span class="sp"></span><span class="hint">'+mic.length+' '+t(mic.length===1?'dy.m1':'dy.mn')+' · '+tot+' mL · '+t('dy.liq')+' '+liq+' mL</span></div>'+
  (mic.length?'<div class="tw"><table class="t" style="margin-top:6px"><tr><th>'+t('dy.hour')+'</th><th>mL</th><th>'+t('dy.urg')+'</th><th>'+t('dy.loss')+'</th><th>'+t('dy.obs')+'</th></tr>'+mic.map(x=>'<tr><td>'+x[0]+'</td><td>'+(x[1]||t('dy.nm'))+'</td><td>'+VL(x[2])+'</td><td>'+VL(x[3])+'</td><td>'+esc(x[4]||'')+'</td></tr>').join('')+'</table></div>':'<p class="hint" style="margin-top:8px">'+t('dy.none')+'</p>')+'</div>'+
- (d.liq.length?'<div class="card"><h3>'+t('dy.liqt')+'</h3><div class="tw"><table class="t" style="margin-top:6px"><tr><th>'+t('dy.hour')+'</th><th>'+t('dy.what')+'</th><th>mL</th></tr>'+d.liq.map(x=>'<tr><td>'+(x[0]||'—')+'</td><td>'+esc(VL(x[2]||''))+'</td><td>'+x[1]+'</td></tr>').join('')+'</table></div></div>':'')+(dxNight()?'<div class="card"><h3>🌙 '+t('dy.night')+'</h3><p class="hint" style="margin:4px 0 8px">'+t('sh.fimnote')+'</p><div class="field"><label class="lbl" for="fg2">'+t('sh.fg')+'</label><input id="fg2" type="number" inputmode="numeric" class="in" data-i="dx.fim.g" value="'+esc(d.fim.g)+'"></div><div class="field"><label class="lbl" for="fm2">'+t('sh.fm')+'</label><input id="fm2" type="number" inputmode="numeric" class="in" data-i="dx.fim.m" value="'+esc(d.fim.m)+'"></div></div>':'')+'<button class="btn block gold" data-a="sheet" data-v="fim"'+(mic.length?'':' disabled')+'>'+t('dy.end')+'</button></div>';
+ (d.liq.length?'<div class="card"><h3>'+t('dy.liqt')+'</h3><div class="tw"><table class="t" style="margin-top:6px"><tr><th>'+t('dy.hour')+'</th><th>mL</th></tr>'+d.liq.map(x=>'<tr><td>'+(x[0]||'—')+'</td><td>'+x[1]+'</td></tr>').join('')+'</table></div></div>':'')+(dxNight()?'<div class="card"><h3>🌙 '+t('dy.night')+'</h3><div class="note" style="margin:8px 0">'+t('dy.nightx')+'</div><div class="field"><label class="lbl" for="fg2">'+t('sh.fg')+'</label><input id="fg2" type="number" inputmode="numeric" class="in" data-i="dx.fim.g" value="'+esc(d.fim.g)+'"></div><div class="field"><label class="lbl" for="fm2">'+t('sh.fm')+'</label><input id="fm2" type="number" inputmode="numeric" class="in" data-i="dx.fim.m" value="'+esc(d.fim.m)+'"></div></div>':'')+'<button class="btn block gold" data-a="sheet" data-v="fim"'+(mic.length?'':' disabled')+'>'+t('dy.end')+'</button></div>';
 }
 /* ----- tratamento ----- */
 const hasNight=k=>!!(S.nights[k]||(S.cfg&&S.cfg.nights&&S.cfg.nights[k]));
@@ -991,7 +992,7 @@ function viewInfo(){
  acc('🌿',t('in.hab'),ul([1,2,3,4,5,6,7].map(i=>t('in.h'+i))),false)+
  acc('⏰',t('in.wet'),'<p class="lead" style="margin-top:6px">'+t('dv.wst')+'</p>'+ul([1,2,3,4].map(i=>t('dv.ws'+i))),false)+
  acc('⌚',t('in.wobl'),'<p class="lead" style="margin-top:6px">'+t('dv.wbt')+'</p>'+ul([1,2,3,4,5].map(i=>t('dv.wb'+i))),false)+
- contactCard()+'</div>';
+ '</div>';
 }
 function sheetsP(){
  const sh=S.p.sheet;if(!sh)return'';let c='';
@@ -999,8 +1000,8 @@ function sheetsP(){
  if(sh.v==='night')c=sheetNight();
  else if(sh.v==='paper'){const x=S.dxp||(S.dxp={dt:'',bad:false}),mn=I(add(TODAY,-60)),mx=I(add(TODAY,-1));c='<h2>'+t('pp.t')+'</h2><p>'+t('pp.p')+'</p><div class="field"><label class="lbl" for="pd">'+t('pp.d')+'</label><input id="pd" type="date" class="in" min="'+mn+'" max="'+mx+'" data-i="dxp.dt" value="'+esc(x.dt)+'"></div>'+(x.bad?'<div class="note" style="border-color:var(--crit)">'+t('pp.bad')+'</div>':'')+'<button class="btn block" data-a="paperok">'+t('pp.go')+'</button>'+cancel}
  else if(sh.v==='rule')c='<h2>'+t('sh.rule',DL[TODAY.getDay()])+'</h2><p>'+t('sh.rulet')+'</p><label class="chk"><input type="checkbox" data-c="dx.ack"'+(S.dx.ack?' checked':'')+'><span>'+t('sh.rulec')+'</span></label><button class="btn block" data-a="ruleok"'+(S.dx.ack?'':' disabled')+'>'+t('sh.rulego')+'</button><button class="btn block ghost" data-a="sheet" data-v="">'+t('sh.ruleno')+'</button>';
- else if(sh.v==='mic'){const m=S.draft2;c='<h2>'+t('sh.mic')+'</h2><div class="field"><label class="lbl" for="mh">'+t('sh.time')+'</label><input id="mh" type="time" class="in" data-i="draft2.h" value="'+m.h+'"></div><div class="field"><label class="lbl" for="mv">'+t('sh.vol')+'</label><input id="mv" type="number" inputmode="numeric" class="in" data-i="draft2.v" value="'+(m.nm?'':m.v)+'" placeholder="'+t('sh.ex')+'"'+(m.nm?' disabled':'')+'></div><label class="chk"><input type="checkbox" data-c="draft2.nm"'+(m.nm?' checked':'')+'><span>'+t('sh.nm')+'</span></label><div><span class="lbl">'+t('sh.urg')+'</span><div class="chips">'+['ausente','+','++','+++'].map(u=>chipB('d2','u',u,VL(u),m.u===u)).join('')+'</div></div><div><span class="lbl">'+t('sh.leak')+'</span><div class="chips">'+['nenhuma','gotas','roupa íntima','roupa molhada'].map(u=>chipB('d2','p',u,VL(u),m.p===u)).join('')+'</div></div>'+(m.p!=='nenhuma'?'<div><span class="lbl">'+t('sh.pt')+'</span><div class="chips">'+['u','s','e'].map(u=>chipB('d2','pt',u,t('sh.pt.'+u),m.pt===u)).join('')+'</div></div>':'')+'<div class="field"><label class="lbl" for="mo">'+t('sh.obs')+'</label><input id="mo" class="in" data-i="draft2.o" value="'+esc(m.o||'')+'" placeholder="'+esc(t('sh.obsph'))+'"></div><button class="btn block" data-a="savemic">'+t('save')+'</button>'+cancel}
- else if(sh.v==='liq'){const m=S.draft3;c='<h2>'+t('sh.liq')+'</h2><div class="field"><label class="lbl" for="lh">'+t('sh.timeo')+'</label><input id="lh" type="time" class="in" data-i="draft3.h" value="'+m.h+'"></div><div><span class="lbl">'+t('sh.drank')+'</span><div class="chips">'+['Água','Suco','Leite','Refrigerante','Outro'].map(x=>'<button type="button" class="chip" data-a="d3t" data-v="'+x+'" aria-pressed="'+(m.t===x)+'">'+VL(x)+'</button>').join('')+'</div></div><div><span class="lbl">'+t('sh.qty')+'</span><div class="chips">'+[100,200,300,500].map(v=>'<button type="button" class="chip" data-a="d3" data-v="'+v+'" aria-pressed="'+(m.v===v&&!m.vv)+'">'+v+'</button>').join('')+'</div></div><div class="field"><label class="lbl" for="lv">'+t('sh.qtyt')+'</label><input id="lv" type="number" inputmode="numeric" class="in" data-i="draft3.vv" value="'+esc(m.vv||'')+'"></div><button class="btn block" data-a="saveliq">'+t('save')+'</button>'+cancel}
+ else if(sh.v==='mic'){const m=S.draft2;c='<h2>'+t('sh.mic')+'</h2><div class="field"><label class="lbl" for="mh">'+t('sh.time')+'</label><input id="mh" type="time" class="in" data-i="draft2.h" value="'+m.h+'"></div><div class="field"><label class="lbl" for="mv">'+t('sh.vol')+'</label><input id="mv" type="number" inputmode="numeric" class="in" data-i="draft2.v" value="'+esc(m.v)+'" placeholder="'+t('sh.ex')+'"></div><p class="hint" style="margin:-4px 0 4px">'+t('sh.volh')+'</p>'+(m.err?'<div class="note" style="border-color:var(--crit)">'+t('sh.volerr')+'</div>':'')+'<div><span class="lbl">'+t('sh.urg')+'</span><div class="chips">'+['ausente','+','++','+++'].map(u=>chipB('d2','u',u,VL(u),m.u===u)).join('')+'</div></div><div><span class="lbl">'+t('sh.leak')+'</span><div class="chips">'+['nenhuma','gotas','roupa íntima','roupa molhada'].map(u=>chipB('d2','p',u,VL(u),m.p===u)).join('')+'</div></div>'+(m.p!=='nenhuma'?'<div><span class="lbl">'+t('sh.pt')+'</span><div class="chips">'+['u','s','e'].map(u=>chipB('d2','pt',u,t('sh.pt.'+u),m.pt===u)).join('')+'</div></div>':'')+'<div class="field"><label class="lbl" for="mo">'+t('sh.obs')+'</label><input id="mo" class="in" data-i="draft2.o" value="'+esc(m.o||'')+'" placeholder="'+esc(t('sh.obsph'))+'"></div><button class="btn block" data-a="savemic">'+t('save')+'</button>'+cancel}
+ else if(sh.v==='liq'){const m=S.draft3;c='<h2>'+t('sh.liq')+'</h2><div class="field"><label class="lbl" for="lh">'+t('sh.timeo')+'</label><input id="lh" type="time" class="in" data-i="draft3.h" value="'+m.h+'"></div><div class="note">'+t('sh.liqh')+'</div><div><span class="lbl">'+t('sh.qty')+'</span><div class="chips">'+[50,100,150,200,250,300,350,400].map(v=>'<button type="button" class="chip" data-a="d3" data-v="'+v+'" aria-pressed="'+(m.v===v&&!m.vv)+'">'+v+'</button>').join('')+'</div></div><div class="field"><label class="lbl" for="lv">'+t('sh.qtyt')+'</label><input id="lv" type="number" inputmode="numeric" class="in" data-i="draft3.vv" value="'+esc(m.vv||'')+'"></div><button class="btn block" data-a="saveliq">'+t('save')+'</button>'+cancel}
  else if(sh.v==='sair')c='<h2>'+t('sh.out')+'</h2><p>'+t('sh.outt')+(S.outbox.length?t('sh.outl',S.outbox.length):'')+t('sh.outr')+'</p><button class="btn block" data-a="sairok">'+t('sh.outb')+'</button>'+cancel;
  else if(sh.v==='fim'){const f=S.dx.fim;
   c='<h2>'+t('sh.fim')+'</h2><div><span class="lbl">'+t('sh.fimq')+'</span><div class="chips">'+[['nao','sh.fimn'],['sim','sh.fims']].map(x=>chipB('fim','k',x[0],t(x[1]),f.q===x[0])).join('')+'</div></div>'+
@@ -1042,7 +1043,7 @@ function viewHelpP(){
  acc('📱',t('hp.dev'),'<p class="lead" style="margin-top:6px">'+t('hp.devt',esc(S.code||''))+'</p><button class="btn block ghost" style="margin-top:10px" data-a="sheet" data-v="sair">'+t('sh.outb')+'</button>',false)+
  acc('❓',t('hp.faq'),ul([1,2,3,4,5,6].map(i=>t('hp.f'+i))),false)+
  acc('🛠️',t('fb.t'),'<p class="hint" style="margin:4px 0 8px">'+t('fb.h')+'</p><textarea id="fb" class="in" rows="3" data-i="fb" placeholder="'+esc(t('fb.ph'))+'">'+esc(S.fb||'')+'</textarea><button class="btn block ghost" style="margin-top:10px" data-a="fbsend">'+t('fb.go')+'</button>',false)+
- contactCard()+'</div>';
+ '</div>';
 }
 function contactCard(){return '<div class="card">'+ct('💬',t('ct.t'))+'<div class="row wrap" style="margin-top:10px">'+waBtn()+agBtn()+'<a class="btn sm ghost" href="'+IG_URL+'" target="_blank" rel="noopener">'+t('ct.ig')+'</a></div></div>'}
 function devCards(){
@@ -1075,7 +1076,7 @@ function init(){
  const L=load()||{};
  S={code:L.code||'',token:L.token||'',papel:L.papel||'',cfg:L.cfg||null,nights:L.nights||{},weeks:L.weeks||{},notes:L.notes||[],outbox:L.outbox||[],
   dx:Object.assign(newDx(),L.dx||{}),nt:'',p:{screen:L.token?(L.screen||'menu'):'onb',share:!!L.share,hqs:L.hqs||'',inst:L.inst||'',cq:L.cq,cqs:L.cqs||''},ob:blankOb(),draft:draftBlank(),
-  draft2:{h:'12:00',v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''},draft3:{h:'12:00',v:0,t:'Água',vv:''},
+  draft2:{h:'12:00',v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''},draft3:{h:'12:00',v:0,t:'Outro',vv:''},
   st:{dt:I(TODAY),ok:false,bad:false},ntq:[],ag:{q:false,dt:'',bad:false},mq:{},dv:{it:Array(10).fill(null)},dvok:false,imp:{n:0,d:0,i:0},iq:{nw:'',dw:''},hq:{hp:'',hm:[],hn:'',hd:'',hi:'',hu:''},ckmsg:'',impok:false,ws:L.ws||{dias:3,av:0,sem:0,urg:0,troca:0,regra:5,evac:6,bris:4,fecal:0},cal:{y:TODAY.getFullYear(),m:TODAY.getMonth()},busy:false,authBad:false};
  if(S.cfg)applyCfg(S.cfg,true);
 }
@@ -1222,7 +1223,7 @@ const A={
   const d=S.dx;if(d.ativo)return 'norender';d.id='d'+uid();d.data=dt;d.ativo=true;d.retro=true;S.p.sheet=null;S.p.screen='diary';save();toTop()},
  ruleok(){const d=S.dx;S.p.sheet=null;d.id='d'+uid();d.data=I(TODAY);d.ativo=true;S.p.screen='diary';save();toTop()},
  dxfromtrat(){S.p.screen='dx';S.p.dxm=1;save();toTop()},
- sheet(d){S.p.sheet=d.v?{v:d.v}:null;if(d.v==='mic')S.draft2={h:S.dx.retro?'':now(),v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''};if(d.v==='liq')S.draft3={h:S.dx.retro?'':now(),v:0,t:'Água',vv:''};if(d.v==='fim')S.dx.fim={q:'',g:'',m:''};if(d.v==='paper'){S.dxp={dt:'',bad:false}}},
+ sheet(d){S.p.sheet=d.v?{v:d.v}:null;if(d.v==='mic')S.draft2={h:S.dx.retro?'':now(),v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''};if(d.v==='liq')S.draft3={h:S.dx.retro?'':now(),v:0,t:'Outro',vv:''};if(d.v==='fim')S.dx.fim={q:'',g:'',m:''};if(d.v==='paper'){S.dxp={dt:'',bad:false}}},
  night(d){openNight(d.v)},
  dr(d){S.draft[d.k]=d.v},
  drf(d){const f=S.draft.f,i=f.indexOf(d.v);i<0?f.push(d.v):f.splice(i,1)},
@@ -1240,7 +1241,7 @@ const A={
  d2(d){S.draft2[d.k]=(d.k==='pt'&&S.draft2.pt===d.v)?'':d.v;if(d.k==='p'&&d.v==='nenhuma')S.draft2.pt=''},
  d3(d){S.draft3.v=Number(d.v);S.draft3.vv=''},
  d3t(d){S.draft3.t=d.v},
- savemic(){const m=S.draft2,dx=S.dx;if(!/^\d{2}:\d{2}$/.test(m.h||''))return 'norender';const ml=m.nm?0:Math.round(Number(m.v)||0);
+ savemic(){const m=S.draft2,dx=S.dx;if(!/^\d{2}:\d{2}$/.test(m.h||''))return 'norender';const ml=Math.round(Number(m.v)||0);if(ml<1||ml>1500){m.err=true;return}
   dx.mic.push([m.h,ml,m.u,m.p,m.o||'']);
   queue('mic',{diario:dx.id,data:dx.data,hora:m.h,ml,urg:m.u,perda:m.p,pt:m.p==='nenhuma'?'':m.pt,obs:m.o||''});S.p.sheet=null;save()},
  saveliq(){const v=Math.round(Number(S.draft3.vv)||S.draft3.v);if(!v)return 'norender';const dx=S.dx;

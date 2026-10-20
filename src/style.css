@@ -172,8 +172,8 @@ input[type=date]::-webkit-date-and-time-value{text-align:left;min-height:1.2em}
 
 a.btn{text-decoration:none}
 
-h3.ct{display:flex;align-items:center;gap:8px;padding-bottom:6px;border-bottom:2px solid var(--gold);margin-bottom:4px}
-h3.ct span{font-size:1.15em;line-height:1}
+h3.ct{display:flex;align-items:center;gap:10px;margin-bottom:4px;color:var(--c-noite);font-size:19px}
+h3.ct span{font-size:1.35em;line-height:1}
 .day .st{font-weight:700;font-size:11px;margin-right:2px}
 .day .st.ok{color:var(--good)} .day .st.wn{color:#c98a00} .day .st.bad{color:var(--crit)}
 .dots::after{content:'';display:inline-block;width:1.2em;text-align:left;animation:dots 1.2s steps(4,end) infinite}
@@ -185,8 +185,9 @@ h3.ct span{font-size:1.15em;line-height:1}
 details.acc{padding:0}
 details.acc>summary{list-style:none;display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;font-size:16px}
 details.acc>summary::-webkit-details-marker{display:none}
-details.acc>summary b{flex:1;font-family:var(--serif,inherit);font-weight:600}
+details.acc>summary b{flex:1;font-family:var(--serif,inherit);font-weight:600;font-size:18px;color:var(--c-noite)}
+details.acc>summary .ic,details.acc>summary>span:first-child{font-size:22px}
 details.acc>summary::after{content:'›';font-size:22px;color:var(--muted);transition:transform .2s}
 details.acc[open]>summary::after{transform:rotate(90deg)}
-details.acc[open]>summary{border-bottom:2px solid var(--gold)}
+
 details.acc>.accb{padding:6px 16px 14px}
