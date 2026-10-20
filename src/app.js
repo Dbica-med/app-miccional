@@ -141,7 +141,7 @@ const A={
  hqsend(){const q=S.hq,o={};if(q.hp)o.hp=q.hp;if(q.hp==='s'&&q.hm.length)o.hm=q.hm.slice();if(q.hn!=='')o.hn=Number(q.hn);if(q.hd!=='')o.hd=Number(q.hd);if(q.hi)o.hi=q.hi;if(q.hu)o.hu=q.hu;if(!Object.keys(o).length)return 'norender';S.cfg.hq=1;queue('hist',o);S.p.screen='menu';save();toTop()},
  impset(d){S.imp[d.k]=Number(d.v)},
  impsend(){const ks=['n','d','i'].filter(k=>hasMod(k));if(!ks.every(k=>S.imp[k]>0))return 'norender';const o={};ks.forEach(k=>o[k]=S.imp[k]);if(S.iq.nw!=='')o.nw=Number(S.iq.nw);if(S.iq.dw!=='')o.dw=Number(S.iq.dw);S.iq={nw:'',dw:''};S.cfg.imp=I(TODAY);S.impok=true;S.imp={n:0,d:0,i:0};queue('imp',o);save()},
- usdone(){if(!S.cfg||!S.cfg.us)return 'norender';S.cfg.us.f=I(TODAY);queue('us',{});save()},
+ usdone(){if(!S.cfg||!S.cfg.us)return 'norender';const ud=S.usd||(S.usd={dt:''}),dt=ud.dt||I(TODAY),n=diff(TODAY,P(dt));if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)||n<0||n>120){ud.bad=true;return}ud.bad=false;ud.dt='';S.cfg.us.f=dt;queue('us',{dt:dt});save()},
  ob(d){S.ob[d.k]=d.k==='nd'?Number(d.v):d.v;S.ob.err=''},
  async obgo(){
   const o=S.ob;if(!obValid()||o.busy)return 'norender';
