@@ -3,7 +3,7 @@ let S;
 const get=p=>p.split('.').reduce((o,k)=>o==null?o:o[k],S);
 const set=(p,v)=>{const a=p.split('.'),l=a.pop();a.reduce((o,k)=>o[k],S)[l]=v};
 const KEY='mic.v1';
-const newDx=()=>({id:'',data:'',ativo:false,ack:false,mic:[],liq:[],fim:{q:'',g:'',m:''}});
+const newDx=()=>({id:'',data:'',ativo:false,ack:false,mic:[],liq:[],fim:{q:'',g:'',m:''},retro:false});
 const blankOb=()=>({code:'',dob:'',sx:'',papel:'',sit:'',termo:false,assent:false,cas:false,mn:false,md:false,nd:2,err:'',busy:false});
 const draftBlank=()=>({s:'',f:[],por:'c',rem:'',who:'',al:'',x:''});
 const now=()=>{const d=new Date();return p2(d.getHours())+':'+p2(d.getMinutes())};
@@ -161,9 +161,11 @@ const A={
   const d=S.dx;
   if(d.ativo||[0,6].includes(TODAY.getDay())||d.ack){if(!d.ativo){d.id='d'+uid();d.data=I(TODAY);d.ativo=true}S.p.screen='diary';save();toTop()}
   else S.p.sheet={v:'rule'}},
+ paperok(){const dt=(S.dxp&&S.dxp.dt)||'',ok=/^\d{4}-\d{2}-\d{2}$/.test(dt)&&diff(TODAY,P(dt))>=1&&diff(TODAY,P(dt))<=60;if(!ok){S.dxp.bad=true;return}
+  const d=S.dx;if(d.ativo)return 'norender';d.id='d'+uid();d.data=dt;d.ativo=true;d.retro=true;S.p.sheet=null;S.p.screen='diary';save();toTop()},
  ruleok(){const d=S.dx;S.p.sheet=null;d.id='d'+uid();d.data=I(TODAY);d.ativo=true;S.p.screen='diary';save();toTop()},
  dxfromtrat(){S.p.screen='dx';save();toTop()},
- sheet(d){S.p.sheet=d.v?{v:d.v}:null;if(d.v==='mic')S.draft2={h:now(),v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''};if(d.v==='liq')S.draft3={h:now(),v:0,t:'Água',vv:''};if(d.v==='fim')S.dx.fim={q:'',g:'',m:''}},
+ sheet(d){S.p.sheet=d.v?{v:d.v}:null;if(d.v==='mic')S.draft2={h:S.dx.retro?'':now(),v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''};if(d.v==='liq')S.draft3={h:S.dx.retro?'':now(),v:0,t:'Água',vv:''};if(d.v==='fim')S.dx.fim={q:'',g:'',m:''};if(d.v==='paper'){S.dxp={dt:'',bad:false}}},
  night(d){openNight(d.v)},
  dr(d){S.draft[d.k]=d.v},
  drf(d){const f=S.draft.f,i=f.indexOf(d.v);i<0?f.push(d.v):f.splice(i,1)},
@@ -181,7 +183,7 @@ const A={
  d2(d){S.draft2[d.k]=(d.k==='pt'&&S.draft2.pt===d.v)?'':d.v;if(d.k==='p'&&d.v==='nenhuma')S.draft2.pt=''},
  d3(d){S.draft3.v=Number(d.v);S.draft3.vv=''},
  d3t(d){S.draft3.t=d.v},
- savemic(){const m=S.draft2,dx=S.dx,ml=m.nm?0:Math.round(Number(m.v)||0);
+ savemic(){const m=S.draft2,dx=S.dx;if(!/^\d{2}:\d{2}$/.test(m.h||''))return 'norender';const ml=m.nm?0:Math.round(Number(m.v)||0);
   dx.mic.push([m.h,ml,m.u,m.p,m.o||'']);
   queue('mic',{diario:dx.id,data:dx.data,hora:m.h,ml,urg:m.u,perda:m.p,pt:m.p==='nenhuma'?'':m.pt,obs:m.o||''});S.p.sheet=null;save()},
  saveliq(){const v=Math.round(Number(S.draft3.vv)||S.draft3.v);if(!v)return 'norender';const dx=S.dx;
