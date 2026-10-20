@@ -215,7 +215,7 @@ details.acc>.accb{padding:6px 16px 14px}
 <script>
 /* Preencha API_URL com o endereço do programa do Google (termina em /exec) */
 const API_URL='https://script.google.com/macros/s/AKfycbxOjWwSj60sG7hnjUilc_hHmllMNoVv36OOzKeRVvDBodoyF36NVerPX-jxHn_pS4eX/exec';
-const APP_V='2.2';
+const APP_V='2.3';
 const TERMO_V='2026-10-v2';
 
 'use strict';
@@ -342,7 +342,7 @@ const M={
 'dx.h4':['<b>Neste dia, não peça nem lembre a criança de fazer xixi.</b> Ela deve urinar sozinha, quando sentir vontade. Só neste dia é proibido estimular. Você só anota.','<b>On this day, do not ask or remind the child to pee.</b> The child should go alone, when they feel the need. Only on this day, prompting is not allowed. You only write it down.','<b>Ce jour-là, ne demandez pas à l’enfant d’aller faire pipi et ne le lui rappelez pas.</b> Il doit uriner seul, quand il en ressent le besoin. Seulement ce jour-là, il est interdit de l’y inciter. Vous notez simplement.'],
 'dx.h5':['Mantenha o dia comum e a ingestão de líquidos habitual: <b>nem menos, nem mais</b> que o normal.','Keep the day ordinary and fluid intake usual: <b>neither less nor more</b> than normal.','Gardez une journée ordinaire et une consommation de liquides habituelle : <b>ni moins, ni plus</b> que d’habitude.'],
 'dx.h6':['Anote <b>tudo</b> que a criança beber durante o dia (água, suco, leite, sopa). O horário é opcional.','Write down <b>everything</b> the child drinks during the day (water, juice, milk, soup). The time is optional.','Notez <b>tout</b> ce que l’enfant boit pendant la journée (eau, jus, lait, soupe). L’heure est facultative.'],
-'dx.h7a':['Na noite do diário, coloque uma fralda e pese de manhã. Meça o primeiro xixi do dia seguinte.','On the night of the diary, put on a diaper and weigh it in the morning. Measure the first pee of the next day.','La nuit du journal, mettez une couche et pesez-la le matin. Mesurez la première miction du lendemain.'],
+'dx.h7a':['Na noite do diário, coloque uma fralda e pese de manhã. Meça o primeiro xixi do dia seguinte e lance os dois aqui, na manhã seguinte.','On the night of the diary, put on a diaper and weigh it in the morning. Measure the first pee of the next day.','La nuit du journal, mettez une couche et pesez-la le matin. Mesurez la première miction du lendemain.'],
 'dx.h7b':['O dia do diário vai do acordar até a criança dormir. Não é preciso pesar fralda.','The diary day runs from waking up until the child goes to sleep. There is no need to weigh a diaper.','La journée du journal va du réveil jusqu’au coucher de l’enfant. Inutile de peser la couche.'],
 'dx.n1':['O envio é automático. Cada registro vai para o Dr. Domingos assim que a internet estiver disponível.','Sending is automatic. Each record goes to Dr. Domingos as soon as there is internet.','L’envoi est automatique. Chaque enregistrement part vers le Dr Domingos dès qu’internet est disponible.'],
 'dx.n2':['Exames e laudos não precisam ser enviados pelo aplicativo. Entregue no consultório, e o Dr. Domingos lança as informações.','Exams and reports do not need to be sent through the app. Bring them to the office, and Dr. Domingos will enter the information.','Les examens et comptes rendus n’ont pas besoin d’être envoyés par l’application. Apportez-les au cabinet, et le Dr Domingos saisira les informations.'],
@@ -562,7 +562,7 @@ const M={
 'sh.outl':[' <b>Há {0} registro(s) ainda não enviados, que serão perdidos.</b>',' <b>{0} record(s) not yet sent will be lost.</b>',' <b>{0} enregistrement(s) non encore envoyés seront perdus.</b>'],
 'sh.outr':[' Para entrar de novo, será preciso o código e a data de nascimento.',' To sign in again, you will need the code and the date of birth.',' Pour vous reconnecter, il faudra le code et la date de naissance.'],'sh.outb':['Sair deste aparelho','Sign out of this device','Quitter cet appareil'],
 'sh.fim':['Encerrar o dia','End the day','Terminer la journée'],'sh.fimq':['Alguma micção ficou sem registro hoje?','Was any urination left unrecorded today?','Une miction est-elle restée sans enregistrement aujourd’hui ?'],'sh.fimn':['Não, registrei todas','No, I recorded them all','Non, je les ai toutes enregistrées'],'sh.fims':['Sim, alguma ficou sem registro','Yes, some were not recorded','Oui, certaines n’ont pas été enregistrées'],
-'sh.fimnote':['<b>Esta noite:</b> coloque uma fralda e pese de manhã. Meça o primeiro xixi do dia seguinte. (Na demonstração, você pode preencher agora.)','<b>Tonight:</b> put on a diaper and weigh it in the morning. Measure the first pee of the next day. (In the demo, you can fill this in now.)','<b>Cette nuit :</b> mettez une couche et pesez-la le matin. Mesurez la première miction du lendemain. (Dans la démonstration, vous pouvez remplir maintenant.)'],
+'sh.fimnote':['<b>Esta noite:</b> coloque uma fralda e pese de manhã. Meça o primeiro xixi do dia seguinte.','<b>Tonight:</b> put on a diaper and weigh it in the morning. Measure the first pee of the next day.','<b>Cette nuit :</b> mettez une couche et pesez-la le matin. Mesurez la première miction du lendemain.'],
 'sh.fg':['Peso da fralda (g)','Diaper weight (g)','Poids de la couche (g)'],'sh.fm':['Primeiro xixi da manhã (mL)','First pee of the morning (mL)','Première miction du matin (mL)'],
 'sh.fimfu':['Neste diário de acompanhamento, não é preciso pesar a fralda. O dia termina quando a criança for dormir.','In this follow-up diary there is no need to weigh the diaper. The day ends when the child goes to sleep.','Dans ce journal de suivi, inutile de peser la couche. La journée se termine au coucher de l’enfant.'],
 'sh.fimok':['Concluir diário','Finish diary','Terminer le journal'],
@@ -661,6 +661,10 @@ const M={
 'cal.st':['<b style="color:var(--good)">✔</b> criança e pais preencheram · <b style="color:#c98a00">!</b> falta uma parte · <b style="color:var(--crit)">!</b> noite sem registro','<b style="color:var(--good)">✔</b> child and parents done · <b style="color:#c98a00">!</b> one part missing · <b style="color:var(--crit)">!</b> night not recorded','<b style="color:var(--good)">✔</b> enfant et parents ont rempli · <b style="color:#c98a00">!</b> une partie manque · <b style="color:var(--crit)">!</b> nuit non notée'],
 'nt.kidonly':['Salvar só a parte da criança','Save only the child’s part','Enregistrer seulement la partie de l’enfant'],
 'f.sending':['Enviando','Sending','Envoi'],
+'dx.paper':['Já fiz um diário no papel','I already did a diary on paper','J’ai déjà fait un journal sur papier'],'dx.contp':['Continuar o diário do papel','Continue the paper diary','Continuer le journal papier'],
+'pp.t':['Diário feito no papel','Diary done on paper','Journal fait sur papier'],'pp.p':['Escolha o dia em que o diário foi feito. Depois, lance cada micção do papel, com o horário, o volume, a urgência e a perda, e os líquidos. No fim, informe a noite (fralda e 1º xixi).','Choose the day the diary was done. Then enter each urination from the paper, with time, volume, urgency and leakage, and the fluids. At the end, enter the night (diaper and first pee).','Choisissez le jour du journal. Puis saisissez chaque miction du papier, avec l’heure, le volume, l’urgence et la fuite, et les liquides. À la fin, indiquez la nuit (couche et 1re miction).'],
+'pp.d':['Dia do diário','Day of the diary','Jour du journal'],'pp.bad':['Escolha um dia entre ontem e 60 dias atrás.','Choose a day between yesterday and 60 days ago.','Choisissez un jour entre hier et il y a 60 jours.'],'pp.go':['Começar a lançar','Start entering','Commencer la saisie'],
+'dy.retro':['<b>Diário do papel.</b> Lance cada micção com o horário que está na folha. Os líquidos também.','<b>Paper diary.</b> Enter each urination with the time written on the sheet. Fluids too.','<b>Journal papier.</b> Saisissez chaque miction avec l’heure inscrite sur la feuille. Les liquides aussi.'],
 'lang':['Idioma','Language','Langue']
 };
 
@@ -717,7 +721,7 @@ function viewDx(){
  '<div class="card"><span class="sem y"><i aria-hidden="true">🔎</i>'+(seg?t('dx.title2'):t('dx.phase'))+'</span><p class="lead" style="margin-top:10px">'+t('dx.intro')+'</p></div>';
  h+='<div class="card"><h3>1 · '+t('dx.diaries')+'</h3><p class="lead" style="margin-top:6px">'+t(n===1?'dx.asked1':'dx.askedn',n)+(d.prazo?' '+t('dx.by',FY(P(d.prazo))):'')+'</p>'+(nightDx?'<p class="hint" style="margin-top:4px">'+t('dx.fr1')+'</p>':'')+
  '<div class="row wrap" style="gap:8px;margin-top:10px">'+Array.from({length:n},(_,i)=>sem(i<fe?'g':(i===fe&&S.dx.ativo?'y':'n'),t('dx.diary',i+1),i<fe?'✓':(i===fe&&S.dx.ativo?'…':'·'))).join('')+'</div>'+
- (done?'<p style="margin-top:12px">'+t('dx.done')+'</p>':'<p class="lead" style="margin-top:12px">'+t('dx.next',F(nextSat()))+'</p><button type="button" class="btn block" style="margin-top:12px" data-a="dxstart">'+(S.dx.ativo?t('dx.cont'):t('dx.start'))+'</button>')+'</div>';
+ (done?'<p style="margin-top:12px">'+t('dx.done')+'</p>':'<p class="lead" style="margin-top:12px">'+t('dx.next',F(nextSat()))+'</p><button type="button" class="btn block" style="margin-top:12px" data-a="dxstart">'+(S.dx.ativo?(S.dx.retro?t('dx.contp'):t('dx.cont')):t('dx.start'))+'</button>')+'</div>';
  if(us.p)h+='<div class="card"><h3>2 · '+t('dx.us')+'</h3>'+(us.f?'<p class="lead" style="margin-top:6px">'+t('dx.usdone',FY(P(us.f)))+'</p>':'<p class="lead" style="margin-top:6px">'+t('dx.usask')+'</p><button type="button" class="btn block ghost" style="margin-top:10px" data-a="usdone">'+t('dx.usbtn')+'</button>')+'</div>';
  {const k=checkCard();h+=k+(k.includes('data-v="agendei"')?'':retCard())}
  h+='<div class="card flat"><h3>'+t('dx.how')+'</h3><ol style="margin:8px 0 0;padding-left:20px;color:var(--ink2);font-size:14px;display:flex;flex-direction:column;gap:6px">'+['dx.h1','dx.h2','dx.h3','dx.h4','dx.h5','dx.h6'].map(k=>'<li>'+t(k)+'</li>').join('')+'<li>'+t(nightDx?'dx.h7a':'dx.h7b')+'</li></ol></div>';
@@ -730,8 +734,8 @@ function viewDx(){
 const dxNight=()=>((S.cfg&&S.cfg.dx&&S.cfg.dx.tipo)||'inicial')==='inicial'&&hasMod('n');
 function viewDiary(){
  const d=S.dx,mic=d.mic.slice().sort((a,b)=>a[0]<b[0]?-1:1),tot=mic.reduce((s,x)=>s+(x[1]||0),0),liq=d.liq.reduce((s,x)=>s+x[1],0);
- return '<div class="body"><button class="back" data-a="go" data-v="dx">'+t('back')+'</button><div><h2>'+t('dy.title',dxFeitos()+1,(S.cfg&&S.cfg.dx&&S.cfg.dx.n)||1)+'</h2><p class="lead">'+DL[TODAY.getDay()]+', '+FY(TODAY)+'</p></div>'+
- '<div class="note">'+t('dy.rem')+'</div><button class="btn block" data-a="sheet" data-v="mic">'+t('dy.addmic')+'</button><button class="btn block ghost" data-a="sheet" data-v="liq">'+t('dy.addliq')+'</button>'+
+ return '<div class="body"><button class="back" data-a="go" data-v="dx">'+t('back')+'</button><div><h2>'+t('dy.title',dxFeitos()+1,(S.cfg&&S.cfg.dx&&S.cfg.dx.n)||1)+'</h2><p class="lead">'+DL[P(d.data).getDay()]+', '+FY(P(d.data))+'</p></div>'+
+ (d.retro?'<div class="note" style="border-color:var(--gold)">'+t('dy.retro')+'</div>':'<div class="note">'+t('dy.rem')+'</div>')+'<button class="btn block" data-a="sheet" data-v="mic">'+t('dy.addmic')+'</button><button class="btn block ghost" data-a="sheet" data-v="liq">'+t('dy.addliq')+'</button>'+
  '<div class="card"><div class="row"><h3>'+t('dy.today')+'</h3><span class="sp"></span><span class="hint">'+mic.length+' '+t(mic.length===1?'dy.m1':'dy.mn')+' · '+tot+' mL · '+t('dy.liq')+' '+liq+' mL</span></div>'+
  (mic.length?'<div class="tw"><table class="t" style="margin-top:6px"><tr><th>'+t('dy.hour')+'</th><th>mL</th><th>'+t('dy.urg')+'</th><th>'+t('dy.loss')+'</th><th>'+t('dy.obs')+'</th></tr>'+mic.map(x=>'<tr><td>'+x[0]+'</td><td>'+(x[1]||t('dy.nm'))+'</td><td>'+VL(x[2])+'</td><td>'+VL(x[3])+'</td><td>'+esc(x[4]||'')+'</td></tr>').join('')+'</table></div>':'<p class="hint" style="margin-top:8px">'+t('dy.none')+'</p>')+'</div>'+
  (d.liq.length?'<div class="card"><h3>'+t('dy.liqt')+'</h3><div class="tw"><table class="t" style="margin-top:6px"><tr><th>'+t('dy.hour')+'</th><th>'+t('dy.what')+'</th><th>mL</th></tr>'+d.liq.map(x=>'<tr><td>'+(x[0]||'—')+'</td><td>'+esc(VL(x[2]||''))+'</td><td>'+x[1]+'</td></tr>').join('')+'</table></div></div>':'')+(dxNight()?'<div class="card"><h3>🌙 '+t('dy.night')+'</h3><p class="hint" style="margin:4px 0 8px">'+t('sh.fimnote')+'</p><div class="field"><label class="lbl" for="fg2">'+t('sh.fg')+'</label><input id="fg2" type="number" inputmode="numeric" class="in" data-i="dx.fim.g" value="'+esc(d.fim.g)+'"></div><div class="field"><label class="lbl" for="fm2">'+t('sh.fm')+'</label><input id="fm2" type="number" inputmode="numeric" class="in" data-i="dx.fim.m" value="'+esc(d.fim.m)+'"></div></div>':'')+'<button class="btn block gold" data-a="sheet" data-v="fim"'+(mic.length?'':' disabled')+'>'+t('dy.end')+'</button></div>';
@@ -989,6 +993,7 @@ function sheetsP(){
  const sh=S.p.sheet;if(!sh)return'';let c='';
  const cancel='<button class="btn block ghost" data-a="sheet" data-v="">'+t('cancel')+'</button>';
  if(sh.v==='night')c=sheetNight();
+ else if(sh.v==='paper'){const x=S.dxp||(S.dxp={dt:'',bad:false}),mn=I(add(TODAY,-60)),mx=I(add(TODAY,-1));c='<h2>'+t('pp.t')+'</h2><p>'+t('pp.p')+'</p><div class="field"><label class="lbl" for="pd">'+t('pp.d')+'</label><input id="pd" type="date" class="in" min="'+mn+'" max="'+mx+'" data-i="dxp.dt" value="'+esc(x.dt)+'"></div>'+(x.bad?'<div class="note" style="border-color:var(--crit)">'+t('pp.bad')+'</div>':'')+'<button class="btn block" data-a="paperok">'+t('pp.go')+'</button>'+cancel}
  else if(sh.v==='rule')c='<h2>'+t('sh.rule',DL[TODAY.getDay()])+'</h2><p>'+t('sh.rulet')+'</p><label class="chk"><input type="checkbox" data-c="dx.ack"'+(S.dx.ack?' checked':'')+'><span>'+t('sh.rulec')+'</span></label><button class="btn block" data-a="ruleok"'+(S.dx.ack?'':' disabled')+'>'+t('sh.rulego')+'</button><button class="btn block ghost" data-a="sheet" data-v="">'+t('sh.ruleno')+'</button>';
  else if(sh.v==='mic'){const m=S.draft2;c='<h2>'+t('sh.mic')+'</h2><div class="field"><label class="lbl" for="mh">'+t('sh.time')+'</label><input id="mh" type="time" class="in" data-i="draft2.h" value="'+m.h+'"></div><div class="field"><label class="lbl" for="mv">'+t('sh.vol')+'</label><input id="mv" type="number" inputmode="numeric" class="in" data-i="draft2.v" value="'+(m.nm?'':m.v)+'" placeholder="'+t('sh.ex')+'"'+(m.nm?' disabled':'')+'></div><label class="chk"><input type="checkbox" data-c="draft2.nm"'+(m.nm?' checked':'')+'><span>'+t('sh.nm')+'</span></label><div><span class="lbl">'+t('sh.urg')+'</span><div class="chips">'+['ausente','+','++','+++'].map(u=>chipB('d2','u',u,VL(u),m.u===u)).join('')+'</div></div><div><span class="lbl">'+t('sh.leak')+'</span><div class="chips">'+['nenhuma','gotas','roupa íntima','roupa molhada'].map(u=>chipB('d2','p',u,VL(u),m.p===u)).join('')+'</div></div>'+(m.p!=='nenhuma'?'<div><span class="lbl">'+t('sh.pt')+'</span><div class="chips">'+['u','s','e'].map(u=>chipB('d2','pt',u,t('sh.pt.'+u),m.pt===u)).join('')+'</div></div>':'')+'<div class="field"><label class="lbl" for="mo">'+t('sh.obs')+'</label><input id="mo" class="in" data-i="draft2.o" value="'+esc(m.o||'')+'" placeholder="'+esc(t('sh.obsph'))+'"></div><button class="btn block" data-a="savemic">'+t('save')+'</button>'+cancel}
  else if(sh.v==='liq'){const m=S.draft3;c='<h2>'+t('sh.liq')+'</h2><div class="field"><label class="lbl" for="lh">'+t('sh.timeo')+'</label><input id="lh" type="time" class="in" data-i="draft3.h" value="'+m.h+'"></div><div><span class="lbl">'+t('sh.drank')+'</span><div class="chips">'+['Água','Suco','Leite','Refrigerante','Outro'].map(x=>'<button type="button" class="chip" data-a="d3t" data-v="'+x+'" aria-pressed="'+(m.t===x)+'">'+VL(x)+'</button>').join('')+'</div></div><div><span class="lbl">'+t('sh.qty')+'</span><div class="chips">'+[100,200,300,500].map(v=>'<button type="button" class="chip" data-a="d3" data-v="'+v+'" aria-pressed="'+(m.v===v&&!m.vv)+'">'+v+'</button>').join('')+'</div></div><div class="field"><label class="lbl" for="lv">'+t('sh.qtyt')+'</label><input id="lv" type="number" inputmode="numeric" class="in" data-i="draft3.vv" value="'+esc(m.vv||'')+'"></div><button class="btn block" data-a="saveliq">'+t('save')+'</button>'+cancel}
@@ -1051,7 +1056,7 @@ let S;
 const get=p=>p.split('.').reduce((o,k)=>o==null?o:o[k],S);
 const set=(p,v)=>{const a=p.split('.'),l=a.pop();a.reduce((o,k)=>o[k],S)[l]=v};
 const KEY='mic.v1';
-const newDx=()=>({id:'',data:'',ativo:false,ack:false,mic:[],liq:[],fim:{q:'',g:'',m:''}});
+const newDx=()=>({id:'',data:'',ativo:false,ack:false,mic:[],liq:[],fim:{q:'',g:'',m:''},retro:false});
 const blankOb=()=>({code:'',dob:'',sx:'',papel:'',sit:'',termo:false,assent:false,cas:false,mn:false,md:false,nd:2,err:'',busy:false});
 const draftBlank=()=>({s:'',f:[],por:'c',rem:'',who:'',al:'',x:''});
 const now=()=>{const d=new Date();return p2(d.getHours())+':'+p2(d.getMinutes())};
@@ -1209,9 +1214,11 @@ const A={
   const d=S.dx;
   if(d.ativo||[0,6].includes(TODAY.getDay())||d.ack){if(!d.ativo){d.id='d'+uid();d.data=I(TODAY);d.ativo=true}S.p.screen='diary';save();toTop()}
   else S.p.sheet={v:'rule'}},
+ paperok(){const dt=(S.dxp&&S.dxp.dt)||'',ok=/^\d{4}-\d{2}-\d{2}$/.test(dt)&&diff(TODAY,P(dt))>=1&&diff(TODAY,P(dt))<=60;if(!ok){S.dxp.bad=true;return}
+  const d=S.dx;if(d.ativo)return 'norender';d.id='d'+uid();d.data=dt;d.ativo=true;d.retro=true;S.p.sheet=null;S.p.screen='diary';save();toTop()},
  ruleok(){const d=S.dx;S.p.sheet=null;d.id='d'+uid();d.data=I(TODAY);d.ativo=true;S.p.screen='diary';save();toTop()},
  dxfromtrat(){S.p.screen='dx';save();toTop()},
- sheet(d){S.p.sheet=d.v?{v:d.v}:null;if(d.v==='mic')S.draft2={h:now(),v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''};if(d.v==='liq')S.draft3={h:now(),v:0,t:'Água',vv:''};if(d.v==='fim')S.dx.fim={q:'',g:'',m:''}},
+ sheet(d){S.p.sheet=d.v?{v:d.v}:null;if(d.v==='mic')S.draft2={h:S.dx.retro?'':now(),v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''};if(d.v==='liq')S.draft3={h:S.dx.retro?'':now(),v:0,t:'Água',vv:''};if(d.v==='fim')S.dx.fim={q:'',g:'',m:''};if(d.v==='paper'){S.dxp={dt:'',bad:false}}},
  night(d){openNight(d.v)},
  dr(d){S.draft[d.k]=d.v},
  drf(d){const f=S.draft.f,i=f.indexOf(d.v);i<0?f.push(d.v):f.splice(i,1)},
@@ -1229,7 +1236,7 @@ const A={
  d2(d){S.draft2[d.k]=(d.k==='pt'&&S.draft2.pt===d.v)?'':d.v;if(d.k==='p'&&d.v==='nenhuma')S.draft2.pt=''},
  d3(d){S.draft3.v=Number(d.v);S.draft3.vv=''},
  d3t(d){S.draft3.t=d.v},
- savemic(){const m=S.draft2,dx=S.dx,ml=m.nm?0:Math.round(Number(m.v)||0);
+ savemic(){const m=S.draft2,dx=S.dx;if(!/^\d{2}:\d{2}$/.test(m.h||''))return 'norender';const ml=m.nm?0:Math.round(Number(m.v)||0);
   dx.mic.push([m.h,ml,m.u,m.p,m.o||'']);
   queue('mic',{diario:dx.id,data:dx.data,hora:m.h,ml,urg:m.u,perda:m.p,pt:m.p==='nenhuma'?'':m.pt,obs:m.o||''});S.p.sheet=null;save()},
  saveliq(){const v=Math.round(Number(S.draft3.vv)||S.draft3.v);if(!v)return 'norender';const dx=S.dx;
