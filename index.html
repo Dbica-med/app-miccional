@@ -222,7 +222,7 @@ details.acc>.accb{padding:6px 16px 14px}
 <script>
 /* Preencha API_URL com o endereço do programa do Google (termina em /exec) */
 const API_URL='https://script.google.com/macros/s/AKfycbxOjWwSj60sG7hnjUilc_hHmllMNoVv36OOzKeRVvDBodoyF36NVerPX-jxHn_pS4eX/exec';
-const APP_V='2.5';
+const APP_V='2.6';
 const TERMO_V='2026-10-v2';
 
 'use strict';
@@ -277,6 +277,12 @@ const M={
 'v.ausente':['ausente','none','aucune'],'v.nenhuma':['nenhuma','none','aucune'],'v.gotas':['gotas','drops','gouttes'],'v.roupa íntima':['roupa íntima','underwear','sous-vêtements'],'v.roupa molhada':['roupa molhada','wet clothes','vêtements mouillés'],
 'v.Água':['Água','Water','Eau'],'v.Suco':['Suco','Juice','Jus'],'v.Leite':['Leite','Milk','Lait'],'v.Refrigerante':['Refrigerante','Soda','Soda'],'v.Outro':['Outro','Other','Autre'],
 /* símbolos e motivos do calendário */
+'fr.seca':['Fralda seca (noite seca)','Dry diaper (dry night)','Couche sèche (nuit sèche)'],'fr.pouco':['Fralda só um pouco úmida','Diaper only slightly damp','Couche seulement un peu humide'],'fr.umida':['Fralda molhada (xixi durante o sono)','Wet diaper (wet during sleep)','Couche mouillée (pipi pendant le sommeil)'],
+'nt.fr':['<b>🌙 Como estava a noite?</b> Anote de manhã como estava a fralda (ou a cama, se a criança já dorme sem fralda).','<b>🌙 How was the night?</b> Note in the morning how the diaper was (or the bed, if the child no longer wears one).','<b>🌙 Comment était la nuit ?</b> Notez le matin l’état de la couche (ou du lit).'],
+'cal.frk':['Fralda da noite','Night-time diaper','Couche de nuit'],'cal.frp':['Anote de manhã se a fralda estava seca, só um pouco úmida ou molhada.','Note in the morning whether the diaper was dry, slightly damp or wet.','Notez le matin si la couche était sèche, un peu humide ou mouillée.'],
+'cal.frst':['<b style="color:var(--good)">✔</b> noite registrada · <b style="color:var(--crit)">!</b> noite sem registro','<b style="color:var(--good)">✔</b> night recorded · <b style="color:var(--crit)">!</b> night not recorded','<b style="color:var(--good)">✔</b> nuit enregistrée · <b style="color:var(--crit)">!</b> nuit non enregistrée'],
+'cal.frt1':['Anotar todas as manhãs leva poucos segundos e mostra se o tratamento está funcionando.','Noting it every morning takes a few seconds and shows whether the treatment is working.','Le noter chaque matin prend quelques secondes et montre si le traitement fonctionne.'],
+'cal.frt2':['Nesta idade é comum a criança ainda usar fralda à noite. Anotem do jeito que estiver, sem cobrar a criança.','At this age it is common to still wear a diaper at night. Just record what you find, without pressuring the child.','À cet âge, il est courant de porter encore une couche la nuit. Notez simplement, sans mettre la pression.'],
 'sym.seca':['Noite seca','Dry night','Nuit sèche'],'sym.umida':['Xixi durante o sono','Wet during sleep','Pipi pendant le sommeil'],'sym.pouco':['Molhou só um pouquinho','Only a little wet','Un tout petit peu mouillé'],'sym.acordou':['Acordou sozinho para fazer xixi','Woke up alone to pee','S’est réveillé seul pour faire pipi'],
 'raz.liquido':['Bebeu líquido antes de deitar','Drank fluids before bed','A bu avant de se coucher'],'raz.tarde':['Dormiu tarde','Went to bed late','S’est couché tard'],'raz.viagem':['Viagem ou festa','Trip or party','Voyage ou fête'],'raz.ar':['Ar-condicionado ou ventilador','Air conditioning or fan','Climatisation ou ventilateur'],'raz.estresse':['Estresse','Stress','Stress'],'raz.doenca':['Doença','Illness','Maladie'],'raz.outro':['Outro','Other','Autre'],
 /* gerais */
@@ -688,14 +694,14 @@ const M={
 };
 
 /* ===== app dos pais ===== */
-const SYM={seca:['☀️','sym.seca'],umida:['<span style="font-size:1.35em">☁️</span>','sym.umida'],pouco:['☀️<span style="font-size:.55em">☁️</span>','sym.pouco'],acordou:['🌙','sym.acordou']};
+const FRK={seca:'fr.seca',pouco:'fr.pouco',umida:'fr.umida'},SYM={seca:['☀️','sym.seca'],umida:['<span style="font-size:1.35em">☁️</span>','sym.umida'],pouco:['☀️<span style="font-size:.55em">☁️</span>','sym.pouco'],acordou:['🌙','sym.acordou']};
 const RAZ=['liquido','tarde','viagem','ar','estresse','doenca','outro'];
 const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]/g,'').toUpperCase();
 const WA_URL='https://wa.me/5521984814150?text=Ol%C3%A1!%20Contato%20pelo%20App-Miccional%20do%20Dr.%20Domingos',AGENDA_URL='https://www.urologistapediatrico.com/agenda-online-drbica',IG_URL='https://www.instagram.com/drdomingosbica';
 const waBtn=()=>'<a class="btn sm" href="'+WA_URL+'" target="_blank" rel="noopener">💬 '+t('ct.wa')+'</a>',agBtn=()=>'<a class="btn sm ghost" href="'+AGENDA_URL+'" target="_blank" rel="noopener">📅 '+t('ct.ag')+'</a>';
 const bookBox=()=>'<p class="hint" style="margin:6px 0">'+t('rc.book')+'</p><div class="row wrap">'+waBtn()+agBtn()+'</div>';
 const NOTEQ=['viagem','estresse','remedio','doente','tarde','liquido','ar','rotina'];
-const hasMod=m=>(S.p.mods||[]).includes(m);
+const hasMod=m=>(S.p.mods||[]).includes(m),isFr=()=>hasMod('f')&&!S.p.adol;
 function sem(c,txt,ic){return '<span class="sem '+c+'"><i aria-hidden="true">'+ic+'</i>'+txt+'</span>'}
 const ul=a=>'<ul style="margin:8px 0 0;padding-left:20px;color:var(--ink2);display:flex;flex-direction:column;gap:6px">'+a.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
 const ONB_LANGS=()=>'<div class="lang" role="group" aria-label="'+t('lang')+'">'+LANGS.map(l=>'<button type="button" data-a="lang" data-v="'+l+'" aria-pressed="'+(LANG===l)+'">'+LNAME[l]+'</button>').join('')+'</div>';
@@ -963,16 +969,16 @@ function viewCal(){
  const prev=new Date(y,m,1,12)>new Date(start.getFullYear(),start.getMonth(),1,12),next=!(y===TODAY.getFullYear()&&m>=TODAY.getMonth());
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><div class="row"><button class="chip" data-a="cm" data-v="-1"'+(prev?'':' disabled')+' aria-label="'+t('cal.prev')+'">‹</button><h2 class="sp" style="text-align:center;text-transform:capitalize">'+MN[m]+' '+y+'</h2><button class="chip" data-a="cm" data-v="1"'+(next?'':' disabled')+' aria-label="'+t('cal.next')+'">›</button></div>'+
  '<div class="cal">'+DS.map(x=>'<div class="h">'+x+'</div>').join('')+cells+'</div>'+
- '<div class="card" style="border-color:var(--gold);margin-top:12px"><span class="lbl">🧒 '+t('cal.kid')+'</span><p class="hint" style="margin:2px 0 8px">'+t('cal.kidp')+'</p><div class="legend">'+Object.values(SYM).map(x=>'<span>'+x[0]+' '+t(x[1])+'</span>').join('')+'</div></div>'+
- '<p class="hint" style="margin:10px 2px">'+t('cal.st')+'</p><div class="card flat" style="margin-top:16px;border-top:3px solid var(--line)"><span class="lbl">👨‍👩‍👧 '+t('cal.par')+'</span><div class="legend" style="margin-top:6px"><span>'+t('cal.med')+'</span><span>'+t('cal.diff')+'</span></div></div>'+
- '<div class="card flat"><h3>'+t('cal.tips')+'</h3>'+ul([1,2,3,4].map(i=>t('cal.t'+i)))+'</div></div>';
+ '<div class="card" style="border-color:var(--gold);margin-top:12px"><span class="lbl">'+(isFr()?'🌙 '+t('cal.frk'):'🧒 '+t('cal.kid'))+'</span><p class="hint" style="margin:2px 0 8px">'+t(isFr()?'cal.frp':'cal.kidp')+'</p><div class="legend">'+Object.entries(SYM).map(([s,x])=>'<span>'+x[0]+' '+t(isFr()&&FRK[s]?FRK[s]:x[1])+'</span>').join('')+'</div></div>'+
+ '<p class="hint" style="margin:10px 2px">'+t(isFr()?'cal.frst':'cal.st')+'</p><div class="card flat" style="margin-top:16px;border-top:3px solid var(--line)"><span class="lbl">👨‍👩‍👧 '+t('cal.par')+'</span><div class="legend" style="margin-top:6px"><span>'+t('cal.med')+'</span><span>'+t('cal.diff')+'</span></div></div>'+
+ '<div class="card flat"><h3>'+t('cal.tips')+'</h3>'+ul((isFr()?['frt1','frt2']:[1,2,3,4]).map(i=>t('cal.t'+i)))+'</div></div>';
 }
 function sheetNight(){
- const k=S.p.sheet.k,d=P(k),n=S.nights[k],dr=S.draft,adol=S.p.adol,step=adol?0:(S.p.sheet.step||1);
+ const k=S.p.sheet.k,d=P(k),n=S.nights[k],dr=S.draft,adol=S.p.adol,fr=isFr(),step=(adol||fr)?0:(S.p.sheet.step||1);
  const title='<h2>'+t('nt.title',DS[d.getDay()],F(d))+'</h2>';
  if(!n&&S.p.cas&&S.cfg&&S.cfg.nights&&S.cfg.nights[k])return title+'<p>'+t('nt.other')+'</p><button class="btn block" data-a="sheet" data-v="">'+t('close')+'</button>';
  const chip=(a,k,v,tx,on)=>chipB(a,k,v,tx,on);
- const child='<div class="note" style="border-color:var(--gold)">'+t('nt.child')+'</div><div><span class="lbl">'+t('nt.how')+'</span><div class="big">'+Object.keys(SYM).map(s=>'<button type="button" class="sym" data-a="dr" data-k="s" data-v="'+s+'" aria-pressed="'+(dr.s===s)+'"><b>'+SYM[s][0]+'</b>'+t(SYM[s][1])+'</button>').join('')+'</div></div>'+(adol?'':'<div class="row"><span class="hint">'+t('nt.who')+'</span>'+chip('drp','k','c',t('nt.kid'),dr.por==='c')+chip('drp','k','r',t('nt.guard'),dr.por==='r')+'</div>');
+ const child='<div class="note" style="border-color:var(--gold)">'+t(fr?'nt.fr':'nt.child')+'</div><div><span class="lbl">'+t('nt.how')+'</span><div class="big">'+Object.keys(SYM).map(s=>'<button type="button" class="sym" data-a="dr" data-k="s" data-v="'+s+'" aria-pressed="'+(dr.s===s)+'"><b>'+SYM[s][0]+'</b>'+t(fr&&FRK[s]?FRK[s]:SYM[s][1])+'</button>').join('')+'</div></div>'+(adol||fr?'':'<div class="row"><span class="hint">'+t('nt.who')+'</span>'+chip('drp','k','c',t('nt.kid'),dr.por==='c')+chip('drp','k','r',t('nt.guard'),dr.por==='r')+'</div>');
  const par=(adol?'':'<div><span class="lbl">'+t('nt.resp')+'</span><div class="chips">'+[['mae','ob.mae'],['pai','ob.pai'],['outro','ob.outro']].map(x=>chip('dr','who',x[0],t(x[1]),dr.who===x[0])).join('')+'</div></div>')+
   '<div><span class="lbl">'+t('nt.med')+'</span><div class="chips">'+[['sim','nt.yes'],['nao','nt.no'],['na','nt.na']].map(x=>chip('dr','rem',x[0],t(x[1]),dr.rem===x[0])).join('')+'</div></div>'+
   (alarmOn(k)?'<div><span class="lbl">'+t('nt.alarm')+'</span><div class="chips">'+[['t','nt.a1'],['n','nt.a2'],['z','nt.z'],['x','nt.a3']].map(x=>chip('dr','al',x[0],t(x[1]),dr.al===x[0])).join('')+'</div></div>':'')+
@@ -980,6 +986,7 @@ function sheetNight(){
   '<div><label class="lbl" for="nx">'+t('no.opt')+'</label><textarea id="nx" class="in" rows="2" data-i="draft.x" placeholder="'+esc(t('no.ph'))+'">'+esc(dr.x||'')+'</textarea><p class="hint" style="margin-top:4px">'+t('no.names')+'</p></div>';
  const cancel='<button class="btn block ghost" data-a="sheet" data-v="">'+t('cancel')+'</button>';
  if(adol)return title+child+par+'<button class="btn block" data-a="savenight"'+(dr.s&&dr.rem?'':' disabled')+'>'+t('save')+'</button>'+cancel;
+ if(fr)return title+child+par+'<button class="btn block" data-a="savenight"'+(dr.s&&dr.rem&&dr.who?'':' disabled')+'>'+t('save')+'</button>'+cancel;
  if(step===1)return title+'<span class="hint">'+t('nt.step1')+'</span>'+child+'<button class="btn block" data-a="nstep" data-v="2"'+(dr.s?'':' disabled')+'>'+t('nt.cont')+'</button><button class="btn block ghost" data-a="savekid"'+(dr.s?'':' disabled')+'>'+t('nt.kidonly')+'</button>'+cancel;
  return title+'<span class="hint">'+t('nt.step2')+'</span><p class="lead">'+t('nt.draw')+'<b style="font-size:1.1em">'+SYM[dr.s][0]+'</b> '+t(SYM[dr.s][1])+'</p>'+par+'<button class="btn block" data-a="savenight"'+(dr.rem&&dr.who?'':' disabled')+'>'+t('save')+'</button><button class="btn block ghost" data-a="nstep" data-v="1">'+t('nt.back')+'</button>';
 }
@@ -1163,7 +1170,8 @@ function openNight(k){
  const n=S.nights[k];
  S.draft=n?{s:n.s,f:n.f.filter(x=>x!=='med'),por:n.por,al:n.al||'',rem:n.f.includes('med')?'nao':(n.rem||(S.p.adol?'sim':'')),who:n.who||(n.h==='P'?'pai':(S.papel==='pai'?'pai':'mae'))}:Object.assign(draftBlank(),{who:S.papel==='pai'?'pai':(S.papel==='mae'?'mae':'')});
  if(S.p.adol)S.draft.who='adol';
- S.p.sheet={v:'night',k,step:(n&&!n.rem&&!S.p.adol)?2:1};
+ if(isFr())S.draft.por='r';
+ S.p.sheet={v:'night',k,step:(n&&!n.rem&&!S.p.adol&&!isFr())?2:1};
 }
 function cqAch(){
  const a=[],ks=Object.keys(S.nights).sort(),dry=k=>S.nights[k]&&S.nights[k].s==='seca';
