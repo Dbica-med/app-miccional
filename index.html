@@ -111,7 +111,7 @@ a{color:inherit}
 .sym[aria-pressed="true"]{border-color:var(--sel-line);background:var(--sel)}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
 .cal .h{font-size:11px;font-weight:700;text-align:center;color:var(--muted);text-transform:uppercase;padding:2px 0}
-.day{aspect-ratio:1/1.12;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:3px 2px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;font-size:11px;color:var(--ink2);min-width:0}
+.day{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;aspect-ratio:1/1.12;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:3px 2px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;font-size:11px;color:var(--ink2);min-width:0}
 .day b{font-size:18px;line-height:1;font-weight:400}
 .day .fl{font-size:9px;line-height:1;min-height:9px}
 .day.off{opacity:.38}
@@ -222,7 +222,7 @@ details.acc>.accb{padding:6px 16px 14px}
 <script>
 /* Preencha API_URL com o endereço do programa do Google (termina em /exec) */
 const API_URL='https://script.google.com/macros/s/AKfycbxOjWwSj60sG7hnjUilc_hHmllMNoVv36OOzKeRVvDBodoyF36NVerPX-jxHn_pS4eX/exec';
-const APP_V='3.0';
+const APP_V='3.1';
 const TERMO_V='2026-10-v2';
 
 'use strict';
