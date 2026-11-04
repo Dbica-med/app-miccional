@@ -222,7 +222,7 @@ details.acc>.accb{padding:6px 16px 14px}
 <script>
 /* Preencha API_URL com o endereço do programa do Google (termina em /exec) */
 const API_URL='https://script.google.com/macros/s/AKfycbxOjWwSj60sG7hnjUilc_hHmllMNoVv36OOzKeRVvDBodoyF36NVerPX-jxHn_pS4eX/exec';
-const APP_V='2.9';
+const APP_V='3.0';
 const TERMO_V='2026-10-v2';
 
 'use strict';
@@ -372,7 +372,7 @@ const M={
 'dy.liqt':['Líquidos de hoje','Today’s fluids','Liquides d’aujourd’hui'],'dy.what':['O quê','What','Quoi'],
 'dy.end':['Encerrar o dia','End the day','Terminer la journée'],
 /* menu */
-'mn.cal':['Calendário do xixi','Pee calendar','Calendrier pipi'],'mn.calok':['Noite de ontem registrada','Last night recorded','Nuit d’hier enregistrée'],'mn.calno':['Falta registrar a noite de ontem','Last night is not recorded yet','Il manque la nuit d’hier'],
+'mn.cal0':['Toque para registrar as noites','Tap to record the nights','Touchez pour noter les nuits'],'mn.cal':['Calendário do xixi','Pee calendar','Calendrier pipi'],'mn.calok':['Noite de ontem registrada','Last night recorded','Nuit d’hier enregistrée'],'mn.calno':['Falta registrar a noite de ontem','Last night is not recorded yet','Il manque la nuit d’hier'],
 'mn.miss':[' · faltam {0} nos últimos 7 dias',' · {0} missing in the last 7 days',' · {0} manquantes ces 7 derniers jours'],
 'mn.uptodate':['Em dia','Up to date','À jour'],'mn.missn':['Faltam {0}','{0} missing','{0} manquantes'],'mn.miss1':['Falta','Missing','Manquant'],
 'mn.week':['Resumo semanal','Weekly summary','Résumé hebdomadaire'],'mn.weekd':['Semana de {0} a {1}','Week of {0} to {1}','Semaine du {0} au {1}'],'mn.sent':['Enviado','Sent','Envoyé'],'mn.pend':['Pendente','Pending','En attente'],
@@ -956,7 +956,7 @@ function viewMenu(){
  const wk=I(add(monday(TODAY),-7)),okW=!!(S.weeks[wk]||(S.cfg&&S.cfg.weeks.includes(wk)));
  const stars=Object.values(S.nights).filter(n=>n.por==='c').length;
  const mi=(a,v,ic,ti,de,badge)=>'<button class="mi" data-a="'+a+'" data-v="'+v+'"><span class="ic">'+ic+'</span><span style="flex:1"><div class="t">'+ti+'</div><div class="d">'+de+'</div></span>'+(badge||'')+'</button>';
- let items=mi('go','cal','🌙',t('mn.cal'),(okN?t('mn.calok'):t('mn.calno')),!miss?sem('g',t('mn.uptodate'),'✓'):sem('r',miss>1?t('mn.missn',miss):t('mn.miss1'),'!'));
+ let items=mi('go','cal','🌙',t('mn.cal'),(okN?t('mn.calok'):(miss?t('mn.calno'):t('mn.cal0'))),!miss?sem('g',t('mn.uptodate'),'✓'):sem('r',miss>1?t('mn.missn',miss):t('mn.miss1'),'!'));
  if(hasMod('d')||hasMod('i'))items+=mi('go','week','📋',t('mn.week'),t('mn.weekd',F(add(monday(TODAY),-7)),F(add(monday(TODAY),-1))),okW?sem('g',t('mn.sent'),'✓'):sem('r',t('mn.pend'),'!'));
  const dxc=S.cfg&&S.cfg.fase==='trat'&&S.cfg.dx&&dxFeitos()<S.cfg.dx.n?S.cfg.dx:null;
  if(dxc){const r=dxc.n-dxFeitos();items+=mi('dxfromtrat','','💧',t('mn.dia'),t(r>1?'mn.dian':'mn.dia1',r),sem('r',t('ms.badge',r),'!'))}
@@ -975,13 +975,13 @@ function viewMenu(){
 function viewCal(){
  const {y,m}=S.cal,start=calStart(),first=new Date(y,m,1,12),nd=new Date(y,m+1,0).getDate(),lead=first.getDay();
  let cells='';for(let i=0;i<lead;i++)cells+='<div></div>';
- for(let dd=1;dd<=nd;dd++){const d=new Date(y,m,dd,12),k=I(d),n=S.nights[k],sv=S.cfg&&S.cfg.nights?S.cfg.nights[k]:null,past=d<=add(TODAY,-1)&&d>=start,isT=I(d)===I(TODAY);
+ for(let dd=1;dd<=nd;dd++){const d=new Date(y,m,dd,12),k=I(d),n=S.nights[k],sv=S.cfg&&S.cfg.nights?S.cfg.nights[k]:null,past=d<=add(TODAY,-1)&&d>=start,tap=d<=add(TODAY,-1)&&d>=add(start,-7),isT=I(d)===I(TODAY);
   let sym='',fl='';
   if(!n&&sv){sym=sv.s?'<span style="font-size:17px;line-height:1">'+SYM[sv.s][0]+'</span>':'<span style="font-size:15px;color:var(--good)" title="'+t('cal.filled')+'">✔</span>'}
   else if(n){sym='<span style="font-size:17px;line-height:1">'+SYM[n.s][0]+'</span>';
    {const part=!S.p.adol&&!n.rem;fl='<span class="st '+(part?'wn':'ok')+'">'+(part?'!':'✔')+'</span>'+(n.f.includes('med')?'🔵':'')+(n.f.some(f=>f!=='med')?'🔺':'')}}
   if(!n&&!sv&&past)fl='<span class="st bad">!</span>';
-  cells+='<button type="button" class="day'+(past?' hit':' off')+(isT?' today':'')+(past&&!n&&!sv?' miss':'')+'"'+(past?' data-a="night" data-v="'+k+'"':' disabled')+' aria-label="'+DS[d.getDay()]+' '+dd+'"><span style="font-size:10px">'+DS[d.getDay()]+'</span><b>'+dd+'</b><span>'+sym+'</span><span class="fl">'+fl+'</span></button>'}
+  cells+='<button type="button" class="day'+(tap?' hit':' off')+(isT?' today':'')+(past&&!n&&!sv?' miss':'')+'"'+(tap?' data-a="night" data-v="'+k+'"':' disabled')+' aria-label="'+DS[d.getDay()]+' '+dd+'"><span style="font-size:10px">'+DS[d.getDay()]+'</span><b>'+dd+'</b><span>'+sym+'</span><span class="fl">'+fl+'</span></button>'}
  const prev=new Date(y,m,1,12)>new Date(start.getFullYear(),start.getMonth(),1,12),next=!(y===TODAY.getFullYear()&&m>=TODAY.getMonth());
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><div class="row"><button class="chip" data-a="cm" data-v="-1"'+(prev?'':' disabled')+' aria-label="'+t('cal.prev')+'">‹</button><h2 class="sp" style="text-align:center;text-transform:capitalize">'+MN[m]+' '+y+'</h2><button class="chip" data-a="cm" data-v="1"'+(next?'':' disabled')+' aria-label="'+t('cal.next')+'">›</button></div>'+
  '<p class="hint" style="margin:6px 2px 8px"><b>'+t('cal.tap')+'</b></p><div class="cal">'+DS.map(x=>'<div class="h">'+x+'</div>').join('')+cells+'</div>'+
