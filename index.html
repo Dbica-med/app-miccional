@@ -222,7 +222,7 @@ details.acc>.accb{padding:6px 16px 14px}
 <script>
 /* Preencha API_URL com o endereço do programa do Google (termina em /exec) */
 const API_URL='https://script.google.com/macros/s/AKfycbxOjWwSj60sG7hnjUilc_hHmllMNoVv36OOzKeRVvDBodoyF36NVerPX-jxHn_pS4eX/exec';
-const APP_V='3.2';
+const APP_V='3.4';
 const TERMO_V='2026-10-v2';
 
 'use strict';
@@ -533,6 +533,11 @@ const M={
 'nt.step1':['Passo 1 de 2 · Criança','Step 1 of 2 · Child','Étape 1 sur 2 · Enfant'],'nt.step2':['Passo 2 de 2 · Responsáveis','Step 2 of 2 · Guardians','Étape 2 sur 2 · Responsables'],
 'nt.cont':['Continuar','Continue','Continuer'],'nt.draw':['Desenho da criança: ','Child’s picture: ','Dessin de l’enfant : '],'nt.back':['‹ Voltar à parte da criança','‹ Back to the child’s part','‹ Retour à la partie de l’enfant'],
 /* resumo semanal */
+'wk.media':['MÉDIA POR DIA na última semana','DAILY AVERAGE in the last week','MOYENNE PAR JOUR la semaine dernière'],'wk.mediah':['Pense no dia a dia da semana: quantas vezes, em média, POR DIA? Não some a semana inteira.','Think of a typical day this week: how many times, on average, PER DAY? Do not add up the whole week.','Pensez à une journée type : combien de fois, en moyenne, PAR JOUR ? N’additionnez pas la semaine.'],
+'wk.ad':['Escapes de xixi na roupa, de dia (por dia)','Daytime pee accidents in clothes (per day)','Fuites d’urine dans les vêtements, le jour (par jour)'],'wk.at':['Como foram esses escapes, em geral?','How were these accidents, in general?','Comment étaient ces fuites, en général ?'],
+'wk.atu':['Com urgência: ficou apertado e não chegou a tempo ao banheiro','With urgency: needed to go badly and did not make it in time','Avec urgence : très pressé, pas arrivé à temps aux toilettes'],'wk.ats':['Sem perceber: só viu a roupa molhada','Without noticing: only saw the wet clothes','Sans s’en rendre compte : a vu seulement les vêtements mouillés'],'wk.atb':['Os dois tipos','Both kinds','Les deux types'],'wk.aterr':['Escolha como foram os escapes (com urgência, sem perceber ou os dois).','Choose how the accidents were (with urgency, without noticing, or both).','Choisissez comment étaient les fuites (avec urgence, sans s’en rendre compte ou les deux).'],'wk.at0':['Sem escapes: não precisa responder mais nada aqui.','No accidents: nothing more to answer here.','Pas de fuites : rien d’autre à répondre ici.'],
+'wk.ug':['Urgência para urinar','Urgency to pee','Urgence d’uriner'],'wk.ugh':['Urgência é a criança ficar apertada, com muita vontade de fazer xixi, e correr para o banheiro. Como foi na semana?','Urgency is when the child suddenly needs to pee badly and rushes to the bathroom. How was the week?','L’urgence, c’est quand l’enfant a très envie de faire pipi et court aux toilettes. Comment était la semaine ?'],'wk.u0':['Nenhuma','None','Aucune'],'wk.u1':['Pequena','Mild','Légère'],'wk.u2':['Moderada','Moderate','Modérée'],'wk.u3':['Intensa','Severe','Intense'],'wk.uerr':['Escolha a intensidade da urgência (ou Nenhuma).','Choose the urgency level (or None).','Choisissez l’intensité de l’urgence (ou Aucune).'],
+'wk.tr':['Precisou trocar a roupa por causa dos escapes? Quantas vezes por dia, em média','Did the child need a clothing change because of the accidents? How many times per day, on average','A-t-il fallu changer de vêtements à cause des fuites ? Combien de fois par jour, en moyenne'],'wk.trh':['Se não precisou, marque 0','If not needed, choose 0','Si non, choisissez 0'],'wk.c0':['0','0','0'],'wk.c05':['menos de 1','less than 1','moins de 1'],'wk.c5':['5 ou mais','5 or more','5 ou plus'],'wk.dia':['por dia','per day','par jour'],
 'wk.title':['Resumo da semana','Weekly summary','Résumé de la semaine'],'wk.lead':['De {0} a {1}. Leva cerca de 1 minuto.','From {0} to {1}. Takes about 1 minute.','Du {0} au {1}. Environ 1 minute.'],
 'wk.dias':['Dias desta semana com a criança','Days this week with the child','Jours de cette semaine avec l’enfant'],'wk.diash':['Só os dias em que ela esteve com você','Only the days the child was with you','Seulement les jours où l’enfant était avec vous'],
 'wk.av':['Escapes de xixi no dia','Daytime pee accidents','Fuites d’urine dans la journée'],'wk.avh':['Com aviso: deu vontade e não deu tempo','With warning: felt the need but did not make it in time','Avec avertissement : envie ressentie mais pas le temps'],
@@ -1009,9 +1014,10 @@ function sheetNight(){
 function viewWeek(){
  const w=S.ws,a=add(monday(TODAY),-7);
  const q=(ti,sub,p,mn,mx)=>'<div class="qrow"><div class="q">'+ti+(sub?'<small>'+sub+'</small>':'')+'</div>'+stepper(p,mn,mx)+'</div>';
+ const avg=(k,ti,sub)=>'<div class="qrow" style="display:block"><div class="q" style="font-weight:700">'+ti+(sub?'<small>'+sub+'</small>':'')+'</div><div class="chips" style="margin-top:6px">'+[[0,'0'],[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,t('wk.c5')]].map(x=>chipB('wkm',k,x[0],x[1],Number(w[k]||0)===x[0])).join('')+'</div></div>';
  return '<div class="body"><button class="back" data-a="go" data-v="menu">'+t('back')+'</button><div><h2>'+t('wk.title')+'</h2><p class="lead">'+t('wk.lead',F(a),F(add(a,6)))+'</p></div>'+
  '<div class="card">'+(S.p.cas?q(t('wk.dias'),t('wk.diash'),'ws.dias',0,7):'')+
- (hasMod('d')?q(t('wk.av'),t('wk.avh'),'ws.av',0,40)+q(t('wk.sem'),t('wk.semh'),'ws.sem',0,40)+q(t('wk.urg'),'','ws.urg',0,60)+q(t('wk.troca'),'','ws.troca',0,40):'')+
+ (hasMod('d')?'<div class="note" style="border-color:var(--gold);margin:0 0 10px"><b style="font-size:1.05em">'+t('wk.media')+'</b><br>'+t('wk.mediah')+'</div>'+avg('ad',t('wk.ad'),'')+(w.ad>0?'<div class="qrow"><div class="q">'+t('wk.at')+'</div></div><div class="chips">'+[['urg','wk.atu'],['sem','wk.ats'],['amb','wk.atb']].map(x=>chipB('wkt','at',x[0],t(x[1]),w.at===x[0])).join('')+'</div>'+(S.wkerr&&!w.at?'<p class="hint" style="color:#b3261e;font-weight:600">'+t('wk.aterr')+'</p>':'')+avg('tr',t('wk.tr'),t('wk.trh')):'<p class="hint" style="margin:0 0 10px">'+t('wk.at0')+'</p>')+'<div class="qrow" style="display:block"><div class="q" style="font-weight:700">'+t('wk.ug')+'<small>'+t('wk.ugh')+'</small></div><div class="chips" style="margin-top:6px">'+[['nenhuma','wk.u0'],['pequena','wk.u1'],['moderada','wk.u2'],['intensa','wk.u3']].map(x=>chipB('wkt','ui',x[0],t(x[1]),w.ui===x[0])).join('')+'</div>'+(S.wkerr&&!w.ui?'<p class="hint" style="color:#b3261e;font-weight:600">'+t('wk.uerr')+'</p>':'')+'</div>':'')+
  q(t('wk.regra'),t('wk.regrah'),'ws.regra',0,7)+
  (hasMod('i')?q(t('wk.evac'),'','ws.evac',0,21)+'<div class="qrow"><div class="q">'+t('wk.stool')+'</div></div><div class="chips">'+[1,2,4,6].map(v=>'<button type="button" class="chip" data-a="wb" data-v="'+v+'" aria-pressed="'+(ws_b(v))+'">'+t('wk.s'+v)+'</button>').join('')+'</div>'+q(t('wk.fecal'),'','ws.fecal',0,21):'')+'</div>'+
  '<button class="btn block" data-a="savewk">'+t('wk.send')+'</button></div>';
@@ -1121,7 +1127,7 @@ function init(){
  S={code:L.code||'',token:L.token||'',papel:L.papel||'',cfg:L.cfg||null,nights:L.nights||{},weeks:L.weeks||{},notes:L.notes||[],outbox:L.outbox||[],
   dx:Object.assign(newDx(),L.dx||{}),nt:'',p:{screen:L.token?(L.screen||'menu'):'onb',share:!!L.share,hqs:L.hqs||'',inst:L.inst||'',cq:L.cq,cqs:L.cqs||''},ob:blankOb(),draft:draftBlank(),
   draft2:{h:'12:00',v:'',nm:false,u:'ausente',p:'nenhuma',pt:'',o:''},draft3:{h:'12:00',v:0,t:'Outro',vv:''},
-  st:{dt:I(TODAY),ok:false,bad:false},ntq:[],ag:{q:false,dt:'',bad:false},mq:{},dv:{it:Array(10).fill(null)},dvok:false,imp:{n:0,d:0,i:0},iq:{nw:'',dw:''},hq:{hp:'',hm:[],hn:'',hd:'',hi:'',hu:''},ckmsg:'',impok:false,ws:L.ws||{dias:3,av:0,sem:0,urg:0,troca:0,regra:5,evac:6,bris:4,fecal:0},cal:{y:TODAY.getFullYear(),m:TODAY.getMonth()},busy:false,authBad:false};
+  st:{dt:I(TODAY),ok:false,bad:false},ntq:[],ag:{q:false,dt:'',bad:false},mq:{},dv:{it:Array(10).fill(null)},dvok:false,imp:{n:0,d:0,i:0},iq:{nw:'',dw:''},hq:{hp:'',hm:[],hn:'',hd:'',hi:'',hu:''},ckmsg:'',impok:false,ws:L.ws||{dias:3,av:0,sem:0,urg:0,troca:0,ad:0,at:'',ui:'',ug:0,tr:0,regra:5,evac:6,bris:4,fecal:0},cal:{y:TODAY.getFullYear(),m:TODAY.getMonth()},busy:false,authBad:false};
  if(S.cfg)applyCfg(S.cfg,true);
 }
 function applyCfg(c,quiet){
@@ -1305,9 +1311,13 @@ const A={
   Object.assign(S.dx,newDx());S.p.sheet=null;S.p.screen=(S.cfg&&S.cfg.fase==='trat')?'menu':'dx';save();toTop()},
  cqok(){S.p.cqs='';save()},
  wb(d){S.ws.bris=Number(d.v)},
+ wkm(d){S.ws[d.k]=Number(d.v);if(d.k==='ad'&&!(Number(d.v)>0))S.ws.at=''},
+ wkt(d){const k=d.k||'at';S.ws[k]=S.ws[k]===d.v?'':d.v},
  savewk(){const w=S.ws,k=I(add(monday(TODAY),-7));
-  S.weeks[k]={dias:w.dias,esc:w.av+w.sem,av:w.av,sem:w.sem,urg:w.urg,troca:w.troca,regra:w.regra,evac:w.evac,bris:w.bris,fecal:w.fecal};
-  queue('week',{semana:k,dias:w.dias,esc:w.av+w.sem,av:w.av,sem:w.sem,urg:w.urg,troca:w.troca,regra:w.regra,evac:w.evac,bris:w.bris,fecal:w.fecal});
+  S.wkerr=false;if(hasMod('d')&&((w.ad>0&&!w.at)||!w.ui)){S.wkerr=true;return}
+  if(hasMod('d')){const D=S.p.cas?Math.max(1,Number(w.dias)||7):7,tot=x=>Math.round((Number(x)||0)*D),e=tot(w.ad),ty=w.at||'urg';w.av=ty==='sem'?0:ty==='amb'?Math.ceil(e/2):e;w.sem=ty==='sem'?e:ty==='amb'?Math.floor(e/2):0;w.urg='';w.troca=e>0?tot(w.tr):0}
+  S.weeks[k]={dias:w.dias,esc:w.av+w.sem,av:w.av,sem:w.sem,urg:w.urg,troca:w.troca,regra:w.regra,evac:w.evac,bris:w.bris,fecal:w.fecal,urgint:hasMod('d')?w.ui:''};
+  queue('week',{semana:k,dias:w.dias,esc:w.av+w.sem,av:w.av,sem:w.sem,urg:w.urg,troca:w.troca,regra:w.regra,evac:w.evac,bris:w.bris,fecal:w.fecal,urgint:hasMod('d')?w.ui:''});
   S.p.screen='menu';cqCheck();save();toTop()},
  ntq(d){const i=S.ntq.indexOf(d.v);if(i>=0)S.ntq.splice(i,1);else S.ntq.push(d.v)},
  fbsend(){const x=(S.fb||'').trim();if(!x)return 'norender';const tx='PROBLEMAS OU DÚVIDAS EM RELAÇÃO AO APP\n\nCódigo: '+S.code+'\nApp v'+APP_V+'\nAparelho: '+(navigator.userAgent||'').replace(/^Mozilla\/5\.0 /,'').slice(0,70)+'\n\n'+x.slice(0,700);window.open('https://wa.me/5521984814150?text='+encodeURIComponent(tx),'_blank');S.fb=''},
